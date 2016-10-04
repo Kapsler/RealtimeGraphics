@@ -178,7 +178,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	//Create swap chain, direct3d device and direct3d device context
 	//Will fail if hardware not dx11 ready
 	//Can fail with multiple video cards -> if happens iterate cards and choose right one
-	result = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, 0, &featureLevel, 1, D3D11_SDK_VERSION, &swapChainDescription, &swapChain, &device, nullptr, &deviceContext);
+	result = D3D11CreateDeviceAndSwapChain(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, D3D11_CREATE_DEVICE_DEBUG, &featureLevel, 1, D3D11_SDK_VERSION, &swapChainDescription, &swapChain, &device, nullptr, &deviceContext);
 	if(FAILED(result))
 	{
 		return false;

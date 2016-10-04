@@ -4,6 +4,7 @@ ModelClass::ModelClass()
 {
 	vertexBuffer = nullptr;
 	indexBuffer = nullptr;
+	texture = nullptr;
 	model = nullptr;
 }
 
@@ -15,7 +16,7 @@ ModelClass::~ModelClass()
 {
 }
 
-bool ModelClass::Initialize(ID3D11Device* device, char* modelFilename)
+bool ModelClass::Initialize(ID3D11Device* device, char* modelFilename, WCHAR* textureFilename)
 {
 	bool result;
 
@@ -33,11 +34,20 @@ bool ModelClass::Initialize(ID3D11Device* device, char* modelFilename)
 		return false;
 	}
 
+	//Load Texture
+	result = LoadTexture(device, textureFilename);
+	if(!result)
+	{
+		return false;
+	}
+
 	return true;
 }
 
 void ModelClass::Shutdown()
 {
+	ReleaseTexture();
+
 	ShutdownBuffer();
 
 	ReleaseModel();
@@ -51,6 +61,16 @@ void ModelClass::Render(ID3D11DeviceContext* context)
 int ModelClass::GetIndexCount()
 {
 	return indexCount;
+}
+
+ID3D11Resource* ModelClass::GetTexture()
+{
+	return texture->GetTexture();
+}
+
+ID3D11ShaderResourceView* ModelClass::GetTextureView()
+{
+	return texture->GetTextureView();
 }
 
 bool ModelClass::InitializeBuffers(ID3D11Device* device)
@@ -77,6 +97,7 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 	for(auto i = 0; i < vertexCount; i++)
 	{
 		vertices[i].position = XMFLOAT3(model[i].x, model[i].y, model[i].z);
+		vertices[i].texture = XMFLOAT2(model[i].tu, model[i].tv);
 		vertices[i].normal = XMFLOAT3(model[i].nx, model[i].ny, model[i].nz);
 
 		indices[i] = i;
@@ -160,6 +181,35 @@ void ModelClass::RenderBuffers(ID3D11DeviceContext* context)
 
 	//Set type of primitive that should be rendered
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+}
+
+bool ModelClass::LoadTexture(ID3D11Device* device, WCHAR* filename)
+{
+	bool result;
+
+	texture = new TextureClass;
+	if(!texture)
+	{
+		return false;
+	}
+
+	result = texture->Initialize(device, filename);
+	if(!result)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+void ModelClass::ReleaseTexture()
+{
+	if(texture)
+	{
+		texture->Shutdown();
+		delete texture;
+		texture = nullptr;
+	}
 }
 
 bool ModelClass::LoadModel(char* filename)

@@ -30,13 +30,16 @@
     <ClCompile Include="D3DClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ColorShaderClass.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ModelClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CameraClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -53,18 +56,24 @@
     <ClInclude Include="D3DClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ColorShaderClass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ModelClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CameraClass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TextureClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="PixelShader.hlsl" />
-    <None Include="VertexShader.hlsl" />
+    <FxCompile Include="PixelShader.hlsl" />
+    <FxCompile Include="VertexShader.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

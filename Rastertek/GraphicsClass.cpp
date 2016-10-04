@@ -5,7 +5,7 @@ GraphicsClass::GraphicsClass()
 	direct3D = nullptr;
 	camera = nullptr;
 	model = nullptr;
-	colorShader = nullptr;
+	shader = nullptr;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass&)
@@ -42,7 +42,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	camera->SetPosition(0.0f, 0.0f, -5.0f);
-	camera->SetRotation(1.0f, 5.5f, 1.0f);
 
 	//Set up model class
 	model = new ModelClass();
@@ -51,24 +50,24 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	result = model->Initialize(direct3D->GetDevice(), "./Model/Cube.txt");
+	result = model->Initialize(direct3D->GetDevice(), "./Model/Cube.txt", L"./Model/Cube.dds");
 	if(!result)
 	{
 		MessageBox(hwnd, L"Could not initialize model", L"Error", MB_OK);
 		return false;
 	}
 
-	//Set up color shader
-	colorShader = new ColorShaderClass();
-	if(!colorShader)
+	//Set up shader
+	shader = new ShaderClass();
+	if(!shader)
 	{
 		return false;
 	}
 
-	result = colorShader->Initialize(direct3D->GetDevice(), hwnd);
+	result = shader->Initialize(direct3D->GetDevice(), hwnd);
 	if(!result)
 	{
-		MessageBox(hwnd, L"Could not initialize color shader object", L"Error", MB_OK);
+		MessageBox(hwnd, L"Could not initialize shader object", L"Error", MB_OK);
 		return false;
 	}
 
@@ -77,11 +76,11 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 void GraphicsClass::Shutdown()
 {
-	if(colorShader)
+	if(shader)
 	{
-		colorShader->Shutdown();
-		delete colorShader;
-		colorShader = nullptr;
+		shader->Shutdown();
+		delete shader;
+		shader = nullptr;
 	}
 
 	if(model)
@@ -137,7 +136,8 @@ bool GraphicsClass::Render()
 	//Put model vertex and index buffer on pipeline
 	model->Render(direct3D->GetDeviceContext());
 
-	result = colorShader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix);
+	//Render using shader
+	result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, model->GetTextureView());
 	if(!result)
 	{
 		return false;

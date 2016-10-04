@@ -3,7 +3,8 @@
 #include "D3DClass.h"
 #include "CameraClass.h"
 #include "ModelClass.h"
-#include "ColorShaderClass.h"
+#include "ShaderClass.h"
+#include "TextureClass.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = true;
@@ -27,5 +28,5 @@ private:
 	D3DClass* direct3D;
 	CameraClass* camera;
 	ModelClass* model;
-	ColorShaderClass* colorShader;
+	ShaderClass* shader;
 };
