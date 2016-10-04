@@ -23,7 +23,7 @@ public:
 	bool Frame();
 
 private:
-	bool Render();
+	bool Render(float);
 
 	D3DClass* direct3D;
 	CameraClass* camera;

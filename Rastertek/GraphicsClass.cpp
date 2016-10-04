@@ -107,8 +107,15 @@ void GraphicsClass::Shutdown()
 bool GraphicsClass::Frame()
 {
 	bool result;
+	static float rotation = 0.0f;
 
-	result = Render();
+	rotation += static_cast<float>(XM_PI * 0.001f);
+	if(rotation > 360.0f)
+	{
+		rotation -= 360.0f;
+	}
+
+	result = Render(rotation);
 	if(!result)
 	{
 		return false;
@@ -117,7 +124,7 @@ bool GraphicsClass::Frame()
 	return true;
 }
 
-bool GraphicsClass::Render()
+bool GraphicsClass::Render(float rotation)
 {
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
 	bool result;
@@ -132,6 +139,10 @@ bool GraphicsClass::Render()
 	direct3D->GetWorldMatrix(worldMatrix);
 	camera->GetViewMatrix(viewMatrix);
 	direct3D->GetProjectionMatrix(projectionMatrix);
+
+	//Use rotation
+	worldMatrix *= XMMatrixRotationX(rotation);
+	worldMatrix *= XMMatrixRotationY(rotation);
 
 	//Put model vertex and index buffer on pipeline
 	model->Render(direct3D->GetDeviceContext());
