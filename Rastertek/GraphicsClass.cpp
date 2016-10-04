@@ -50,7 +50,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	result = model->Initialize(direct3D->GetDevice(), "./Model/Cube.txt", L"./Model/Cube.dds");
+	result = model->Initialize(direct3D->GetDevice(), "./Model/Cube.txt", L"./Model/hearts.dds");
 	if(!result)
 	{
 		MessageBox(hwnd, L"Could not initialize model", L"Error", MB_OK);
