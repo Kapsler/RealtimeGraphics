@@ -4,6 +4,7 @@ ModelClass::ModelClass()
 {
 	vertexBuffer = nullptr;
 	indexBuffer = nullptr;
+	instanceBuffer = nullptr;
 	texture = nullptr;
 	model = nullptr;
 }
@@ -63,6 +64,16 @@ int ModelClass::GetIndexCount()
 	return indexCount;
 }
 
+int ModelClass::GetVertexCount()
+{
+	return vertexCount;
+}
+
+int ModelClass::GetInstanceCount()
+{
+	return instanceCount;
+}
+
 ID3D11Resource* ModelClass::GetTexture()
 {
 	return texture->GetTexture();
@@ -76,9 +87,10 @@ ID3D11ShaderResourceView* ModelClass::GetTextureView()
 bool ModelClass::InitializeBuffers(ID3D11Device* device)
 {
 	VertexType* vertices;
+	InstanceType* instances;
 	unsigned long* indices;
-	D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc;
-	D3D11_SUBRESOURCE_DATA vertexData, indexData;
+	D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc, instanceBufferDesc;
+	D3D11_SUBRESOURCE_DATA vertexData, indexData, instanceData;
 	HRESULT result;
 
 	vertices = new VertexType[vertexCount];
@@ -147,11 +159,57 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 	delete[] indices;
 	indices = nullptr;
 
+	//HARDCODED
+	instanceCount = 4;
+
+	instances = new InstanceType[instanceCount];
+	if(!instances)
+	{
+		return false;
+	}
+
+	//Load instance array with data
+	instances[0].position = XMFLOAT3(-1.5, -1.5f, 5);
+	instances[1].position = XMFLOAT3(-1.5, 1.5f, 5);
+	instances[2].position = XMFLOAT3(1.5, -1.5f, 5);
+	instances[3].position = XMFLOAT3(1.5, 1.5f, 5);
+	//HARDCODED ENDE
+
+
+	//Instance Description
+	instanceBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	instanceBufferDesc.ByteWidth = sizeof(InstanceType) * instanceCount;
+	instanceBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	instanceBufferDesc.CPUAccessFlags = 0;
+	instanceBufferDesc.MiscFlags = 0;
+	instanceBufferDesc.StructureByteStride = 0;
+
+	instanceData.pSysMem = instances;
+	instanceData.SysMemPitch = 0;
+	instanceData.SysMemSlicePitch = 0;
+
+	//Create Instance Buffer
+	result = device->CreateBuffer(&instanceBufferDesc, &instanceData, &instanceBuffer);
+	if(FAILED(result))
+	{
+		return false;
+	}
+
+	//release instance array
+	delete[] instances;
+	instances = nullptr;
+
 	return true;
 }
 
 void ModelClass::ShutdownBuffer()
 {
+	if(instanceBuffer)
+	{
+		instanceBuffer->Release();
+		instanceBuffer = nullptr;
+	}
+
 	if(indexBuffer)
 	{
 		indexBuffer->Release();
@@ -167,14 +225,19 @@ void ModelClass::ShutdownBuffer()
 
 void ModelClass::RenderBuffers(ID3D11DeviceContext* context)
 {
-	unsigned int stride;
-	unsigned int offset;
+	unsigned int strides[2];
+	unsigned int offsets[2];
+	ID3D11Buffer* bufferPointers[2];
 
-	stride = sizeof(VertexType);
-	offset = 0;
+	strides[0] = sizeof(VertexType);
+	strides[1] = sizeof(InstanceType);
+	offsets[0] = 0;
+	offsets[1] = 0;
+	bufferPointers[0] = vertexBuffer;
+	bufferPointers[1] = instanceBuffer;
 
 	//Set vertex buffer active
-	context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+	context->IASetVertexBuffers(0, 2, bufferPointers, strides, offsets);
 
 	//Set index buffer actice
 	context->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R32_UINT, 0);

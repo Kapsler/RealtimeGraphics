@@ -35,7 +35,7 @@ void ShaderClass::Shutdown()
 	ShutdownShader();
 }
 
-bool ShaderClass::Render(ID3D11DeviceContext* context, int indexCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX	projectionMatrix, ID3D11ShaderResourceView* textureView)
+bool ShaderClass::Render(ID3D11DeviceContext* context, int indexCount, int instanceCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX	projectionMatrix, ID3D11ShaderResourceView* textureView)
 {
 	bool result;
 
@@ -45,7 +45,7 @@ bool ShaderClass::Render(ID3D11DeviceContext* context, int indexCount, XMMATRIX 
 		return false;
 	}
 
-	RenderShader(context, indexCount);
+	RenderShader(context, indexCount, instanceCount);
 
 	return true;
 }
@@ -56,7 +56,7 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* verte
 	ID3D10Blob* errorMessage;
 	ID3D10Blob* vertexShaderBuffer;
 	ID3D10Blob* pixelShaderBuffer;
-	D3D11_INPUT_ELEMENT_DESC polygonLayout[2];
+	D3D11_INPUT_ELEMENT_DESC polygonLayout[3];
 	unsigned int numElements;
 	D3D11_BUFFER_DESC matrixBufferDesc;
 	D3D11_SAMPLER_DESC samplerDesc;
@@ -126,6 +126,14 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* verte
 	polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[1].InstanceDataStepRate = 0;
+
+	polygonLayout[2].SemanticName = "TEXCOORD";
+	polygonLayout[2].SemanticIndex = 1;
+	polygonLayout[2].Format = DXGI_FORMAT_R32G32_FLOAT;
+	polygonLayout[2].InputSlot = 1;
+	polygonLayout[2].AlignedByteOffset = 0;
+	polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_INSTANCE_DATA;
+	polygonLayout[2].InstanceDataStepRate = 1;
 
 	numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 
@@ -274,7 +282,7 @@ bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* context, XMMATRIX wor
 	return true;
 }
 
-void ShaderClass::RenderShader(ID3D11DeviceContext* context, int indexCount)
+void ShaderClass::RenderShader(ID3D11DeviceContext* context, int indexCount, int instanceCount)
 {
 	//Vertex Input Layout
 	context->IASetInputLayout(layout);
@@ -287,5 +295,5 @@ void ShaderClass::RenderShader(ID3D11DeviceContext* context, int indexCount)
 	context->PSSetSamplers(0, 1, &sampleState);
 
 	//Render indices
-	context->DrawIndexed(indexCount, 0, 0);
+	context->DrawIndexedInstanced(indexCount, instanceCount, 0, 0, 0);
 }

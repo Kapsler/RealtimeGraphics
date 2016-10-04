@@ -148,7 +148,7 @@ bool GraphicsClass::Render(float rotation)
 	model->Render(direct3D->GetDeviceContext());
 
 	//Render using shader
-	result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, model->GetTextureView());
+	result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), model->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, model->GetTextureView());
 	if(!result)
 	{
 		return false;
