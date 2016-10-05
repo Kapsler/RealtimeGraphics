@@ -4,7 +4,6 @@ GraphicsClass::GraphicsClass()
 {
 	direct3D = nullptr;
 	camera = nullptr;
-	model = nullptr;
 	shader = nullptr;
 }
 
@@ -49,20 +48,15 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	camera->SetPosition(0.0f, 0.0f, -5.0f);
 
-	//Set up model class
-	model = new ModelClass();
-	if(!model)
-	{
-		return false;
-	}
+	//HARDCODED - Setting up Models
 
-	result = model->Initialize(direct3D->GetDevice(), "./Model/Cube.txt", L"./Model/hearts.dds");
-	if(!result)
-	{
-		MessageBox(hwnd, L"Could not initialize model", L"Error", MB_OK);
-		return false;
-	}
+	InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/hearts.dds", XMFLOAT3(-5.0f, 0.0f, 5.0f), 2.0f);
+	InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/hearts.dds", XMFLOAT3(5.0f, 0.0f, 10.0f), 1.0f);
+	InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/hearts.dds", XMFLOAT3(-3.0f, 0.0f, -5.0f), 1.0f);
+	InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/seafloor.dds", XMFLOAT3(0.0f, -10.0f, -5.0f), 200.0f);
 
+	//HARDCODED END
+	
 	//Set up shader
 	shader = new ShaderClass();
 	if(!shader)
@@ -82,18 +76,13 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 void GraphicsClass::Shutdown()
 {
+	ShutdownModels();
+
 	if(shader)
 	{
 		shader->Shutdown();
 		delete shader;
 		shader = nullptr;
-	}
-
-	if(model)
-	{
-		model->Shutdown();
-		delete model;
-		model = nullptr;
 	}
 
 	if(camera)
@@ -135,33 +124,32 @@ bool GraphicsClass::Frame(InputClass* input)
 
 bool GraphicsClass::Render(float rotation, InputClass* input)
 {
-	XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
+	XMMATRIX viewMatrix, projectionMatrix;
 	bool result;
 
 	//clear Buffer at beginning
-	direct3D->BeginScene(0.9f, 0.5f, 1.0f, 0.0f);
+	direct3D->BeginScene(0.2f, 0.5f, 0.5f, 0.0f);
 
 	//Generate view matrix based on camera
 	camera->DoMovement(input);
 	camera->Render();
 
 	//Get world, view and proj matrices
-	direct3D->GetWorldMatrix(worldMatrix);
+	//direct3D->GetWorldMatrix(worldMatrix);
 	camera->GetViewMatrix(viewMatrix);
 	direct3D->GetProjectionMatrix(projectionMatrix);
 
-	//Use rotation
-	//worldMatrix *= XMMatrixRotationX(rotation);
-	//worldMatrix *= XMMatrixRotationY(rotation);
-
 	//Put model vertex and index buffer on pipeline
-	model->Render(direct3D->GetDeviceContext());
-
-	//Render using shader
-	result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), model->GetInstanceCount(), worldMatrix, viewMatrix, projectionMatrix, model->GetTextureView());
-	if(!result)
+	for(ModelClass* model : models)
 	{
-		return false;
+		model->Render(direct3D->GetDeviceContext());
+
+		//Render using shader
+		result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), model->GetInstanceCount(), model->worldMatrix, viewMatrix, projectionMatrix, model->GetTextureView());
+		if(!result)
+		{
+			return false;
+		}
 	}
 
 	//Output Buffer
@@ -212,4 +200,43 @@ void GraphicsClass::ChangeFillmode(D3D11_FILL_MODE fillmode)
 
 	rasterState->Release();
 	rasterState = nullptr;
+}
+
+bool GraphicsClass::InitializeModel(HWND hwnd, char* modelFilename, WCHAR* textureFilename, XMFLOAT3 position, float scale)
+{
+	bool result;
+	ModelClass* model;
+
+	//Set up model class
+	model = new ModelClass();
+	if (!model)
+	{
+		return false;
+	}
+
+	result = model->Initialize(direct3D->GetDevice(), modelFilename, textureFilename);
+	if (!result)
+	{
+		MessageBox(hwnd, L"Could not initialize model", L"Error", MB_OK);
+		return false;
+	}
+
+	model->worldMatrix *= XMMatrixScaling(scale, scale, scale);
+	model->worldMatrix *= XMMatrixTranslation(position.x, position.y, position.z);
+
+	models.push_back(model);
+
+	return true;
+}
+
+void GraphicsClass::ShutdownModels()
+{
+	for(ModelClass* model : models)
+	{
+		model->Shutdown();
+		delete model;
+	}
+
+	models.clear();
+
 }

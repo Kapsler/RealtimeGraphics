@@ -147,7 +147,6 @@ void CameraClass::DoMovement(InputClass* input)
 		trackingKeyToggle = false;
 	}
 
-
 }
 
 void CameraClass::Render()
@@ -155,7 +154,7 @@ void CameraClass::Render()
 	XMVECTOR upVector, positionVector, lookAtVector;
 	float yaw, pitch, roll;
 	XMMATRIX rotationMatrix;
-	
+
 	upVector = up;
 	positionVector = position;
 	lookAtVector = lookAt;

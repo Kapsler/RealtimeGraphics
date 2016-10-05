@@ -5,6 +5,7 @@
 #include "ModelClass.h"
 #include "ShaderClass.h"
 #include "TextureClass.h"
+#include <vector>
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = true;
@@ -26,10 +27,12 @@ private:
 	bool Render(float, InputClass*);
 	void CheckWireframe(InputClass*);
 	void ChangeFillmode(D3D11_FILL_MODE);
+	bool InitializeModel(HWND, char*, WCHAR*, XMFLOAT3, float);
+	void ShutdownModels();
 
 	D3DClass* direct3D;
 	CameraClass* camera;
-	ModelClass* model;
+	std::vector<ModelClass*> models;
 	ShaderClass* shader;
 
 	bool wireframeMode, wireframeKeyToggle;

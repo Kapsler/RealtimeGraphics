@@ -74,6 +74,44 @@ int ModelClass::GetInstanceCount()
 	return instanceCount;
 }
 
+bool ModelClass::changeInstanceData(ID3D11Device* device, XMFLOAT3 newPosition)
+{
+	D3D11_BUFFER_DESC tempBufferDesc;
+	D3D11_SUBRESOURCE_DATA instanceData;
+	InstanceType* instance;
+	bool result;
+
+	instanceBuffer->GetDesc(&tempBufferDesc);
+
+
+	instance = new InstanceType();
+	if (!instance)
+	{
+		return false;
+	}
+
+	//Load instance array with data
+	instance->position = newPosition;
+	//HARDCODED ENDE
+
+	instanceData.pSysMem = instance;
+	instanceData.SysMemPitch = 0;
+	instanceData.SysMemSlicePitch = 0;
+
+	//Create Instance Buffer
+	result = device->CreateBuffer(&tempBufferDesc, &instanceData, &instanceBuffer);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	//release instance array
+	delete instance;
+	instance = nullptr;
+
+	return true;
+}
+
 ID3D11Resource* ModelClass::GetTexture()
 {
 	return texture->GetTexture();
@@ -160,7 +198,7 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 	indices = nullptr;
 
 	//HARDCODED
-	instanceCount = 4;
+	instanceCount = 1;
 
 	instances = new InstanceType[instanceCount];
 	if(!instances)
@@ -169,10 +207,8 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 	}
 
 	//Load instance array with data
-	instances[0].position = XMFLOAT3(-1.5, -1.5f, 5);
-	instances[1].position = XMFLOAT3(-1.5, 1.5f, 5);
-	instances[2].position = XMFLOAT3(1.5, -1.5f, 5);
-	instances[3].position = XMFLOAT3(1.5, 1.5f, 5);
+	instances[0].position = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	instances[0].scale = 1.0f;
 	//HARDCODED ENDE
 
 
@@ -198,6 +234,8 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 	//release instance array
 	delete[] instances;
 	instances = nullptr;
+
+	worldMatrix = XMMatrixIdentity();
 
 	return true;
 }

@@ -33,4 +33,5 @@ private:
 	XMMATRIX viewMatrix;
 	TimerClass* timer;
 	bool tracking, trackingKeyToggle;
+	Quaternion test;
 };

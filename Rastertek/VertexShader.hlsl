@@ -24,11 +24,6 @@ PixelInputType main( VertexInputType input )
 
     input.position.w = 1.0f;
 
-    //Position changes for instanced objects
-    input.position.x += input.instancePosition.x;
-    input.position.y += input.instancePosition.y;
-    input.position.z += input.instancePosition.z;
-
     output.position = mul(input.position, worldMatrix);
     output.position = mul(output.position, viewMatrix);
     output.position = mul(output.position, projectionMatrix);

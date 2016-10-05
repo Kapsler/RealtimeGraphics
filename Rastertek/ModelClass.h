@@ -20,8 +20,12 @@ public:
 	int GetVertexCount();
 	int GetInstanceCount();
 
+	bool changeInstanceData(ID3D11Device*, XMFLOAT3);
+
 	ID3D11Resource* GetTexture();
 	ID3D11ShaderResourceView* GetTextureView();
+
+	XMMATRIX worldMatrix;
 
 private:
 	struct VertexType
@@ -34,6 +38,7 @@ private:
 	struct InstanceType
 	{
 		XMFLOAT3 position;
+		float scale;
 	};
 
 	struct ModelType
