@@ -24,9 +24,14 @@ public:
 
 private:
 	bool Render(float, InputClass*);
+	void CheckWireframe(InputClass*);
+	void ChangeFillmode(D3D11_FILL_MODE);
 
 	D3DClass* direct3D;
 	CameraClass* camera;
 	ModelClass* model;
 	ShaderClass* shader;
+
+	bool wireframeMode, wireframeKeyToggle;
+
 };

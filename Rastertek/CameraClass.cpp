@@ -128,23 +128,23 @@ void CameraClass::DoMovement(InputClass* input)
 			movementDirection.Normalize();
 			position -= cameraSpeed * movementDirection;
 		}
-		if (input->IsKeyDown(tkey) && !trackingKeyPressed)
+		if (input->IsKeyDown(tkey) && !trackingKeyToggle)
 		{
 			tracking = true;
-			trackingKeyPressed = true;
+			trackingKeyToggle = true;
 		}
 	} else
 	{
-		if (input->IsKeyDown(tkey) && !trackingKeyPressed)
+		if (input->IsKeyDown(tkey) && !trackingKeyToggle)
 		{
 			tracking = false;
-			trackingKeyPressed = true;
+			trackingKeyToggle = true;
 		}
 	}
 
 	if(input->IsKeyUp(tkey))
 	{
-		trackingKeyPressed = false;
+		trackingKeyToggle = false;
 	}
 
 

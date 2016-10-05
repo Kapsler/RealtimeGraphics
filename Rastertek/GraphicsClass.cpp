@@ -116,6 +116,8 @@ bool GraphicsClass::Frame(InputClass* input)
 	bool result;
 	static float rotation = 0.0f;
 
+	CheckWireframe(input);
+
 	rotation += static_cast<float>(XM_PI * 0.001f);
 	if(rotation > 360.0f)
 	{
@@ -166,4 +168,48 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 	direct3D->EndScene();
 
 	return true;
+}
+
+void GraphicsClass::CheckWireframe(InputClass* input)
+{
+	unsigned int zkey = 0x5A;
+
+	if(!wireframeMode)
+	{
+		if(input->IsKeyDown(zkey) & !wireframeKeyToggle)
+		{
+			wireframeMode = true;
+			wireframeKeyToggle = true;
+			ChangeFillmode(D3D11_FILL_WIREFRAME);
+		}	
+	} else
+	{
+		if (input->IsKeyDown(zkey) & !wireframeKeyToggle)
+		{
+			wireframeMode = false;
+			wireframeKeyToggle = true;
+			ChangeFillmode(D3D11_FILL_SOLID);
+		}
+	}
+	
+	if(input->IsKeyUp(zkey))
+	{
+		wireframeKeyToggle = false;
+	}
+}
+
+void GraphicsClass::ChangeFillmode(D3D11_FILL_MODE fillmode)
+{
+	ID3D11RasterizerState* rasterState;
+	D3D11_RASTERIZER_DESC rasterStateDesc;
+
+	direct3D->GetDeviceContext()->RSGetState(&rasterState);
+	rasterState->GetDesc(&rasterStateDesc);
+	rasterStateDesc.FillMode = fillmode;
+
+	direct3D->GetDevice()->CreateRasterizerState(&rasterStateDesc, &rasterState);
+	direct3D->GetDeviceContext()->RSSetState(rasterState);
+
+	rasterState->Release();
+	rasterState = nullptr;
 }
