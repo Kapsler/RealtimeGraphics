@@ -1,4 +1,5 @@
 #include "SystemClass.h"
+#include <iostream>
 
 SystemClass::SystemClass()
 {
@@ -145,7 +146,7 @@ bool SystemClass::Frame()
 	}
 
 	//Do the frame processing for graphics
-	result = graphics->Frame();
+	result = graphics->Frame(input);
 	if(!result)
 	{
 		return false;

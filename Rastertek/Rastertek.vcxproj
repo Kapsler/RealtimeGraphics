@@ -152,16 +152,18 @@
     <ClCompile Include="ModelClass.cpp" />
     <ClCompile Include="SystemClass.cpp" />
     <ClCompile Include="TextureClass.cpp" />
+    <ClCompile Include="TimerClass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CameraClass.h" />
     <ClInclude Include="ShaderClass.h" />
     <ClInclude Include="D3DClass.h" />
     <ClInclude Include="GraphicsClass.h" />
-    <ClInclude Include="Inputclass.h" />
+    <ClInclude Include="InputClass.h" />
     <ClInclude Include="ModelClass.h" />
     <ClInclude Include="SystemClass.h" />
     <ClInclude Include="TextureClass.h" />
+    <ClInclude Include="TimerClass.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PixelShader.hlsl">

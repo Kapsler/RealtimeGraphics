@@ -41,6 +41,12 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
+	result = camera->Initialize();
+	if(!result)
+	{
+		return false;
+	}
+
 	camera->SetPosition(0.0f, 0.0f, -5.0f);
 
 	//Set up model class
@@ -92,6 +98,7 @@ void GraphicsClass::Shutdown()
 
 	if(camera)
 	{
+		camera->Shutdown();
 		delete camera;
 		camera = nullptr;
 	}
@@ -104,7 +111,7 @@ void GraphicsClass::Shutdown()
 	}
 }
 
-bool GraphicsClass::Frame()
+bool GraphicsClass::Frame(InputClass* input)
 {
 	bool result;
 	static float rotation = 0.0f;
@@ -115,7 +122,7 @@ bool GraphicsClass::Frame()
 		rotation -= 360.0f;
 	}
 
-	result = Render(rotation);
+	result = Render(rotation, input);
 	if(!result)
 	{
 		return false;
@@ -124,7 +131,7 @@ bool GraphicsClass::Frame()
 	return true;
 }
 
-bool GraphicsClass::Render(float rotation)
+bool GraphicsClass::Render(float rotation, InputClass* input)
 {
 	XMMATRIX worldMatrix, viewMatrix, projectionMatrix;
 	bool result;
@@ -133,6 +140,7 @@ bool GraphicsClass::Render(float rotation)
 	direct3D->BeginScene(0.9f, 0.5f, 1.0f, 0.0f);
 
 	//Generate view matrix based on camera
+	camera->DoMovement(input);
 	camera->Render();
 
 	//Get world, view and proj matrices
@@ -141,8 +149,8 @@ bool GraphicsClass::Render(float rotation)
 	direct3D->GetProjectionMatrix(projectionMatrix);
 
 	//Use rotation
-	worldMatrix *= XMMatrixRotationX(rotation);
-	worldMatrix *= XMMatrixRotationY(rotation);
+	//worldMatrix *= XMMatrixRotationX(rotation);
+	//worldMatrix *= XMMatrixRotationY(rotation);
 
 	//Put model vertex and index buffer on pipeline
 	model->Render(direct3D->GetDeviceContext());

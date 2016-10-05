@@ -2,13 +2,13 @@
 
 CameraClass::CameraClass()
 {
-	positionX = 0.0f;
-	positionY = 0.0f;
-	positionZ = 0.0f;
+	position.x = 0.0f;
+	position.y = 0.0f;
+	position.z = 0.0f;
 
-	rotationX = 0.0f;
-	rotationY = 0.0f;
-	rotationZ = 0.0f;
+	rotation.x = 0.0f;
+	rotation.y = 0.0f;
+	rotation.z = 0.0f;
 }
 
 CameraClass::CameraClass(const CameraClass&)
@@ -21,60 +21,131 @@ CameraClass::~CameraClass()
 
 void CameraClass::SetPosition(float x, float y, float z)
 {
-	positionX = x;
-	positionY = y;
-	positionZ = z;	
+	position.x = x;
+	position.y= y;
+	position.z = z;	
 }
 
 void CameraClass::SetRotation(float x, float y, float z)
 {
-	rotationX = x;
-	rotationY = y;
-	rotationZ = z;
+	rotation.x = x;
+	rotation.y = y;
+	rotation.z = z;
 }
 
-XMFLOAT3 CameraClass::GetPosition()
+bool CameraClass::Initialize()
 {
-	return XMFLOAT3(positionX, positionY, positionZ);
-}
+	bool result;
 
-XMFLOAT3 CameraClass::GetRotation()
-{
-	return XMFLOAT3(rotationX, rotationY, rotationZ);
-}
+	timer = new TimerClass();
+	if(!timer)
+	{
+		return false;
+	}
 
-void CameraClass::Render()
-{
-	XMFLOAT3 up, position, lookAt;
-	XMVECTOR upVector, positionVector, lookAtVector;
-	float yaw, pitch, roll;
-	XMMATRIX rotationMatrix;
+	result = timer->Initialize();
+	if(!result)
+	{
+		return false;
+	}
+	
+	//HARDCODED DIRECTIONS
 
 	//Where is up
 	up.x = 0.0f;
 	up.y = 1.0f;
 	up.z = 0.0f;
 
-	upVector = XMLoadFloat3(&up);
-
-	//Set position in world
-	position.x = positionX;
-	position.y = positionY;
-	position.z = positionZ;
-
-	positionVector = XMLoadFloat3(&position);
-
 	//Set default look direction
 	lookAt.x = 0.0f;
 	lookAt.y = 0.0f;
 	lookAt.z = 1.0f;
 
-	lookAtVector = XMLoadFloat3(&lookAt);
+
+
+	//HARDCODED END
+
+	return true;
+}
+
+void CameraClass::Shutdown()
+{
+	if(timer)
+	{
+		delete timer;
+		timer = nullptr;
+	}
+}
+
+XMFLOAT3 CameraClass::GetPosition()
+{
+	return XMFLOAT3(position);
+}
+
+XMFLOAT3 CameraClass::GetRotation()
+{
+	return XMFLOAT3(rotation);
+}
+
+void CameraClass::DoMovement(InputClass* input)
+{
+	int wkey = 0x57;
+	int skey = 0x53;
+	int akey = 0x41;
+	int dkey = 0x44;
+	Vector3 movementDirection;
+	timer->Frame();
+
+
+	float deltaTime = timer->GetFrameTime();
+	float cameraSpeed = 0.01f * deltaTime;
+
+
+	if(input->IsKeyDown(wkey))
+	{
+		movementDirection = lookAt;
+		movementDirection.Normalize();
+		position += cameraSpeed * movementDirection;
+	}
+	if(input->IsKeyDown(skey))
+	{
+		movementDirection = lookAt;
+		movementDirection.Normalize();
+		position -= cameraSpeed * movementDirection;
+	}
+	if(input->IsKeyDown(akey))
+	{
+		movementDirection = lookAt.Cross(up);
+		movementDirection.Normalize();
+		position += cameraSpeed * movementDirection;
+	}
+	if(input->IsKeyDown(dkey))
+	{
+		movementDirection = lookAt.Cross(up);
+		movementDirection.Normalize();
+		position -= cameraSpeed * movementDirection;
+	}
+
+
+
+
+
+}
+
+void CameraClass::Render()
+{
+	XMVECTOR upVector, positionVector, lookAtVector;
+	float yaw, pitch, roll;
+	XMMATRIX rotationMatrix;
+	
+	upVector = up;
+	positionVector = position;
+	lookAtVector = lookAt;
 
 	//Set Rotation in radians
-	pitch = rotationX * 0.0174532925f;
-	yaw = rotationY * 0.0174532925f;
-	roll = rotationZ * 0.0174532925f;
+	pitch = rotation.x * 0.0174532925f;
+	yaw = rotation.y * 0.0174532925f;
+	roll = rotation.z * 0.0174532925f;
 
 	rotationMatrix = XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
 
