@@ -37,3 +37,8 @@ bool InputClass::IsKeyDown(unsigned int key)
 {
 	return keys[key];
 }
+
+bool InputClass::IsKeyUp(unsigned int key)
+{
+	return !keys[key];
+}

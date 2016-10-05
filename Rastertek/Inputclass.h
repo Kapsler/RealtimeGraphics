@@ -13,8 +13,8 @@ public:
 	void KeyUp(unsigned int);
 
 	bool IsKeyDown(unsigned int);
+	bool IsKeyUp(unsigned int);
 
 private:
 	bool keys[256];
-
 };

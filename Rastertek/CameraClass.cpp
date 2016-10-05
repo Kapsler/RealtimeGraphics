@@ -9,6 +9,8 @@ CameraClass::CameraClass()
 	rotation.x = 0.0f;
 	rotation.y = 0.0f;
 	rotation.z = 0.0f;
+
+	tracking = false;
 }
 
 CameraClass::CameraClass(const CameraClass&)
@@ -61,8 +63,6 @@ bool CameraClass::Initialize()
 	lookAt.y = 0.0f;
 	lookAt.z = 1.0f;
 
-
-
 	//HARDCODED END
 
 	return true;
@@ -89,10 +89,11 @@ XMFLOAT3 CameraClass::GetRotation()
 
 void CameraClass::DoMovement(InputClass* input)
 {
-	int wkey = 0x57;
-	int skey = 0x53;
-	int akey = 0x41;
-	int dkey = 0x44;
+	unsigned int wkey = 0x57;
+	unsigned int skey = 0x53;
+	unsigned int akey = 0x41;
+	unsigned int dkey = 0x44;
+	unsigned int tkey = 0x54;
 	Vector3 movementDirection;
 	timer->Frame();
 
@@ -101,33 +102,50 @@ void CameraClass::DoMovement(InputClass* input)
 	float cameraSpeed = 0.01f * deltaTime;
 
 
-	if(input->IsKeyDown(wkey))
+	if(!tracking)
 	{
-		movementDirection = lookAt;
-		movementDirection.Normalize();
-		position += cameraSpeed * movementDirection;
-	}
-	if(input->IsKeyDown(skey))
+		if (input->IsKeyDown(wkey))
+		{
+			movementDirection = lookAt;
+			movementDirection.Normalize();
+			position += cameraSpeed * movementDirection;
+		}
+		if (input->IsKeyDown(skey))
+		{
+			movementDirection = lookAt;
+			movementDirection.Normalize();
+			position -= cameraSpeed * movementDirection;
+		}
+		if (input->IsKeyDown(akey))
+		{
+			movementDirection = lookAt.Cross(up);
+			movementDirection.Normalize();
+			position += cameraSpeed * movementDirection;
+		}
+		if (input->IsKeyDown(dkey))
+		{
+			movementDirection = lookAt.Cross(up);
+			movementDirection.Normalize();
+			position -= cameraSpeed * movementDirection;
+		}
+		if (input->IsKeyDown(tkey) && !trackingKeyPressed)
+		{
+			tracking = true;
+			trackingKeyPressed = true;
+		}
+	} else
 	{
-		movementDirection = lookAt;
-		movementDirection.Normalize();
-		position -= cameraSpeed * movementDirection;
-	}
-	if(input->IsKeyDown(akey))
-	{
-		movementDirection = lookAt.Cross(up);
-		movementDirection.Normalize();
-		position += cameraSpeed * movementDirection;
-	}
-	if(input->IsKeyDown(dkey))
-	{
-		movementDirection = lookAt.Cross(up);
-		movementDirection.Normalize();
-		position -= cameraSpeed * movementDirection;
+		if (input->IsKeyDown(tkey) && !trackingKeyPressed)
+		{
+			tracking = false;
+			trackingKeyPressed = true;
+		}
 	}
 
-
-
+	if(input->IsKeyUp(tkey))
+	{
+		trackingKeyPressed = false;
+	}
 
 
 }

@@ -32,4 +32,5 @@ private:
 	Vector3 position, rotation, up, forward, lookAt;
 	XMMATRIX viewMatrix;
 	TimerClass* timer;
+	bool tracking, trackingKeyPressed;
 };
