@@ -25,6 +25,7 @@ public:
 	XMFLOAT3 GetRotation();
 
 	void DoMovement(InputClass*);
+	std::vector<Vector3*> getTrackingPoints();
 
 	void Render();
 	void GetViewMatrix(XMMATRIX&);

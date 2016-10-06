@@ -76,14 +76,12 @@ bool CameraClass::Initialize()
 	trackingPoints.push_back(new Vector3(0.0f, 0.0f, 0.0f));
 
 	trackingPoints.push_back(new Vector3(-30.0f, 0.0f, 25.0f));
-	trackingPoints.push_back(new Vector3(-30.0f, 0.0f, 75.0f));
-	trackingPoints.push_back(new Vector3(30.0f, 0.0f, 125.0f));
+	trackingPoints.push_back(new Vector3(-30.0f, 10.0f, 75.0f));
+	trackingPoints.push_back(new Vector3(30.0f, 5.0f, 125.0f));
 	trackingPoints.push_back(new Vector3(30.0f, 0.0f, 175.0f));
-	trackingPoints.push_back(new Vector3(-30.0f, 0.0f, 225.0f));
-	trackingPoints.push_back(new Vector3(-30.0f, 0.0f, 275.0f));
+	trackingPoints.push_back(new Vector3(-30.0f, 15.0f, 225.0f));
+	trackingPoints.push_back(new Vector3(-30.0f, 5.0f, 275.0f));
 	trackingPoints.push_back(new Vector3(0.0f, 0.0f, 300.0f));
-
-
 
 	//HARDCODED END
 
@@ -202,6 +200,11 @@ void CameraClass::DoMovement(InputClass* input)
 
 }
 
+std::vector<Vector3*> CameraClass::getTrackingPoints()
+{
+	return trackingPoints;
+}
+
 void CameraClass::Render()
 {
 	XMVECTOR upVector, positionVector, lookAtVector;
@@ -228,7 +231,10 @@ void CameraClass::Render()
 	if (tracking)
 	{
 		trackingCamera();
-		lookAtVector = XMVector3Normalize(position - lastPosition);
+		if(position != lastPosition)
+		{
+			lookAtVector = XMVector3Normalize(position - lastPosition);
+		}
 	}
 	else
 	{
