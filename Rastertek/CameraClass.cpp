@@ -59,9 +59,9 @@ bool CameraClass::Initialize()
 	up.z = 0.0f;
 
 	//Set default look direction
-	lookAt.x = 0.0f;
-	lookAt.y = 0.0f;
-	lookAt.z = 1.0f;
+	forward.x = 0.0f;
+	forward.y = 0.0f;
+	forward.z = 1.0f;
 
 	//HARDCODED END
 
@@ -99,11 +99,12 @@ void CameraClass::DoMovement(InputClass* input)
 
 
 	float deltaTime = timer->GetFrameTime();
-	float cameraSpeed = 0.01f * deltaTime;
-
+	float cameraSpeed = 0.03f * deltaTime;
 
 	if(!tracking)
 	{
+
+		//Movement
 		if (input->IsKeyDown(wkey))
 		{
 			movementDirection = lookAt;
@@ -128,13 +129,35 @@ void CameraClass::DoMovement(InputClass* input)
 			movementDirection.Normalize();
 			position -= cameraSpeed * movementDirection;
 		}
+
+		//Rotation
+		if(input->IsKeyDown(VK_UP))
+		{
+			rotation.x -= cameraSpeed * 2;
+		}
+		if(input->IsKeyDown(VK_DOWN))
+		{
+			rotation.x += cameraSpeed * 2;
+		}
+		if(input->IsKeyDown(VK_LEFT))
+		{
+			rotation.y -= cameraSpeed * 4;
+		}
+		if(input->IsKeyDown(VK_RIGHT))
+		{
+			rotation.y += cameraSpeed * 4;
+		}
+
+		//Toggle Tracking
 		if (input->IsKeyDown(tkey) && !trackingKeyToggle)
 		{
 			tracking = true;
 			trackingKeyToggle = true;
 		}
+		
 	} else
 	{
+		//Toggle Tracking
 		if (input->IsKeyDown(tkey) && !trackingKeyToggle)
 		{
 			tracking = false;
@@ -142,6 +165,7 @@ void CameraClass::DoMovement(InputClass* input)
 		}
 	}
 
+	//Tracking Toggle Flag
 	if(input->IsKeyUp(tkey))
 	{
 		trackingKeyToggle = false;
@@ -157,7 +181,7 @@ void CameraClass::Render()
 
 	upVector = up;
 	positionVector = position;
-	lookAtVector = lookAt;
+	lookAtVector = forward;
 
 	//Set Rotation in radians
 	pitch = rotation.x * 0.0174532925f;
@@ -170,8 +194,12 @@ void CameraClass::Render()
 	lookAtVector = DirectX::XMVector3TransformCoord(lookAtVector, rotationMatrix);
 	upVector = DirectX::XMVector3TransformCoord(upVector, rotationMatrix);
 
+	lookAt = XMVector3Normalize(lookAtVector);
+
 	//Translate to position of viewer
 	lookAtVector = DirectX::XMVectorAdd(positionVector, lookAtVector);
+
+	
 
 	//Finally create view matrix
 	viewMatrix = XMMatrixLookAtLH(positionVector, lookAtVector, upVector);

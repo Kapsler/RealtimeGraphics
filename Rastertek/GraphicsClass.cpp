@@ -50,10 +50,12 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	//HARDCODED - Setting up Models
 
-	InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/hearts.dds", XMFLOAT3(-5.0f, 0.0f, 5.0f), 2.0f);
-	InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/hearts.dds", XMFLOAT3(5.0f, 0.0f, 10.0f), 1.0f);
-	InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/hearts.dds", XMFLOAT3(-3.0f, 0.0f, -5.0f), 1.0f);
-	InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/seafloor.dds", XMFLOAT3(0.0f, -10.0f, -5.0f), 200.0f);
+	InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/companion_cube.dds", XMFLOAT3(-15.0f, 0.0f, 0.0f), 4.0f);
+	InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/companion_cube.dds", XMFLOAT3(15.0f, 0.0f, 100.0f), 4.0f);
+	InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/companion_cube.dds", XMFLOAT3(-15.0f, 0.0f, 200.0f), 4.0f);
+	InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -4.0f, 0.0f), 100.0f);
+	InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(00.0f, -4.0f, 200.0f), 100.0f);
+	InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(00.0f, -4.0f, 400.0f), 100.0f);
 
 	//HARDCODED END
 	
