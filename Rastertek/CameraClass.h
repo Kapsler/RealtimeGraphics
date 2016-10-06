@@ -4,6 +4,7 @@
 #include "InputClass.h"
 #include "SimpleMath.h"
 #include "TimerClass.h"
+#include <vector>
 using namespace DirectX;
 using namespace SimpleMath;
 
@@ -29,9 +30,14 @@ public:
 	void GetViewMatrix(XMMATRIX&);
 
 private:
-	Vector3 position, rotation, up, forward, lookAt;
+	void trackingCamera();
+
+	Vector3 lastPosition, position, rotation, up, forward, lookAt;
 	XMMATRIX viewMatrix;
 	TimerClass* timer;
 	bool tracking, trackingKeyToggle;
 	Quaternion test;
+	std::vector<Vector3*> trackingPoints;
+	float progress;
+	int currentTrackingPoint;
 };

@@ -63,6 +63,28 @@ bool CameraClass::Initialize()
 	forward.y = 0.0f;
 	forward.z = 1.0f;
 
+	//Setting up tracking progress
+	progress = 0.0f;
+	currentTrackingPoint = 1;
+
+	//Setting predefined Tracking points
+	trackingPoints.push_back(new Vector3(0.0f, 0.0f, 0.0f));
+	trackingPoints.push_back(new Vector3(0.0f, 0.0f, 0.0f));
+	trackingPoints.push_back(new Vector3(50.0f, 0.0f, 50.0f));
+	trackingPoints.push_back(new Vector3(0.0f, 0.0f, 100.0f));
+	trackingPoints.push_back(new Vector3(-50.0f, 0.0f, 0.0f));
+	trackingPoints.push_back(new Vector3(0.0f, 0.0f, 0.0f));
+
+	trackingPoints.push_back(new Vector3(-30.0f, 0.0f, 25.0f));
+	trackingPoints.push_back(new Vector3(-30.0f, 0.0f, 75.0f));
+	trackingPoints.push_back(new Vector3(30.0f, 0.0f, 125.0f));
+	trackingPoints.push_back(new Vector3(30.0f, 0.0f, 175.0f));
+	trackingPoints.push_back(new Vector3(-30.0f, 0.0f, 225.0f));
+	trackingPoints.push_back(new Vector3(-30.0f, 0.0f, 275.0f));
+	trackingPoints.push_back(new Vector3(0.0f, 0.0f, 300.0f));
+
+
+
 	//HARDCODED END
 
 	return true;
@@ -75,6 +97,13 @@ void CameraClass::Shutdown()
 		delete timer;
 		timer = nullptr;
 	}
+
+	for(Vector3* tmp : trackingPoints)
+	{
+		delete tmp;
+		tmp = nullptr;
+	}
+
 }
 
 XMFLOAT3 CameraClass::GetPosition()
@@ -196,16 +225,69 @@ void CameraClass::Render()
 
 	lookAt = XMVector3Normalize(lookAtVector);
 
+	if (tracking)
+	{
+		trackingCamera();
+		lookAtVector = XMVector3Normalize(position - lastPosition);
+	}
+	else
+	{
+		progress = 0.0f;
+	}
+
 	//Translate to position of viewer
 	lookAtVector = DirectX::XMVectorAdd(positionVector, lookAtVector);
 
-	
-
 	//Finally create view matrix
 	viewMatrix = XMMatrixLookAtLH(positionVector, lookAtVector, upVector);
+
+	lastPosition = position;
 }
 
 void CameraClass::GetViewMatrix(XMMATRIX& output)
 {
 	output = viewMatrix;
+}
+
+void CameraClass::trackingCamera()
+{
+	float deltaTime = timer->GetFrameTime();
+	float movementSpeed = deltaTime * 0.0005f;
+	Vector3 tangent1, tangent2;
+	float a, b;
+
+	a = -0.5f;
+	b = 0.0f;
+
+	if(currentTrackingPoint - 1 >= 0 && currentTrackingPoint + 2 < trackingPoints.size())
+	{
+		progress += movementSpeed;
+
+		tangent1 = (((1 - a) * (1 + b)) / 2) * (*trackingPoints[currentTrackingPoint] - *trackingPoints[currentTrackingPoint-1]) + (((1 - a) * (1 - b)) /2) * (*trackingPoints[currentTrackingPoint+1] - *trackingPoints[currentTrackingPoint]);
+		if(currentTrackingPoint + 2 >= trackingPoints.size())
+		{
+			tangent2 = tangent1;
+		} else
+		{
+			tangent2 = (((1 - a) * (1 + b)) / 2) * (*trackingPoints[currentTrackingPoint+1] - *trackingPoints[currentTrackingPoint]) + (((1 - a) * (1 - b)) /2) * (*trackingPoints[currentTrackingPoint+2] - *trackingPoints[currentTrackingPoint+1]);
+
+		}
+		
+		//position = *(trackingPoints[currentTrackingPoint]) * (1 - progress) + *(trackingPoints[currentTrackingPoint+1]) * progress;
+		position = position.Hermite(*(trackingPoints[currentTrackingPoint]), tangent1, *trackingPoints[currentTrackingPoint+1], tangent2, progress);
+
+		if(progress >= 1.0f)
+		{
+			progress = 0;
+			currentTrackingPoint += 1;
+		}
+	} else
+	{
+		tracking = false;
+		currentTrackingPoint = 1;
+	}
+
+	
+	
+
 }
