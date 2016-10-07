@@ -64,7 +64,7 @@ bool CameraClass::Initialize()
 	forward.z = 1.0f;
 
 	//Setting up tracking progress
-	progress = 0.0f;
+	trackingProgress = 0.0f;
 	currentTrackingPoint = 1;
 
 	//Setting predefined Tracking points
@@ -224,21 +224,23 @@ void CameraClass::Render()
 
 	//Tranform vectors by rotationMatrix, so view is correctly rotated to origin
 	lookAtVector = DirectX::XMVector3TransformCoord(lookAtVector, rotationMatrix);
+
 	upVector = DirectX::XMVector3TransformCoord(upVector, rotationMatrix);
 
 	lookAt = XMVector3Normalize(lookAtVector);
 
 	if (tracking)
 	{
-		trackingCamera();
+		lookAtVector = kochanekBartels();
 		if(position != lastPosition)
 		{
-			lookAtVector = XMVector3Normalize(position - lastPosition);
+			//lookAtVector = XMVector3Normalize(position - lastPosition);
 		}
 	}
 	else
 	{
-		progress = 0.0f;
+		trackingProgress = 0.0f;
+		currentTrackingPoint = 1;
 	}
 
 	//Translate to position of viewer
@@ -255,19 +257,21 @@ void CameraClass::GetViewMatrix(XMMATRIX& output)
 	output = viewMatrix;
 }
 
-void CameraClass::trackingCamera()
+Vector3 CameraClass::kochanekBartels()
 {
+	//LookAt interpolation zwischen outgoing tangenten
+
 	float deltaTime = timer->GetFrameTime();
 	float movementSpeed = deltaTime * 0.0005f;
-	Vector3 tangent1, tangent2;
+	Vector3 tangent1, tangent2, viewDirection;
 	float a, b;
 
-	a = -0.5f;
+	a = 0.0f;
 	b = 0.0f;
 
 	if(currentTrackingPoint - 1 >= 0 && currentTrackingPoint + 2 < trackingPoints.size())
 	{
-		progress += movementSpeed;
+		trackingProgress += movementSpeed;
 
 		tangent1 = (((1 - a) * (1 + b)) / 2) * (*trackingPoints[currentTrackingPoint] - *trackingPoints[currentTrackingPoint-1]) + (((1 - a) * (1 - b)) /2) * (*trackingPoints[currentTrackingPoint+1] - *trackingPoints[currentTrackingPoint]);
 		if(currentTrackingPoint + 2 >= trackingPoints.size())
@@ -276,15 +280,19 @@ void CameraClass::trackingCamera()
 		} else
 		{
 			tangent2 = (((1 - a) * (1 + b)) / 2) * (*trackingPoints[currentTrackingPoint+1] - *trackingPoints[currentTrackingPoint]) + (((1 - a) * (1 - b)) /2) * (*trackingPoints[currentTrackingPoint+2] - *trackingPoints[currentTrackingPoint+1]);
-
 		}
 		
 		//position = *(trackingPoints[currentTrackingPoint]) * (1 - progress) + *(trackingPoints[currentTrackingPoint+1]) * progress;
-		position = position.Hermite(*(trackingPoints[currentTrackingPoint]), tangent1, *trackingPoints[currentTrackingPoint+1], tangent2, progress);
+		position = position.Hermite(*(trackingPoints[currentTrackingPoint]), tangent1, *trackingPoints[currentTrackingPoint+1], tangent2, trackingProgress);
 
-		if(progress >= 1.0f)
+		if (trackingProgress != 0.0f) {
+			viewDirection = viewDirection.Lerp(tangent1, tangent2, trackingProgress);
+			//viewDirection = viewDirection.Lerp(*trackingPoints[currentTrackingPoint] - *trackingPoints[currentTrackingPoint-1], *trackingPoints[currentTrackingPoint+1] - *trackingPoints[currentTrackingPoint], trackingProgress);
+		}
+
+		if(trackingProgress >= 1.0f)
 		{
-			progress = 0;
+			trackingProgress = 0;
 			currentTrackingPoint += 1;
 		}
 	} else
@@ -293,7 +301,7 @@ void CameraClass::trackingCamera()
 		currentTrackingPoint = 1;
 	}
 
-	
-	
+
+	return viewDirection;
 
 }

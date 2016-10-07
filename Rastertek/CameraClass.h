@@ -31,7 +31,7 @@ public:
 	void GetViewMatrix(XMMATRIX&);
 
 private:
-	void trackingCamera();
+	Vector3 kochanekBartels();
 
 	Vector3 lastPosition, position, rotation, up, forward, lookAt;
 	XMMATRIX viewMatrix;
@@ -39,6 +39,6 @@ private:
 	bool tracking, trackingKeyToggle;
 	Quaternion test;
 	std::vector<Vector3*> trackingPoints;
-	float progress;
+	float trackingProgress;
 	int currentTrackingPoint;
 };
