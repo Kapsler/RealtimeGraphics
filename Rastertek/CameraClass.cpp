@@ -129,34 +129,30 @@ void CameraClass::DoMovement(InputClass* input)
 
 	float deltaTime = timer->GetFrameTime();
 	float cameraSpeed = 0.03f * deltaTime;
+	viewQuaternion.Inverse(viewQuaternion);
 
 	if(!tracking)
 	{
-
 		//Movement
 		if (input->IsKeyDown(wkey))
 		{
-			movementDirection = viewQuaternion * forward;
-			movementDirection.Normalize();
+			movementDirection = Vector3::Transform(forward, viewQuaternion);
 			position +=  movementDirection * cameraSpeed;
 			
 		}
 		if (input->IsKeyDown(skey))
 		{
-			movementDirection = lookAt;
-			movementDirection.Normalize();
+			movementDirection = Vector3::Transform(forward, viewQuaternion);
 			position -= cameraSpeed * movementDirection;
 		}
 		if (input->IsKeyDown(akey))
 		{
-			movementDirection = lookAt.Cross(up);
-			movementDirection.Normalize();
+			movementDirection = Vector3::Transform(forward.Cross(up), viewQuaternion);
 			position += cameraSpeed * movementDirection;
 		}
 		if (input->IsKeyDown(dkey))
 		{
-			movementDirection = lookAt.Cross(up);
-			movementDirection.Normalize();
+			movementDirection = Vector3::Transform(forward.Cross(up), viewQuaternion);
 			position -= cameraSpeed * movementDirection;
 		}
 
@@ -234,7 +230,7 @@ void CameraClass::Render()
 	//Finally create view matrix
 	//viewMatrix = XMMatrixLookAtLH(positionVector, lookAtVector, upVector);
 	viewQuaternion.Inverse(viewQuaternion);
-	viewMatrix = Matrix::CreateFromQuaternion(viewQuaternion);
+	viewMatrix = Matrix::Identity;
 	viewMatrix = viewMatrix.Transform(Matrix::CreateTranslation(-position), viewQuaternion);
 }
 
