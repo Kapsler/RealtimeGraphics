@@ -5,6 +5,7 @@
 #include "ModelClass.h"
 #include "ShaderClass.h"
 #include "TextureClass.h"
+#include <PrimitiveBatch.h>
 #include <vector>
 
 const bool FULL_SCREEN = false;

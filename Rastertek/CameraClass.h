@@ -39,14 +39,20 @@ public:
 private:
 
 	ControlPoint* generatePoint(float px, float py, float pz, float ox, float oy, float oz, float ow);
+	ControlPoint* generatePoint(Vector3 pos, Quaternion rot);
+	ControlPoint* generatePoint(ControlPoint* other);
 	Quaternion kochanekBartels();
+	void resetTrackingPoints();
+	void addTrackingPoint();
+
 
 	Vector3 position, rotation;
 	Matrix viewMatrix;
 	TimerClass* timer;
-	bool tracking, trackingKeyToggle;
+	bool tracking, trackingKeyToggle, addPointKeyToggle;
 	Quaternion viewQuaternion;
 	std::vector<ControlPoint*> trackingPoints;
 	float trackingProgress;
 	int currentTrackingPoint;
+	bool useSquad;
 };
