@@ -53,16 +53,6 @@ bool CameraClass::Initialize()
 	
 	//HARDCODED DIRECTIONS
 
-	//Where is up
-	up.x = 0.0f;
-	up.y = 1.0f;
-	up.z = 0.0f;
-
-	//Set default look direction
-	forward.x = 0.0f;
-	forward.y = 0.0f;
-	forward.z = 1.0f;
-
 	//Setting up tracking progress
 	trackingProgress = 0.0f;
 	currentTrackingPoint = 1;
@@ -136,24 +126,24 @@ void CameraClass::DoMovement(InputClass* input)
 		//Movement
 		if (input->IsKeyDown(wkey))
 		{
-			movementDirection = Vector3::Transform(forward, viewQuaternion);
-			position +=  movementDirection * cameraSpeed;
+			movementDirection = Vector3::Transform(Vector3::Forward, viewQuaternion);
+			position -=  movementDirection * cameraSpeed;
 			
 		}
 		if (input->IsKeyDown(skey))
 		{
-			movementDirection = Vector3::Transform(forward, viewQuaternion);
-			position -= cameraSpeed * movementDirection;
+			movementDirection = Vector3::Transform(Vector3::Forward, viewQuaternion);
+			position += cameraSpeed * movementDirection;
 		}
 		if (input->IsKeyDown(akey))
 		{
-			movementDirection = Vector3::Transform(forward.Cross(up), viewQuaternion);
-			position += cameraSpeed * movementDirection;
+			movementDirection = Vector3::Transform(Vector3::Forward.Cross(Vector3::Up), viewQuaternion);
+			position -= cameraSpeed * movementDirection;
 		}
 		if (input->IsKeyDown(dkey))
 		{
-			movementDirection = Vector3::Transform(forward.Cross(up), viewQuaternion);
-			position -= cameraSpeed * movementDirection;
+			movementDirection = Vector3::Transform(Vector3::Forward.Cross(Vector3::Up), viewQuaternion);
+			position += cameraSpeed * movementDirection;
 		}
 
 		//Rotation

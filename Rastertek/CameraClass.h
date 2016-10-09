@@ -41,7 +41,7 @@ private:
 	ControlPoint* generatePoint(float px, float py, float pz, float ox, float oy, float oz, float ow);
 	Quaternion kochanekBartels();
 
-	Vector3 position, rotation, up, forward, lookAt;
+	Vector3 position, rotation;
 	Matrix viewMatrix;
 	TimerClass* timer;
 	bool tracking, trackingKeyToggle;
