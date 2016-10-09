@@ -11,6 +11,12 @@ using namespace SimpleMath;
 class CameraClass
 {
 public:
+	struct ControlPoint
+	{
+		Vector3 position;
+		Quaternion direction;
+	};
+
 	CameraClass();
 	CameraClass(const CameraClass&);
 	~CameraClass();
@@ -25,20 +31,22 @@ public:
 	XMFLOAT3 GetRotation();
 
 	void DoMovement(InputClass*);
-	std::vector<Vector3*> getTrackingPoints();
+	std::vector<ControlPoint*> getTrackingPoints();
 
 	void Render();
 	void GetViewMatrix(XMMATRIX&);
 
 private:
-	Vector3 kochanekBartels();
 
-	Vector3 lastPosition, position, rotation, up, forward, lookAt;
-	XMMATRIX viewMatrix;
+	ControlPoint* generatePoint(float px, float py, float pz, float ox, float oy, float oz, float ow);
+	Quaternion kochanekBartels();
+
+	Vector3 position, rotation, up, forward, lookAt;
+	Matrix viewMatrix;
 	TimerClass* timer;
 	bool tracking, trackingKeyToggle;
-	Quaternion test;
-	std::vector<Vector3*> trackingPoints;
+	Quaternion viewQuaternion;
+	std::vector<ControlPoint*> trackingPoints;
 	float trackingProgress;
 	int currentTrackingPoint;
 };

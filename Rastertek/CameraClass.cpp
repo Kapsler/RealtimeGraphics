@@ -68,20 +68,20 @@ bool CameraClass::Initialize()
 	currentTrackingPoint = 1;
 
 	//Setting predefined Tracking points
-	trackingPoints.push_back(new Vector3(0.0f, 0.0f, 0.0f));
-	trackingPoints.push_back(new Vector3(0.0f, 0.0f, 0.0f));
-	trackingPoints.push_back(new Vector3(50.0f, 0.0f, 50.0f));
-	trackingPoints.push_back(new Vector3(0.0f, 0.0f, 100.0f));
-	trackingPoints.push_back(new Vector3(-50.0f, 0.0f, 0.0f));
-	trackingPoints.push_back(new Vector3(0.0f, 0.0f, 0.0f));
+	trackingPoints.push_back(generatePoint(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f));
+	trackingPoints.push_back(generatePoint(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f));
+	trackingPoints.push_back(generatePoint(50.0f, 0.0f, 50.0f, 0.0f, 0.0f, 0.0f, 0.0f));
+	trackingPoints.push_back(generatePoint(0.0f, 0.0f, 100.0f, 0.0f, 0.0f, 0.0f, 0.0f));
+	trackingPoints.push_back(generatePoint(-50.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f));
+	trackingPoints.push_back(generatePoint(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f));
 
-	trackingPoints.push_back(new Vector3(-30.0f, 0.0f, 25.0f));
-	trackingPoints.push_back(new Vector3(-30.0f, 10.0f, 75.0f));
-	trackingPoints.push_back(new Vector3(30.0f, 5.0f, 125.0f));
-	trackingPoints.push_back(new Vector3(30.0f, 0.0f, 175.0f));
-	trackingPoints.push_back(new Vector3(-30.0f, 15.0f, 225.0f));
-	trackingPoints.push_back(new Vector3(-30.0f, 5.0f, 275.0f));
-	trackingPoints.push_back(new Vector3(0.0f, 0.0f, 300.0f));
+	trackingPoints.push_back(generatePoint(-30.0f, 0.0f, 25.0f, 0.0f, 0.0f, 0.0f, 0.0f));
+	trackingPoints.push_back(generatePoint(-30.0f, 10.0f, 75.0f, 0.0f, 0.0f, 0.0f, 0.0f));
+	trackingPoints.push_back(generatePoint(30.0f, 5.0f, 125.0f, 0.0f, 0.0f, 0.0f, 0.0f));
+	trackingPoints.push_back(generatePoint(30.0f, 0.0f, 175.0f, 0.0f, 0.0f, 0.0f, 0.0f));
+	trackingPoints.push_back(generatePoint(-30.0f, 15.0f, 225.0f, 0.0f, 0.0f, 0.0f, 0.0f));
+	trackingPoints.push_back(generatePoint(-30.0f, 5.0f, 275.0f, 0.0f, 0.0f, 0.0f, 0.0f));
+	trackingPoints.push_back(generatePoint(0.0f, 0.0f, 300.0f, 0.0f, 0.0f, 0.0f, 0.0f));
 
 	//HARDCODED END
 
@@ -96,11 +96,13 @@ void CameraClass::Shutdown()
 		timer = nullptr;
 	}
 
-	for(Vector3* tmp : trackingPoints)
+	for(ControlPoint* tmp : trackingPoints)
 	{
 		delete tmp;
 		tmp = nullptr;
 	}
+
+	trackingPoints.clear();
 
 }
 
@@ -134,9 +136,10 @@ void CameraClass::DoMovement(InputClass* input)
 		//Movement
 		if (input->IsKeyDown(wkey))
 		{
-			movementDirection = lookAt;
+			movementDirection = viewQuaternion * forward;
 			movementDirection.Normalize();
-			position += cameraSpeed * movementDirection;
+			position +=  movementDirection * cameraSpeed;
+			
 		}
 		if (input->IsKeyDown(skey))
 		{
@@ -200,42 +203,25 @@ void CameraClass::DoMovement(InputClass* input)
 
 }
 
-std::vector<Vector3*> CameraClass::getTrackingPoints()
+std::vector<CameraClass::ControlPoint*> CameraClass::getTrackingPoints()
 {
 	return trackingPoints;
 }
 
 void CameraClass::Render()
 {
-	XMVECTOR upVector, positionVector, lookAtVector;
 	float yaw, pitch, roll;
-	XMMATRIX rotationMatrix;
-
-	upVector = up;
-	positionVector = position;
-	lookAtVector = forward;
 
 	//Set Rotation in radians
 	pitch = rotation.x * 0.0174532925f;
 	yaw = rotation.y * 0.0174532925f;
 	roll = rotation.z * 0.0174532925f;
 
-	rotationMatrix = XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
-
-	//Tranform vectors by rotationMatrix, so view is correctly rotated to origin
-	lookAtVector = DirectX::XMVector3TransformCoord(lookAtVector, rotationMatrix);
-
-	upVector = DirectX::XMVector3TransformCoord(upVector, rotationMatrix);
-
-	lookAt = XMVector3Normalize(lookAtVector);
+	viewQuaternion = Quaternion::CreateFromYawPitchRoll(yaw, pitch, roll);
 
 	if (tracking)
 	{
-		lookAtVector = kochanekBartels();
-		if(position != lastPosition)
-		{
-			//lookAtVector = XMVector3Normalize(position - lastPosition);
-		}
+		viewQuaternion = kochanekBartels();
 	}
 	else
 	{
@@ -244,12 +230,12 @@ void CameraClass::Render()
 	}
 
 	//Translate to position of viewer
-	lookAtVector = DirectX::XMVectorAdd(positionVector, lookAtVector);
 
 	//Finally create view matrix
-	viewMatrix = XMMatrixLookAtLH(positionVector, lookAtVector, upVector);
-
-	lastPosition = position;
+	//viewMatrix = XMMatrixLookAtLH(positionVector, lookAtVector, upVector);
+	viewQuaternion.Inverse(viewQuaternion);
+	viewMatrix = Matrix::CreateFromQuaternion(viewQuaternion);
+	viewMatrix = viewMatrix.Transform(Matrix::CreateTranslation(-position), viewQuaternion);
 }
 
 void CameraClass::GetViewMatrix(XMMATRIX& output)
@@ -257,13 +243,30 @@ void CameraClass::GetViewMatrix(XMMATRIX& output)
 	output = viewMatrix;
 }
 
-Vector3 CameraClass::kochanekBartels()
+CameraClass::ControlPoint* CameraClass::generatePoint(float px, float py, float pz, float ox, float oy, float oz, float ow)
+{
+	ControlPoint* p = new ControlPoint();
+
+	p->position.x = px;
+	p->position.y = py;
+	p->position.z = pz;
+
+	p->direction.x = ox;
+	p->direction.y = oy;
+	p->direction.z = oz;
+	p->direction.w = ow;
+
+	return p;
+}
+
+Quaternion CameraClass::kochanekBartels()
 {
 	//LookAt interpolation zwischen outgoing tangenten
-
+	
 	float deltaTime = timer->GetFrameTime();
 	float movementSpeed = deltaTime * 0.0005f;
-	Vector3 tangent1, tangent2, viewDirection;
+	Vector3 tangent1, tangent2;
+	Quaternion direction;
 	float a, b;
 
 	a = 0.0f;
@@ -273,21 +276,20 @@ Vector3 CameraClass::kochanekBartels()
 	{
 		trackingProgress += movementSpeed;
 
-		tangent1 = (((1 - a) * (1 + b)) / 2) * (*trackingPoints[currentTrackingPoint] - *trackingPoints[currentTrackingPoint-1]) + (((1 - a) * (1 - b)) /2) * (*trackingPoints[currentTrackingPoint+1] - *trackingPoints[currentTrackingPoint]);
+		tangent1 = (((1 - a) * (1 + b)) / 2) * (trackingPoints[currentTrackingPoint]->position - trackingPoints[currentTrackingPoint-1]->position) + (((1 - a) * (1 - b)) /2) * (trackingPoints[currentTrackingPoint+1]->position - trackingPoints[currentTrackingPoint]->position);
 		if(currentTrackingPoint + 2 >= trackingPoints.size())
 		{
 			tangent2 = tangent1;
 		} else
 		{
-			tangent2 = (((1 - a) * (1 + b)) / 2) * (*trackingPoints[currentTrackingPoint+1] - *trackingPoints[currentTrackingPoint]) + (((1 - a) * (1 - b)) /2) * (*trackingPoints[currentTrackingPoint+2] - *trackingPoints[currentTrackingPoint+1]);
+			tangent2 = (((1 - a) * (1 + b)) / 2) * (trackingPoints[currentTrackingPoint+1]->position - trackingPoints[currentTrackingPoint]->position) + (((1 - a) * (1 - b)) /2) * (trackingPoints[currentTrackingPoint+2]->position - trackingPoints[currentTrackingPoint+1]->position);
 		}
 		
 		//position = *(trackingPoints[currentTrackingPoint]) * (1 - progress) + *(trackingPoints[currentTrackingPoint+1]) * progress;
-		position = position.Hermite(*(trackingPoints[currentTrackingPoint]), tangent1, *trackingPoints[currentTrackingPoint+1], tangent2, trackingProgress);
+		position = position.Hermite(trackingPoints[currentTrackingPoint]->position, tangent1, trackingPoints[currentTrackingPoint+1]->position, tangent2, trackingProgress);
 
 		if (trackingProgress != 0.0f) {
-			viewDirection = viewDirection.Lerp(tangent1, tangent2, trackingProgress);
-			//viewDirection = viewDirection.Lerp(*trackingPoints[currentTrackingPoint] - *trackingPoints[currentTrackingPoint-1], *trackingPoints[currentTrackingPoint+1] - *trackingPoints[currentTrackingPoint], trackingProgress);
+			direction = Quaternion::Slerp(trackingPoints[currentTrackingPoint]->direction, trackingPoints[currentTrackingPoint + 1]->direction, trackingProgress);
 		}
 
 		if(trackingProgress >= 1.0f)
@@ -301,7 +303,5 @@ Vector3 CameraClass::kochanekBartels()
 		currentTrackingPoint = 1;
 	}
 
-
-	return viewDirection;
-
+	return direction;
 }
