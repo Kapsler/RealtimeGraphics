@@ -232,18 +232,6 @@ void CameraClass::Render()
 		float movementSpeed = deltaTime * 0.0005f;
 		trackingProgress += movementSpeed;
 
-		if (trackingPoints.size() > 1)
-		{
-			if (trackingPoints[0]->position != trackingPoints[1]->position && trackingPoints[0]->direction != trackingPoints[1]->direction)
-			{
-				trackingPoints.insert(trackingPoints.begin(), generatePoint(trackingPoints[0]));
-			}
-
-			if (trackingPoints[trackingPoints.size() - 1]->position != trackingPoints[trackingPoints.size() - 2]->position && trackingPoints[trackingPoints.size() - 1]->direction != trackingPoints[trackingPoints.size() - 2]->direction)
-			{
-				trackingPoints.push_back(generatePoint(trackingPoints[trackingPoints.size() - 1]));
-			}
-		}
 
 		kochanekBartels(&position, &viewQuaternion, trackingProgress, &currentTrackingPoint);
 
@@ -361,6 +349,7 @@ void CameraClass::resetTrackingPoints()
 
 	for (ModelClass* p : trackingPointsModels)
 	{
+		p->Shutdown();
 		delete p;
 	}
 
@@ -419,6 +408,28 @@ void CameraClass::calculateTrack()
 
 	kochanekPoints.clear();
 
+	if(trackingPoints.size() > 2)
+	{
+
+		if (trackingPoints[trackingPoints.size() - 2]->position == trackingPoints[trackingPoints.size() - 3]->position && trackingPoints[trackingPoints.size() - 2]->direction == trackingPoints[trackingPoints.size() - 3]->direction)
+		{
+			trackingPoints.erase(trackingPoints.end() - 2);
+		}
+	}
+
+	if (trackingPoints.size() > 1)
+	{
+		if (trackingPoints[0]->position != trackingPoints[1]->position && trackingPoints[0]->direction != trackingPoints[1]->direction)
+		{
+			trackingPoints.insert(trackingPoints.begin(), generatePoint(trackingPoints[0]));
+		}
+
+		if (trackingPoints[trackingPoints.size() - 1]->position != trackingPoints[trackingPoints.size() - 2]->position && trackingPoints[trackingPoints.size() - 1]->direction != trackingPoints[trackingPoints.size() - 2]->direction)
+		{
+			trackingPoints.push_back(generatePoint(trackingPoints[trackingPoints.size() - 1]));
+		}
+	}
+
 	std::vector<ControlPoint*> newPointsVector;
 
 	int numberOfPoints = trackingPoints.size();
@@ -448,6 +459,7 @@ void CameraClass::generateModels()
 
 	for (ModelClass* p : trackingPointsModels)
 	{
+		p->Shutdown();
 		delete p;
 	}
 
