@@ -28,13 +28,14 @@ private:
 	bool Render(float, InputClass*);
 	void CheckWireframe(InputClass*);
 	void ChangeFillmode(D3D11_FILL_MODE);
-	bool InitializeModel(HWND, char*, WCHAR*, XMFLOAT3, float);
+	ModelClass* InitializeModel(HWND, char*, WCHAR*, XMFLOAT3, float);
 	void ShutdownModels();
 
 	D3DClass* direct3D;
 	CameraClass* camera;
 	std::vector<ModelClass*> models;
 	ShaderClass* shader;
+	HWND* hwndptr;
 
 	bool wireframeMode, wireframeKeyToggle;
 

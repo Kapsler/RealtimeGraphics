@@ -40,7 +40,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	result = camera->Initialize();
+	result = camera->Initialize(direct3D->GetDevice());
 	if(!result)
 	{
 		return false;
@@ -50,12 +50,12 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	//HARDCODED - Setting up Models
 
-	InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/companion_cube.dds", XMFLOAT3(-20.0f, 0.0f, 50.0f), 4.0f);
-	InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/companion_cube.dds", XMFLOAT3(20.0f, 0.0f, 150.0f), 4.0f);
-	InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/companion_cube.dds", XMFLOAT3(-20.0f, 0.0f, 250.0f), 4.0f);
-	InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -4.0f, 0.0f), 100.0f);
-	InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(00.0f, -4.0f, 200.0f), 100.0f);
-	InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(00.0f, -4.0f, 400.0f), 100.0f);
+	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/companion_cube.dds", XMFLOAT3(-20.0f, 0.0f, 50.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/companion_cube.dds", XMFLOAT3(20.0f, 0.0f, 150.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/companion_cube.dds", XMFLOAT3(-20.0f, 0.0f, 250.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -4.0f, 0.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(00.0f, -4.0f, 200.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(00.0f, -4.0f, 400.0f), 100.0f));
 
 	//HARDCODED END
 	
@@ -154,6 +154,19 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 		}
 	}
 
+	//Render Trackingpoints
+	for(ModelClass* model : camera->getTrackingPointsModels())
+	{
+		model->Render(direct3D->GetDeviceContext());
+
+		//Render using shader
+		result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), model->GetInstanceCount(), model->worldMatrix, viewMatrix, projectionMatrix, model->GetTextureView());
+		if (!result)
+		{
+			return false;
+		}
+	}
+
 	//Output Buffer
 	direct3D->EndScene();
 
@@ -204,7 +217,7 @@ void GraphicsClass::ChangeFillmode(D3D11_FILL_MODE fillmode)
 	rasterState = nullptr;
 }
 
-bool GraphicsClass::InitializeModel(HWND hwnd, char* modelFilename, WCHAR* textureFilename, XMFLOAT3 position, float scale)
+ModelClass* GraphicsClass::InitializeModel(HWND hwnd, char* modelFilename, WCHAR* textureFilename, XMFLOAT3 position, float scale)
 {
 	bool result;
 	ModelClass* model;
@@ -226,9 +239,7 @@ bool GraphicsClass::InitializeModel(HWND hwnd, char* modelFilename, WCHAR* textu
 	model->worldMatrix *= XMMatrixScaling(scale, scale, scale);
 	model->worldMatrix *= XMMatrixTranslation(position.x, position.y, position.z);
 
-	models.push_back(model);
-
-	return true;
+	return model;
 }
 
 void GraphicsClass::ShutdownModels()

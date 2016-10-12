@@ -1,4 +1,5 @@
 #include "CameraClass.h"
+#include <iostream>
 
 CameraClass::CameraClass()
 {
@@ -36,9 +37,11 @@ void CameraClass::SetRotation(float x, float y, float z)
 	rotation.z = z;
 }
 
-bool CameraClass::Initialize()
+bool CameraClass::Initialize(ID3D11Device* odevice)
 {
 	bool result;
+
+	device = odevice;
 
 	timer = new TimerClass();
 	if(!timer)
@@ -73,7 +76,9 @@ bool CameraClass::Initialize()
 	trackingPoints.push_back(generatePoint(-30.0f, 15.0f, 225.0f, 0.0f, 0.0f, 0.0f, 0.0f));
 	trackingPoints.push_back(generatePoint(-30.0f, 5.0f, 275.0f, 0.0f, 0.0f, 0.0f, 0.0f));
 	trackingPoints.push_back(generatePoint(0.0f, 0.0f, 300.0f, 0.0f, 0.0f, 0.0f, 0.0f));
-
+	
+	calculateTrack();
+	generateModels();
 
 	//HARDCODED END
 
@@ -82,12 +87,7 @@ bool CameraClass::Initialize()
 
 void CameraClass::Shutdown()
 {	
-	for(ControlPoint* tmp : trackingPoints)
-	{
-		delete tmp;
-	}
-
-	trackingPoints.clear();
+	resetTrackingPoints();
 
 	if(timer)
 	{
@@ -210,9 +210,9 @@ void CameraClass::DoMovement(InputClass* input)
 
 }
 
-std::vector<CameraClass::ControlPoint*> CameraClass::getTrackingPoints()
+std::vector<ModelClass*> CameraClass::getTrackingPointsModels()
 {
-	return trackingPoints;
+	return trackingPointsModels;
 }
 
 void CameraClass::Render()
@@ -228,7 +228,30 @@ void CameraClass::Render()
 
 	if (tracking)
 	{
-		viewQuaternion = kochanekBartels();
+		float deltaTime = timer->GetFrameTime();
+		float movementSpeed = deltaTime * 0.0005f;
+		trackingProgress += movementSpeed;
+
+		if (trackingPoints.size() > 1)
+		{
+			if (trackingPoints[0]->position != trackingPoints[1]->position && trackingPoints[0]->direction != trackingPoints[1]->direction)
+			{
+				trackingPoints.insert(trackingPoints.begin(), generatePoint(trackingPoints[0]));
+			}
+
+			if (trackingPoints[trackingPoints.size() - 1]->position != trackingPoints[trackingPoints.size() - 2]->position && trackingPoints[trackingPoints.size() - 1]->direction != trackingPoints[trackingPoints.size() - 2]->direction)
+			{
+				trackingPoints.push_back(generatePoint(trackingPoints[trackingPoints.size() - 1]));
+			}
+		}
+
+		kochanekBartels(&position, &viewQuaternion, trackingProgress, &currentTrackingPoint);
+
+		if (trackingProgress >= 1.0f)
+		{
+			trackingProgress = 0;
+			currentTrackingPoint += 1;
+		}
 	}
 	else
 	{
@@ -236,12 +259,12 @@ void CameraClass::Render()
 		currentTrackingPoint = 1;
 	}
 
-	//Translate to position of viewer
 
 	//Finally create view matrix
 	//viewMatrix = XMMatrixLookAtLH(positionVector, lookAtVector, upVector);
 	viewQuaternion.Inverse(viewQuaternion);
 	viewMatrix = Matrix::Identity;
+	//Translate to position of viewer
 	viewMatrix = viewMatrix.Transform(Matrix::CreateTranslation(-position), viewQuaternion);
 }
 
@@ -286,83 +309,63 @@ CameraClass::ControlPoint* CameraClass::generatePoint(ControlPoint* other)
 	return p;
 }
 
-Quaternion CameraClass::kochanekBartels()
+void CameraClass::kochanekBartels(Vector3* pos, Quaternion* rot, float progress, int* currentPoint)
 {
 	//LookAt interpolation zwischen outgoing tangenten
-	
-	float deltaTime = timer->GetFrameTime();
-	float movementSpeed = deltaTime * 0.0005f;
 	Vector3 tangent1, tangent2;
-	Quaternion direction;
 	float a, b;
 
 	a = 0.0f;
 	b = 0.0f;
 
-	if (trackingPoints.size() > 1)
+	if(*currentPoint - 1 >= 0 && *currentPoint + 2 < trackingPoints.size())
 	{
-		if (trackingPoints[0]->position != trackingPoints[1]->position && trackingPoints[0]->direction != trackingPoints[1]->direction)
-		{
-			trackingPoints.insert(trackingPoints.begin(), generatePoint(trackingPoints[0]));
-		}
-
-		if (trackingPoints[trackingPoints.size() - 1]->position != trackingPoints[trackingPoints.size() - 2]->position && trackingPoints[trackingPoints.size() - 1]->direction != trackingPoints[trackingPoints.size() - 2]->direction)
-		{
-			trackingPoints.push_back(generatePoint(trackingPoints[trackingPoints.size() - 1]));
-		}
-	}
-	if(currentTrackingPoint - 1 >= 0 && currentTrackingPoint + 2 < trackingPoints.size())
-	{
-		trackingProgress += movementSpeed;
-
-		tangent1 = (((1 - a) * (1 + b)) / 2) * (trackingPoints[currentTrackingPoint]->position - trackingPoints[currentTrackingPoint-1]->position) + (((1 - a) * (1 - b)) /2) * (trackingPoints[currentTrackingPoint+1]->position - trackingPoints[currentTrackingPoint]->position);
-		if(currentTrackingPoint + 2 >= trackingPoints.size())
+		tangent1 = (((1 - a) * (1 + b)) / 2) * (trackingPoints[*currentPoint]->position - trackingPoints[*currentPoint -1]->position) + (((1 - a) * (1 - b)) /2) * (trackingPoints[*currentPoint +1]->position - trackingPoints[*currentPoint]->position);
+		if(*currentPoint + 2 >= trackingPoints.size())
 		{
 			tangent2 = tangent1;
 		} else
 		{
-			tangent2 = (((1 - a) * (1 + b)) / 2) * (trackingPoints[currentTrackingPoint+1]->position - trackingPoints[currentTrackingPoint]->position) + (((1 - a) * (1 - b)) /2) * (trackingPoints[currentTrackingPoint+2]->position - trackingPoints[currentTrackingPoint+1]->position);
+			tangent2 = (((1 - a) * (1 + b)) / 2) * (trackingPoints[*currentPoint +1]->position - trackingPoints[*currentPoint]->position) + (((1 - a) * (1 - b)) /2) * (trackingPoints[*currentPoint +2]->position - trackingPoints[*currentPoint +1]->position);
 		}
 		
 		//position = *(trackingPoints[currentTrackingPoint]) * (1 - progress) + *(trackingPoints[currentTrackingPoint+1]) * progress;
-		position = position.Hermite(trackingPoints[currentTrackingPoint]->position, tangent1, trackingPoints[currentTrackingPoint+1]->position, tangent2, trackingProgress);
+		*pos = pos->Hermite(trackingPoints[*currentPoint]->position, tangent1, trackingPoints[*currentPoint +1]->position, tangent2, progress);
 
-		if (trackingProgress != 0.0f) {
+		if (progress != 0.0f) {
 			if(useSquad)
 			{
 				XMVECTOR A, B, C;
 
-				XMQuaternionSquadSetup(&A, &B, &C, trackingPoints[currentTrackingPoint - 1]->direction, trackingPoints[currentTrackingPoint]->direction, trackingPoints[currentTrackingPoint + 1]->direction, trackingPoints[currentTrackingPoint +2]->direction);
+				XMQuaternionSquadSetup(&A, &B, &C, trackingPoints[*currentPoint - 1]->direction, trackingPoints[*currentPoint]->direction, trackingPoints[*currentPoint + 1]->direction, trackingPoints[*currentPoint +2]->direction);
 
-				direction = XMQuaternionSquad(trackingPoints[currentTrackingPoint]->direction, A, B, C, trackingProgress);
+				*rot = XMQuaternionSquad(trackingPoints[*currentPoint]->direction, A, B, C, progress);
 			} else
 			{
-				direction = Quaternion::Slerp(trackingPoints[currentTrackingPoint]->direction, trackingPoints[currentTrackingPoint + 1]->direction, trackingProgress);
+				*rot = Quaternion::Slerp(trackingPoints[*currentPoint]->direction, trackingPoints[*currentPoint + 1]->direction, progress);
 			}
-		}
-
-		if(trackingProgress >= 1.0f)
-		{
-			trackingProgress = 0;
-			currentTrackingPoint += 1;
 		}
 	} else
 	{
 		tracking = false;
-		currentTrackingPoint = 1;
+		*currentPoint = 1;
 	}
-
-	return direction;
 }
 
 void CameraClass::resetTrackingPoints()
 {
-	for(ControlPoint* p : trackingPoints)
+	for (ControlPoint* p : trackingPoints)
+	{
+		delete p;
+	}
+
+	for (ModelClass* p : trackingPointsModels)
 	{
 		delete p;
 	}
 
 	trackingPoints.clear();
+	trackingPointsModels.clear();
 }
 
 void CameraClass::addTrackingPoint()
@@ -374,4 +377,90 @@ void CameraClass::addTrackingPoint()
 	p->direction = viewQuaternion;
 
 	trackingPoints.push_back(p);
+
+	calculateTrack();
+	generateModels();
+}
+
+ModelClass* CameraClass::InitializeTrackingPointModel(char* modelFilename, WCHAR* textureFilename, Vector3 pos, float scale, Quaternion rot)
+{
+	bool result;
+	ModelClass* model;
+
+	//Set up model class
+	model = new ModelClass();
+	if (!model)
+	{
+		return false;
+	}
+
+	result = model->Initialize(device, modelFilename, textureFilename);
+	if (!result)
+	{
+		
+		std::cerr << "Error initializing model" << endl;
+	}
+
+	model->worldMatrix *= XMMatrixRotationQuaternion(rot);
+	model->worldMatrix *= XMMatrixScaling(scale, scale, scale);
+	model->worldMatrix *= XMMatrixTranslation(pos.x, pos.y, pos.z);
+
+	return model;
+}
+
+void CameraClass::calculateTrack()
+{
+	//need second vector for points between controlpoints
+
+	for(ControlPoint* p : kochanekPoints)
+	{
+		delete p;
+	}
+
+	kochanekPoints.clear();
+
+	std::vector<ControlPoint*> newPointsVector;
+
+	int numberOfPoints = trackingPoints.size();
+
+	if(numberOfPoints > 1)
+	{
+		for(int i = 0; i < numberOfPoints; i++)
+		{
+			int tmp = i;
+			for(float t = 0; t <= 1.0f; t += 1.0f/5.0f)
+			{
+				ControlPoint* p = new ControlPoint();
+				kochanekBartels(&(*p).position, &(*p).direction, t, &tmp);
+				newPointsVector.push_back(p);
+			}
+		}
+	}
+	
+
+	kochanekPoints = newPointsVector;
+	
+
+}
+
+void CameraClass::generateModels()
+{
+
+	for (ModelClass* p : trackingPointsModels)
+	{
+		delete p;
+	}
+
+	trackingPointsModels.clear();
+
+	for(ControlPoint* p : trackingPoints)
+	{
+		trackingPointsModels.push_back(InitializeTrackingPointModel("./Model/Cube.txt", L"./Model/companion_cube.dds", p->position, 0.8f, p->direction));
+	}
+
+	for(ControlPoint* p : kochanekPoints)
+	{
+		trackingPointsModels.push_back(InitializeTrackingPointModel("./Model/Cube.txt", L"./Model/companion_cube.dds", p->position, 0.3f, p->direction));
+	}
+
 }
