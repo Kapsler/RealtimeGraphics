@@ -7,6 +7,7 @@ ShaderClass::ShaderClass()
 	layout = nullptr;
 	matrixBuffer = nullptr;
 	sampleState = nullptr;
+	lightBuffer = nullptr;
 }
 
 ShaderClass::ShaderClass(const ShaderClass&)
@@ -35,11 +36,11 @@ void ShaderClass::Shutdown()
 	ShutdownShader();
 }
 
-bool ShaderClass::Render(ID3D11DeviceContext* context, int indexCount, int instanceCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX	projectionMatrix, ID3D11ShaderResourceView* textureView)
+bool ShaderClass::Render(ID3D11DeviceContext* context, int indexCount, int instanceCount, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX	projectionMatrix, ID3D11ShaderResourceView* textureView, XMFLOAT3 lightDirection, XMFLOAT4 diffuseColor)
 {
 	bool result;
 
-	result = SetShaderParameters(context, worldMatrix, viewMatrix, projectionMatrix, textureView);
+	result = SetShaderParameters(context, worldMatrix, viewMatrix, projectionMatrix, textureView, lightDirection, diffuseColor);
 	if(!result)
 	{
 		return false;
@@ -56,9 +57,10 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* verte
 	ID3D10Blob* errorMessage;
 	ID3D10Blob* vertexShaderBuffer;
 	ID3D10Blob* pixelShaderBuffer;
-	D3D11_INPUT_ELEMENT_DESC polygonLayout[3];
+	D3D11_INPUT_ELEMENT_DESC polygonLayout[4];
 	unsigned int numElements;
 	D3D11_BUFFER_DESC matrixBufferDesc;
+	D3D11_BUFFER_DESC lightBufferDesc;
 	D3D11_SAMPLER_DESC samplerDesc;
 
 	errorMessage = nullptr;
@@ -135,6 +137,14 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* verte
 	polygonLayout[2].InputSlotClass = D3D11_INPUT_PER_INSTANCE_DATA;
 	polygonLayout[2].InstanceDataStepRate = 1;
 
+	polygonLayout[3].SemanticName = "NORMAL";
+	polygonLayout[3].SemanticIndex = 0;
+	polygonLayout[3].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	polygonLayout[3].InputSlot = 0;
+	polygonLayout[3].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[3].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[3].InstanceDataStepRate = 0;
+
 	numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 
 	result = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &layout);
@@ -187,11 +197,31 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* verte
 		return false;
 	}
 
+	//Setup LightBuffer Description
+	lightBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	lightBufferDesc.ByteWidth = sizeof(LightBufferType);
+	lightBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	lightBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	lightBufferDesc.MiscFlags = 0;
+	lightBufferDesc.StructureByteStride = 0;
+
+	result = device->CreateBuffer(&lightBufferDesc, nullptr, &lightBuffer);
+	if(FAILED(result))
+	{
+		return false;
+	}
+
 	return true;
 }
 
 void ShaderClass::ShutdownShader()
 {
+	if(lightBuffer)
+	{
+		lightBuffer->Release();
+		lightBuffer = nullptr;
+	}
+
 	if(sampleState)
 	{
 		sampleState->Release();
@@ -243,11 +273,12 @@ void ShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, 
 
 }
 
-bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* context, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, ID3D11ShaderResourceView* textureView)
+bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* context, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix, ID3D11ShaderResourceView* textureView, XMFLOAT3 lightDirection, XMFLOAT4 diffuseColor)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	MatrixBufferType* dataPtr;
+	LightBufferType* dataPtr2;
 	unsigned int bufferNumber;
 
 	//DirectX11 need matrices transposed!
@@ -255,6 +286,8 @@ bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* context, XMMATRIX wor
 	viewMatrix = XMMatrixTranspose(viewMatrix);
 	projectionMatrix = XMMatrixTranspose(projectionMatrix);
 
+
+	// ### MATRIXBUFFER ###
 	//Lock Buffer
 	result = context->Map(matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if(FAILED(result))
@@ -276,8 +309,31 @@ bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* context, XMMATRIX wor
 	//Set constant buffer
 	context->VSSetConstantBuffers(bufferNumber, 1, &matrixBuffer);
 
+	// ### TEXTURE ###
 	//Set texture in pixel shader
 	context->PSSetShaderResources(0, 1, &textureView);
+
+	// ### LIGHTBUFFER ###
+	//Lock Buffer
+	result = context->Map(lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	//Get pointer to data
+	dataPtr2 = static_cast<LightBufferType*>(mappedResource.pData);
+
+	//Set data
+	dataPtr2->diffuseColor = diffuseColor;
+	dataPtr2->lightDirection = lightDirection;
+	dataPtr2->padding = 0.0f;
+
+	context->Unmap(lightBuffer, 0);
+	bufferNumber = 0;
+
+	//Set constant buffer
+	context->VSSetConstantBuffers(bufferNumber, 1, &lightBuffer);
 
 	return true;
 }

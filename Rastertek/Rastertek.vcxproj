@@ -144,6 +144,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CameraClass.cpp" />
+    <ClCompile Include="LightClass.cpp" />
     <ClCompile Include="ShaderClass.cpp" />
     <ClCompile Include="D3DClass.cpp" />
     <ClCompile Include="GraphicsClass.cpp" />
@@ -156,6 +157,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CameraClass.h" />
+    <ClInclude Include="LightClass.h" />
     <ClInclude Include="ShaderClass.h" />
     <ClInclude Include="D3DClass.h" />
     <ClInclude Include="GraphicsClass.h" />

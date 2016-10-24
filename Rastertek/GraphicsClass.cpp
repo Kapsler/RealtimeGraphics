@@ -5,6 +5,7 @@ GraphicsClass::GraphicsClass()
 	direct3D = nullptr;
 	camera = nullptr;
 	shader = nullptr;
+	light = nullptr;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass&)
@@ -50,12 +51,28 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	//HARDCODED - Setting up Models
 
+	//Scene
 	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/companion_cube.dds", XMFLOAT3(-20.0f, 0.0f, 50.0f), 4.0f));
 	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/companion_cube.dds", XMFLOAT3(20.0f, 0.0f, 150.0f), 4.0f));
 	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/companion_cube.dds", XMFLOAT3(-20.0f, 0.0f, 250.0f), 4.0f));
 	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -4.0f, 0.0f), 100.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(00.0f, -4.0f, 200.0f), 100.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(00.0f, -4.0f, 400.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -4.0f, 200.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -4.0f, 400.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(200.0f, -4.0f, 0.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(200.0f, -4.0f, 200.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(200.0f, -4.0f, 400.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(-200.0f, -4.0f, 0.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(-200.0f, -4.0f, 200.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(-200.0f, -4.0f, 400.0f), 100.0f));
+
+	//Lights
+	light = new LightClass();
+	if(!light)
+	{
+		return false;
+	}
+	light->SetDiffuseColor(1.0f, 0.0f, 1.0f, 1.0f);
+	light->SetDirection(0.0f, 0.0f, 1.0f);
 
 	//HARDCODED END
 	
@@ -78,6 +95,12 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 void GraphicsClass::Shutdown()
 {
+	if(light)
+	{
+		delete light;
+		light = nullptr;
+	}
+
 	ShutdownModels();
 
 	if(shader)
@@ -147,7 +170,7 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 		model->Render(direct3D->GetDeviceContext());
 
 		//Render using shader
-		result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), model->GetInstanceCount(), model->worldMatrix, viewMatrix, projectionMatrix, model->GetTextureView());
+		result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), model->GetInstanceCount(), model->worldMatrix, viewMatrix, projectionMatrix, model->GetTextureView(), light->GetDirection(), light->GetDiffuseColor());
 		if(!result)
 		{
 			return false;
@@ -160,7 +183,7 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 		model->Render(direct3D->GetDeviceContext());
 
 		//Render using shader
-		result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), model->GetInstanceCount(), model->worldMatrix, viewMatrix, projectionMatrix, model->GetTextureView());
+		result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), model->GetInstanceCount(), model->worldMatrix, viewMatrix, projectionMatrix, model->GetTextureView(), light->GetDirection(), light->GetDiffuseColor());
 		if (!result)
 		{
 			return false;

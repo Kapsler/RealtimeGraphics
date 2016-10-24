@@ -7,6 +7,7 @@
 #include "TextureClass.h"
 #include <PrimitiveBatch.h>
 #include <vector>
+#include "LightClass.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = true;
@@ -36,6 +37,7 @@ private:
 	std::vector<ModelClass*> models;
 	ShaderClass* shader;
 	HWND* hwndptr;
+	LightClass* light;
 
 	bool wireframeMode, wireframeKeyToggle;
 
