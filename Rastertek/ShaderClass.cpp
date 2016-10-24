@@ -333,7 +333,7 @@ bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* context, XMMATRIX wor
 	bufferNumber = 0;
 
 	//Set constant buffer
-	context->VSSetConstantBuffers(bufferNumber, 1, &lightBuffer);
+	context->PSSetConstantBuffers(bufferNumber, 1, &lightBuffer);
 
 	return true;
 }
