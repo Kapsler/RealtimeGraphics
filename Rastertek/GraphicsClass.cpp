@@ -49,6 +49,19 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	camera->SetPosition(0.0f, 0.0f, -5.0f);
 
+
+	timer = new TimerClass();
+	if (!timer)
+	{
+		return false;
+	}
+
+	result = timer->Initialize();
+	if (!result)
+	{
+		return false;
+	}
+
 	//HARDCODED - Setting up Models
 
 	//Scene
@@ -71,8 +84,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	{
 		return false;
 	}
-	light->SetDiffuseColor(1.0f, 0.0f, 1.0f, 1.0f);
-	light->SetDirection(0.0f, 0.0f, 1.0f);
+	light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
+	light->SetDiffuseColor(1.0, 1.0, 1.0, 1.0f);
+	light->SetDirection(0.5f, -0.5f, 0.5f);
 
 	//HARDCODED END
 	
@@ -103,6 +117,12 @@ void GraphicsClass::Shutdown()
 
 	ShutdownModels();
 
+	if(timer)
+	{
+		delete timer;
+		timer = nullptr;
+	}
+
 	if(shader)
 	{
 		shader->Shutdown();
@@ -129,14 +149,17 @@ bool GraphicsClass::Frame(InputClass* input)
 {
 	bool result;
 	static float rotation = 0.0f;
+	timer->Frame();
+
+	float deltaTime = timer->GetFrameTime();
 
 	CheckWireframe(input);
+	/*
+	rotation += deltaTime * 0.00000000001f;
 
-	rotation += static_cast<float>(XM_PI * 0.001f);
-	if(rotation > 360.0f)
-	{
-		rotation -= 360.0f;
-	}
+	Vector3 currentdirection = light->GetDirection();
+	currentdirection = XMVector3TransformCoord(currentdirection, XMMatrixRotationAxis(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), rotation));
+	light->SetDirection(currentdirection.x, currentdirection.y, currentdirection.z);*/
 
 	result = Render(rotation, input);
 	if(!result)
@@ -170,7 +193,7 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 		model->Render(direct3D->GetDeviceContext());
 
 		//Render using shader
-		result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), model->GetInstanceCount(), model->worldMatrix, viewMatrix, projectionMatrix, model->GetTextureView(), light->GetDirection(), light->GetDiffuseColor());
+		result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), model->GetInstanceCount(), model->worldMatrix, viewMatrix, projectionMatrix, model->GetTextureView(), light->GetDirection(), light->GetAmbientColor(), light->GetDiffuseColor());
 		if(!result)
 		{
 			return false;
@@ -183,7 +206,7 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 		model->Render(direct3D->GetDeviceContext());
 
 		//Render using shader
-		result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), model->GetInstanceCount(), model->worldMatrix, viewMatrix, projectionMatrix, model->GetTextureView(), light->GetDirection(), light->GetDiffuseColor());
+		result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), model->GetInstanceCount(), model->worldMatrix, viewMatrix, projectionMatrix, model->GetTextureView(), light->GetDirection(), light->GetAmbientColor(), light->GetDiffuseColor());
 		if (!result)
 		{
 			return false;

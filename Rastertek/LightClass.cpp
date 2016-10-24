@@ -12,6 +12,16 @@ LightClass::~LightClass()
 {
 }
 
+void LightClass::SetAmbientColor(float red, float green, float blue, float alpha)
+{
+	ambientColor = XMFLOAT4(red, green, blue, alpha);
+}
+
+XMFLOAT4 LightClass::GetAmbientColor()
+{
+	return  ambientColor;
+}
+
 void LightClass::SetDiffuseColor(float red, float green, float blue, float alpha)
 {
 	diffuseColor = XMFLOAT4(red, green, blue, alpha);

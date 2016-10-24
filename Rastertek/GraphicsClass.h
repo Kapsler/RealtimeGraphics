@@ -38,6 +38,7 @@ private:
 	ShaderClass* shader;
 	HWND* hwndptr;
 	LightClass* light;
+	TimerClass* timer;
 
 	bool wireframeMode, wireframeKeyToggle;
 
