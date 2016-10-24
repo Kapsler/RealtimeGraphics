@@ -31,6 +31,9 @@ public:
 
 	void GetVideoCardInfo(char*, int&);
 
+	void SetBackBufferRenderTarget();
+	void ResetViewport();
+
 private:
 	bool vsync_enabled;
 	int videoCardMemory;
@@ -46,4 +49,5 @@ private:
 	XMMATRIX projectionMatrix;
 	XMMATRIX worldMatrix;
 	XMMATRIX orthoMatrix;
+	D3D11_VIEWPORT viewport;
 };

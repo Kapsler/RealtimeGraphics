@@ -16,14 +16,14 @@ public:
 
 	bool Initialize(ID3D11Device*, HWND);
 	void Shutdown();
-	bool Render(ID3D11DeviceContext*, int, int, XMMATRIX, XMMATRIX, XMMATRIX, ID3D11ShaderResourceView*, XMFLOAT3, XMFLOAT4, XMFLOAT4);
+	bool Render(ID3D11DeviceContext*, int, int, XMMATRIX, XMMATRIX, XMMATRIX, XMMATRIX, XMMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, XMFLOAT3, XMFLOAT4, XMFLOAT4);
 
 private:
 	bool InitializeShader(ID3D11Device*, HWND, WCHAR*, WCHAR*);
 	void ShutdownShader();
 	void OutputShaderErrorMessage(ID3D10Blob*, HWND, WCHAR*);
 
-	bool SetShaderParameters(ID3D11DeviceContext*, XMMATRIX, XMMATRIX, XMMATRIX, ID3D11ShaderResourceView*, XMFLOAT3, XMFLOAT4, XMFLOAT4);
+	bool SetShaderParameters(ID3D11DeviceContext*, XMMATRIX, XMMATRIX, XMMATRIX, XMMATRIX, XMMATRIX, ID3D11ShaderResourceView*, ID3D11ShaderResourceView*, XMFLOAT3, XMFLOAT4, XMFLOAT4);
 	void RenderShader(ID3D11DeviceContext*, int, int);
 
 	struct MatrixBufferType
@@ -31,13 +31,19 @@ private:
 		XMMATRIX world;
 		XMMATRIX view;
 		XMMATRIX projection;
+		XMMATRIX lightView;
+		XMMATRIX lightProjection;
 	};
 
 	struct LightBufferType
 	{
 		XMFLOAT4 ambientColor;
 		XMFLOAT4 diffuseColor;
-		XMFLOAT3 lightDirection;
+	};
+
+	struct LightBufferType2
+	{
+		XMFLOAT3 lightPosition;
 		float padding;
 	};
 
@@ -45,6 +51,8 @@ private:
 	ID3D11PixelShader* pixelShader;
 	ID3D11InputLayout* layout;
 	ID3D11Buffer* matrixBuffer;
-	ID3D11SamplerState* sampleState;
+	ID3D11SamplerState* sampleStateWrap;
+	ID3D11SamplerState* sampleStateClamp;
 	ID3D11Buffer* lightBuffer;
+	ID3D11Buffer* lightBuffer2;
 };
