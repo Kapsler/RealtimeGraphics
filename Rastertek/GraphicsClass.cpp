@@ -65,9 +65,12 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	//HARDCODED - Setting up Models
 
 	//Scene
-	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/companion_cube.dds", XMFLOAT3(-20.0f, 0.0f, 50.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/companion_cube.dds", XMFLOAT3(20.0f, 0.0f, 150.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/companion_cube.dds", XMFLOAT3(-20.0f, 0.0f, 250.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/ice.dds", XMFLOAT3(-20.0f, 0.0f, 50.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/ice.dds", XMFLOAT3(20.0f, 0.0f, 50.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/metal001.dds", XMFLOAT3(20.0f, 0.0f, 150.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/metal001.dds", XMFLOAT3(-20.0f, 0.0f, 150.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/wall01.dds", XMFLOAT3(-20.0f, 0.0f, 250.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/wall01.dds", XMFLOAT3(20.0f, 0.0f, 250.0f), 4.0f));
 	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -4.0f, 0.0f), 100.0f));
 	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -4.0f, 200.0f), 100.0f));
 	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -4.0f, 400.0f), 100.0f));
@@ -86,7 +89,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 	light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
 	light->SetDiffuseColor(1.0, 1.0, 1.0, 1.0f);
-	light->SetDirection(0.5f, -0.5f, 0.5f);
+	light->SetDirection(1.0f, -1.0f, 1.0f);
 
 	//HARDCODED END
 	
@@ -154,12 +157,12 @@ bool GraphicsClass::Frame(InputClass* input)
 	float deltaTime = timer->GetFrameTime();
 
 	CheckWireframe(input);
-	/*
-	rotation += deltaTime * 0.00000000001f;
+	
+	//rotation += deltaTime * 0.00000000001f;
 
 	Vector3 currentdirection = light->GetDirection();
 	currentdirection = XMVector3TransformCoord(currentdirection, XMMatrixRotationAxis(XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), rotation));
-	light->SetDirection(currentdirection.x, currentdirection.y, currentdirection.z);*/
+	light->SetDirection(currentdirection.x, currentdirection.y, currentdirection.z);
 
 	result = Render(rotation, input);
 	if(!result)
