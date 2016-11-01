@@ -320,17 +320,17 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 	}
 
 	//Render Trackingpoints
-	/*for(ModelClass* model : camera->getTrackingPointsModels())
-	{
+	//for(ModelClass* model : camera->getTrackingPointsModels())
+	//{
 
-		model->Render(direct3D->GetDeviceContext());
+	//	model->Render(direct3D->GetDeviceContext());
 
-		//Render using shader
-		result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), model->GetInstanceCount(), model->worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTextureView(), renderTexture->GetShaderResourceView(), light->GetPosition(), light->GetAmbientColor(), light->GetDiffuseColor());
-		{
-			return false;
-		}
-	}*/
+	//	//Render using shader
+	//	result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), model->GetInstanceCount(), model->worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTextureView(), renderTexture->GetShaderResourceView(), light->GetPosition(), light->GetAmbientColor(), light->GetDiffuseColor());
+	//	{
+	//		return false;
+	//	}
+	//}
 
 	//Output Buffer
 	direct3D->EndScene();
