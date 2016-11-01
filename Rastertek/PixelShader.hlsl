@@ -1,8 +1,8 @@
 Texture2D shaderTexture;
 Texture2D depthMapTexture;
 
-SamplerState SampleTypeClamp;
 SamplerState SampleTypeWrap;
+SamplerState SampleTypeClamp;
 
 cbuffer LightBuffer
 {
@@ -30,7 +30,7 @@ float4 main(PixelInputType input) : SV_Target
     float4 textureColor;
 
     //Bias is set to fix floating point precision issues
-    bias = 0.001f;
+    bias = 0.000001f;
 
     //Set default color to ambient
     color = ambientColor;
@@ -38,10 +38,10 @@ float4 main(PixelInputType input) : SV_Target
     //Depth Buffer (Shadow Map)
     //Calculate Projected texture coordinates
     projectTexCoord.x = input.lightViewPosition.x / input.lightViewPosition.w / 2.0f + 0.5f;
-    projectTexCoord.y = input.lightViewPosition.y / input.lightViewPosition.w / 2.0f + 0.5f;
+    projectTexCoord.y = -input.lightViewPosition.y / input.lightViewPosition.w / 2.0f + 0.5f;
 
     //Check if projected coords are in view
-    if ((saturate(projectTexCoord.x) == projectTexCoord.x) && saturate(projectTexCoord.y) == projectTexCoord.y);
+    if ((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y));
     {
         //Depth Value of pixel in Shadow map - only red channel because greyscale
         depthValue = depthMapTexture.Sample(SampleTypeClamp, projectTexCoord).r;

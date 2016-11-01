@@ -66,31 +66,43 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	//Scene
 	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/ice.dds", XMFLOAT3(-30, 0.0f, 50.0f), 4.0f));
+	
 	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/ice.dds", XMFLOAT3(30, 0.0f, 50.0f), 4.0f));
 	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/metal001.dds", XMFLOAT3(20.0f, 0.0f, 150.0f), 4.0f));
 	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/metal001.dds", XMFLOAT3(-20.0f, 0.0f, 150.0f), 4.0f));
 	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/wall01.dds", XMFLOAT3(-10, 0.0f, 250.0f), 4.0f));
 	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/wall01.dds", XMFLOAT3(10, 0.0f, 250.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -4.0f, 0.0f), 100.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -4.0f, 200.0f), 100.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -4.0f, 400.0f), 100.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(200.0f, -4.0f, 0.0f), 100.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(200.0f, -4.0f, 200.0f), 100.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(200.0f, -4.0f, 400.0f), 100.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(-200.0f, -4.0f, 0.0f), 100.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(-200.0f, -4.0f, 200.0f), 100.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(-200.0f, -4.0f, 400.0f), 100.0f));
 
+	//noshadowmodels.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -10.0f, 0.0f), 100.0f));
+	//noshadowmodels.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -10.0f, 200.0f), 100.0f));
+	//noshadowmodels.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -10.0f, 400.0f), 100.0f));
+	//noshadowmodels.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(200.0f, -10.0f, 0.0f), 100.0f));
+	//noshadowmodels.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(200.0f, -10.0f, 200.0f), 100.0f));
+	//noshadowmodels.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(200.0f, -10.0f, 400.0f), 100.0f));
+	//noshadowmodels.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(-200.0f, -10.0f, 0.0f), 100.0f));
+	//noshadowmodels.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(-200.0f, -10.0f, 200.0f), 100.0f));
+	//noshadowmodels.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(-200.0f, -10.0f, 400.0f), 100.0f));
+	
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -10.0f, 0.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -10.0f, 200.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -10.0f, 400.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(200.0f, -10.0f, 0.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(200.0f, -10.0f, 200.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(200.0f, -10.0f, 400.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(-200.0f, -10.0f, 0.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(-200.0f, -10.0f, 200.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(-200.0f, -10.0f, 400.0f), 100.0f));
+	
 	//Lights
 	light = new LightClass();
 	if(!light)
 	{
 		return false;
 	}
-	light->SetPosition(0.0f, 0.0f, -10.0f);
+	light->SetPosition(0.0f, 100.0f, -100.0f);
 	light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
 	light->SetDiffuseColor(1.0, 1.0, 1.0, 1.0f);
-	light->SetLookAt(0.0f, 0.0f, 0.0f);
+	light->SetLookAt(0.0f, 0.0f, 20.0f);
 	light->GenerateProjectionsMatrix(SCREEN_DEPTH, SCREEN_NEAR);
 
 	//HARDCODED END
@@ -201,10 +213,10 @@ bool GraphicsClass::Frame(InputClass* input)
 
 	CheckWireframe(input);
 	
-	counter += deltaTime * 0.001f;
-	if(counter > 5.0f)
+	counter += deltaTime * 0.005f;
+	if(counter > 30.0f)
 	{
-		counter = -5.0f;
+		counter = -30.0f;
 	}
 	light->SetPosition(counter, light->GetPosition().y, light->GetPosition().z);
 
@@ -281,7 +293,6 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 	light->GetViewMatrix(lightViewMatrix);
 	light->GetProjectionMatrix(lightProjectionMatrix);
 
-
 	//Put model vertex and index buffer on pipeline
 	for(ModelClass* model : models)
 	{
@@ -295,8 +306,21 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 		}
 	}
 
+	//Put model vertex and index buffer on pipeline
+	for(ModelClass* model : noshadowmodels)
+	{
+		model->Render(direct3D->GetDeviceContext());
+
+		//Render using shader
+		result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), model->GetInstanceCount(), model->worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTextureView(), renderTexture->GetShaderResourceView(), light->GetPosition(), light->GetAmbientColor(), light->GetDiffuseColor());
+		if(!result)
+		{
+			return false;
+		}
+	}
+
 	//Render Trackingpoints
-	for(ModelClass* model : camera->getTrackingPointsModels())
+	/*for(ModelClass* model : camera->getTrackingPointsModels())
 	{
 
 		model->Render(direct3D->GetDeviceContext());
@@ -306,7 +330,7 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 		{
 			return false;
 		}
-	}
+	}*/
 
 	//Output Buffer
 	direct3D->EndScene();

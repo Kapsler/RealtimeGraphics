@@ -117,7 +117,7 @@ bool RenderTextureClass::Initialize(ID3D11Device* device, int textureWidth, int 
 	m_viewport.TopLeftY = 0.0f;
 
 	// Setup the projection matrix.
-	projectionMatrix = XMMatrixPerspectiveFovLH(XM_PIDIV4, (static_cast<float>(textureWidth) / static_cast<float>(textureHeight)), screenNear, screenDepth);
+	projectionMatrix = XMMatrixPerspectiveFovLH(XM_PIDIV4, static_cast<float>(static_cast<float>(textureWidth) / static_cast<float>(textureHeight)), screenNear, screenDepth);
 
 	// Create an orthographic projection matrix for 2D rendering.
 	orthoMatrix = XMMatrixOrthographicLH(static_cast<float>(textureWidth), static_cast<float>(textureHeight), screenNear, screenDepth);

@@ -62,7 +62,7 @@ bool CameraClass::Initialize(ID3D11Device* odevice)
 	currentTrackingPoint = 1;
 
 	//Setting predefined Tracking points
-	/*trackingPoints.push_back(generatePoint(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f));
+	trackingPoints.push_back(generatePoint(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f));
 	trackingPoints.push_back(generatePoint(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f));
 	trackingPoints.push_back(generatePoint(50.0f, 0.0f, 50.0f, 0.0f, 0.0f, 0.0f, 0.0f));
 	trackingPoints.push_back(generatePoint(0.0f, 0.0f, 100.0f, 0.0f, 0.0f, 0.0f, 0.0f));
@@ -76,7 +76,7 @@ bool CameraClass::Initialize(ID3D11Device* odevice)
 	trackingPoints.push_back(generatePoint(-30.0f, 15.0f, 225.0f, 0.0f, 0.0f, 0.0f, 0.0f));
 	trackingPoints.push_back(generatePoint(-30.0f, 5.0f, 275.0f, 0.0f, 0.0f, 0.0f, 0.0f));
 	trackingPoints.push_back(generatePoint(0.0f, 0.0f, 300.0f, 0.0f, 0.0f, 0.0f, 0.0f));
-	*/
+	
 	calculateTrack();
 	generateModels();
 

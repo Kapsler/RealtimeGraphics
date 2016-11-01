@@ -15,8 +15,8 @@ const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = true;
 const float SCREEN_DEPTH = 1000.0f;
 const float SCREEN_NEAR = 0.1f;
-const int SHADOWMAP_WIDTH = 1024;
-const int SHADOWMAP_HEIGHT = 1024;
+const int SHADOWMAP_WIDTH = 4096;
+const int SHADOWMAP_HEIGHT = 4096;
 
 class GraphicsClass
 {
@@ -40,6 +40,7 @@ private:
 	D3DClass* direct3D;
 	CameraClass* camera;
 	std::vector<ModelClass*> models;
+	std::vector<ModelClass*> noshadowmodels;
 	ShaderClass* shader;
 	HWND* hwndptr;
 	LightClass* light;

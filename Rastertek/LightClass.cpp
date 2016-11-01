@@ -55,7 +55,7 @@ void LightClass::GenerateViewMatrix()
 	viewMatrix = XMMatrixLookAtLH(position, lookAt, up);
 }
 
-void LightClass::GenerateProjectionsMatrix(float screenNear, float screenDepth)
+void LightClass::GenerateProjectionsMatrix(float screenDepth, float screenNear)
 {
 	float fieldOfView, screenAspect;
 
