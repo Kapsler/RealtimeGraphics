@@ -38,13 +38,14 @@ void ShaderClass::Shutdown()
 }
 
 bool ShaderClass::Render(ID3D11DeviceContext* context, int indexCount, int instanceCount,
-	XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX	projectionMatrix, XMMATRIX lightViewMatrix, XMMATRIX lightProjectionMatrix,
-	ID3D11ShaderResourceView* textureView, ID3D11ShaderResourceView* depthMapTexture, XMFLOAT3 lightPosition,
-							XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor)
+	XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX	projectionMatrix,
+	XMMATRIX lightViewMatrix, XMMATRIX lightProjectionMatrix, ID3D11ShaderResourceView* textureView,
+	ID3D11ShaderResourceView* depthMapTexture, XMFLOAT3 lightPosition, XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor,
+	XMMATRIX lightViewMatrix2, XMMATRIX lightProjectionMatrix2, ID3D11ShaderResourceView* depthMapTexture2, XMFLOAT3 lightPosition2, XMFLOAT4 diffuseColor2)
 {
 	bool result;
 
-	result = SetShaderParameters(context, worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, textureView, depthMapTexture, lightPosition, ambientColor, diffuseColor);
+	result = SetShaderParameters(context, worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, textureView, depthMapTexture, lightPosition, ambientColor, diffuseColor, lightViewMatrix2, lightProjectionMatrix2, depthMapTexture2, lightPosition2, diffuseColor2);
 	if(!result)
 	{
 		return false;
@@ -67,7 +68,7 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* verte
 	D3D11_BUFFER_DESC lightBufferDesc;
 	D3D11_BUFFER_DESC lightBufferDesc2;
 	D3D11_SAMPLER_DESC samplerDesc;
-	DWORD shaderflags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+	DWORD shaderflags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG;// | D3DCOMPILE_SKIP_OPTIMIZATION;
 
 	errorMessage = nullptr;
 	vertexShaderBuffer = nullptr;
@@ -318,7 +319,8 @@ void ShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, 
 }
 
 bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* context, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix,
-										XMMATRIX lightViewMatrix, XMMATRIX lightProjectionMatrix, ID3D11ShaderResourceView* textureView, ID3D11ShaderResourceView* depthMapTexture, XMFLOAT3 lightPosition, XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor)
+		XMMATRIX lightViewMatrix, XMMATRIX lightProjectionMatrix, ID3D11ShaderResourceView* textureView, ID3D11ShaderResourceView* depthMapTexture, XMFLOAT3 lightPosition, XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor,
+		XMMATRIX lightViewMatrix2, XMMATRIX lightProjectionMatrix2, ID3D11ShaderResourceView* depthMapTexture2, XMFLOAT3 lightPosition2, XMFLOAT4 diffuseColor2)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -333,6 +335,8 @@ bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* context, XMMATRIX wor
 	projectionMatrix = XMMatrixTranspose(projectionMatrix);
 	lightViewMatrix = XMMatrixTranspose(lightViewMatrix);
 	lightProjectionMatrix = XMMatrixTranspose(lightProjectionMatrix);
+	lightViewMatrix2 = XMMatrixTranspose(lightViewMatrix2);
+	lightProjectionMatrix2 = XMMatrixTranspose(lightProjectionMatrix2);
 
 
 	// ### MATRIXBUFFER ###
@@ -352,6 +356,8 @@ bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* context, XMMATRIX wor
 	dataPtr->projection = projectionMatrix;
 	dataPtr->lightView = lightViewMatrix;
 	dataPtr->lightProjection = lightProjectionMatrix;
+	dataPtr->lightView2 = lightViewMatrix2;
+	dataPtr->lightProjection2 = lightProjectionMatrix2;
 
 	context->Unmap(matrixBuffer, 0);
 	bufferNumber = 0;
@@ -364,6 +370,8 @@ bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* context, XMMATRIX wor
 	context->PSSetShaderResources(0, 1, &textureView);
 	//Set depth Texture
 	context->PSSetShaderResources(1, 1, &depthMapTexture);
+	//Set depth Texture2
+	context->PSSetShaderResources(2, 1, &depthMapTexture2);
 
 	// ### LIGHTBUFFER ###
 	//Lock Buffer
@@ -379,6 +387,7 @@ bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* context, XMMATRIX wor
 	//Set data
 	dataPtr2->ambientColor = ambientColor;
 	dataPtr2->diffuseColor = diffuseColor;
+	dataPtr2->diffuseColor2 = diffuseColor2;
 
 	context->Unmap(lightBuffer, 0);
 	bufferNumber = 0;
@@ -399,7 +408,9 @@ bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* context, XMMATRIX wor
 
 	//Set data
 	dataPtr3->lightPosition = lightPosition;
-	dataPtr3->padding = 0.0f;
+	dataPtr3->lightPosition2 = lightPosition2;
+	dataPtr3->padding1 = 0.0f;
+	dataPtr3->padding2 = 0.0f;
 
 	context->Unmap(lightBuffer2, 0);
 	bufferNumber = 1;

@@ -5,12 +5,16 @@ cbuffer MatrixBuffer
     matrix projectionMatrix;
     matrix lightViewMatrix;
     matrix lightProjectionMatrix;
+    matrix lightViewMatrix2;
+    matrix lightProjectionMatrix2;
 };
 
 cbuffer LightBuffer2
 {
     float3 lightPosition;
-    float padding;
+    float padding1;
+    float3 lightPosition2;
+    float padding2;
 };
 
 struct VertexInputType
@@ -28,6 +32,8 @@ struct PixelInputType
     float3 normal : NORMAL;
     float4 lightViewPosition : TEXCOORD2;
     float3 lightPos : TEXCOORD3;
+    float4 lightViewPosition2 : TEXCOORD4;
+    float3 lightPos2 : TEXCOORD5;
 };
 
 PixelInputType main( VertexInputType input )
@@ -47,6 +53,10 @@ PixelInputType main( VertexInputType input )
     output.lightViewPosition = mul(input.position, worldMatrix);
     output.lightViewPosition = mul(output.lightViewPosition, lightViewMatrix);
     output.lightViewPosition = mul(output.lightViewPosition, lightProjectionMatrix);
+    //Calculate vertexposition from second light viewpoint
+    output.lightViewPosition2 = mul(input.position, worldMatrix);
+    output.lightViewPosition2 = mul(output.lightViewPosition2, lightViewMatrix2);
+    output.lightViewPosition2 = mul(output.lightViewPosition2, lightProjectionMatrix2);
 
     //Texture coordinates
     output.tex = input.tex;
@@ -58,6 +68,10 @@ PixelInputType main( VertexInputType input )
     //Determine Light Position
     output.lightPos = lightPosition.xyz - worldPosition.xyz;
     output.lightPos = normalize(output.lightPos);
+
+    //Determine Light 2 Position
+    output.lightPos2 = lightPosition2.xyz - worldPosition.xyz;
+    output.lightPos2 = normalize(output.lightPos2);
 
     return output;
 }

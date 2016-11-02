@@ -6,6 +6,11 @@ GraphicsClass::GraphicsClass()
 	camera = nullptr;
 	shader = nullptr;
 	light = nullptr;
+	light2 = nullptr;
+	renderTexture = nullptr;
+	renderTexture2 = nullptr;
+	timer = nullptr;
+	depthShader = nullptr;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass&)
@@ -99,11 +104,23 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	{
 		return false;
 	}
-	light->SetPosition(0.0f, 100.0f, -100.0f);
+	light->SetPosition(-30.0f, 100.0f, -100.0f);
 	light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
 	light->SetDiffuseColor(1.0, 1.0, 1.0, 1.0f);
 	light->SetLookAt(0.0f, 0.0f, 20.0f);
 	light->GenerateProjectionsMatrix(SCREEN_DEPTH, SCREEN_NEAR);
+
+	//Lights
+	light2 = new LightClass();
+	if(!light2)
+	{
+		return false;
+	}
+	light2->SetPosition(30.0f, 100.0f, -100.0f);
+	light2->SetAmbientColor(0.0f, 0.0f, 0.0f, 0.0f);
+	light2->SetDiffuseColor(1.0, 1.0, 1.0, 1.0f);
+	light2->SetLookAt(0.0f, 0.0f, 20.0f);
+	light2->GenerateProjectionsMatrix(SCREEN_DEPTH, SCREEN_NEAR);
 
 	//HARDCODED END
 	
@@ -115,6 +132,19 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	result = renderTexture->Initialize(direct3D->GetDevice(), SHADOWMAP_WIDTH, SHADOWMAP_HEIGHT, SCREEN_DEPTH, SCREEN_NEAR);
+	if(!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the render to texture object.", L"Error", MB_OK);
+		return false;
+	}
+	
+	renderTexture2 = new RenderTextureClass();
+	if (!renderTexture2)
+	{
+		return false;
+	}
+
+	result = renderTexture2->Initialize(direct3D->GetDevice(), SHADOWMAP_WIDTH, SHADOWMAP_HEIGHT, SCREEN_DEPTH, SCREEN_NEAR);
 	if(!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the render to texture object.", L"Error", MB_OK);
@@ -171,6 +201,19 @@ void GraphicsClass::Shutdown()
 	{
 		delete light;
 		light = nullptr;
+	}
+	
+	if (renderTexture2)
+	{
+		renderTexture2->Shutdown();
+		delete renderTexture2;
+		renderTexture2 = nullptr;
+	}
+
+	if (light2)
+	{
+		delete light2;
+		light2 = nullptr;
 	}
 
 	ShutdownModels();
@@ -234,8 +277,7 @@ bool GraphicsClass::Frame(InputClass* input)
 
 bool GraphicsClass::RenderSceneToTexture()
 {
-	XMMATRIX worldMatrix, lightViewMatrix, lightProjectionMatrix, translateMatrix;
-	Vector3 pos;
+	XMMATRIX lightViewMatrix, lightProjectionMatrix;
 	bool result;
 
 	//Set texture as render target
@@ -265,15 +307,54 @@ bool GraphicsClass::RenderSceneToTexture()
 	return true;
 }
 
+bool GraphicsClass::RenderSceneToTexture2()
+{
+	XMMATRIX lightViewMatrix, lightProjectionMatrix;
+	bool result;
+
+	//Set texture as render target
+	renderTexture2->SetRenderTarget(direct3D->GetDeviceContext());
+
+	//Clear rendertexture
+	renderTexture2->ClearRenderTarget(direct3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
+
+	light2->GenerateViewMatrix();
+
+	light2->GetViewMatrix(lightViewMatrix);
+	light2->GetProjectionMatrix(lightProjectionMatrix);
+
+	for(auto i : models)
+	{
+		i->Render(direct3D->GetDeviceContext());
+		result = depthShader->Render(direct3D->GetDeviceContext(), i->GetIndexCount(), i->GetInstanceCount(), i->worldMatrix, lightViewMatrix, lightProjectionMatrix);
+		if(!result)
+		{
+			return false;
+		}
+	}
+
+	direct3D->SetBackBufferRenderTarget();
+	direct3D->ResetViewport();
+
+	return true;
+}
+
 bool GraphicsClass::Render(float rotation, InputClass* input)
 {
 	XMMATRIX viewMatrix, projectionMatrix, translateMatrix;
 	XMMATRIX lightViewMatrix, lightProjectionMatrix;
-	Vector3 modelpos;
+	XMMATRIX lightViewMatrix2, lightProjectionMatrix2;
 	bool result;
 
 	//Render scene to texture
 	result = RenderSceneToTexture();
+	if(!result)
+	{
+		return false;
+	}
+
+	//Render scene to texture 2
+	result = RenderSceneToTexture2();
 	if(!result)
 	{
 		return false;
@@ -295,6 +376,10 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 	light->GenerateViewMatrix();
 	light->GetViewMatrix(lightViewMatrix);
 	light->GetProjectionMatrix(lightProjectionMatrix);
+	//Lighting2
+	light2->GenerateViewMatrix();
+	light2->GetViewMatrix(lightViewMatrix2);
+	light2->GetProjectionMatrix(lightProjectionMatrix2);
 
 	//Put model vertex and index buffer on pipeline
 	for(ModelClass* model : models)
@@ -302,20 +387,7 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 		model->Render(direct3D->GetDeviceContext());
 
 		//Render using shader
-		result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), model->GetInstanceCount(), model->worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTextureView(), renderTexture->GetShaderResourceView(), light->GetPosition(), light->GetAmbientColor(), light->GetDiffuseColor());
-		if(!result)
-		{
-			return false;
-		}
-	}
-
-	//Put model vertex and index buffer on pipeline
-	for(ModelClass* model : noshadowmodels)
-	{
-		model->Render(direct3D->GetDeviceContext());
-
-		//Render using shader
-		result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), model->GetInstanceCount(), model->worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTextureView(), renderTexture->GetShaderResourceView(), light->GetPosition(), light->GetAmbientColor(), light->GetDiffuseColor());
+		result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), model->GetInstanceCount(), model->worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTextureView(), renderTexture->GetShaderResourceView(), light->GetPosition(), light->GetAmbientColor(), light->GetDiffuseColor(),lightViewMatrix2, lightProjectionMatrix2,renderTexture2->GetShaderResourceView(), light2->GetPosition(), light2->GetDiffuseColor());
 		if(!result)
 		{
 			return false;
@@ -372,6 +444,7 @@ void GraphicsClass::CheckWireframe(InputClass* input)
 void GraphicsClass::SetLightDirection(InputClass* input)
 {
 	unsigned int onekey = 0x31;
+	unsigned int twokey = 0x32;
 
 	if (input->IsKeyDown(onekey))
 	{
@@ -381,6 +454,16 @@ void GraphicsClass::SetLightDirection(InputClass* input)
 
 		light->SetPosition(newposition.x, newposition.y, newposition.z);
 		light->SetLookAt(newrotation.x, newrotation.y, newrotation.z);
+	}
+
+	if (input->IsKeyDown(twokey))
+	{
+		Vector3 newposition = camera->GetPosition();
+		Vector3 newrotation = camera->GetRotation();
+		newrotation.Normalize();
+
+		light2->SetPosition(newposition.x, newposition.y, newposition.z);
+		light2->SetLookAt(newrotation.x, newrotation.y, newrotation.z);
 	}
 }
 
