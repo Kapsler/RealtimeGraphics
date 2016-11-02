@@ -213,12 +213,15 @@ bool GraphicsClass::Frame(InputClass* input)
 
 	CheckWireframe(input);
 	
-	counter += deltaTime * 0.005f;
-	if(counter > 30.0f)
-	{
-		counter = -30.0f;
-	}
-	light->SetPosition(counter, light->GetPosition().y, light->GetPosition().z);
+	//Lightmovement
+	//counter += deltaTime * 0.005f;
+	//if(counter > 30.0f)
+	//{
+	//	counter = -30.0f;
+	//}
+	//light->SetPosition(counter, light->GetPosition().y, light->GetPosition().z);
+	SetLightDirection(input);
+
 
 	result = Render(counter, input);
 	if(!result)
@@ -363,6 +366,21 @@ void GraphicsClass::CheckWireframe(InputClass* input)
 	if(input->IsKeyUp(zkey))
 	{
 		wireframeKeyToggle = false;
+	}
+}
+
+void GraphicsClass::SetLightDirection(InputClass* input)
+{
+	unsigned int onekey = 0x31;
+
+	if (input->IsKeyDown(onekey))
+	{
+		Vector3 newposition = camera->GetPosition();
+		Vector3 newrotation = camera->GetRotation();
+		newrotation.Normalize();
+
+		light->SetPosition(newposition.x, newposition.y, newposition.z);
+		light->SetLookAt(newrotation.x, newrotation.y, newrotation.z);
 	}
 }
 

@@ -33,6 +33,7 @@ private:
 	bool RenderSceneToTexture();
 	bool Render(float, InputClass*);
 	void CheckWireframe(InputClass*);
+	void SetLightDirection(InputClass*);
 	void ChangeFillmode(D3D11_FILL_MODE);
 	ModelClass* InitializeModel(HWND, char*, WCHAR*, XMFLOAT3, float);
 	void ShutdownModels();
