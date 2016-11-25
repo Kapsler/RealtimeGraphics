@@ -37,7 +37,6 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	D3D11_DEPTH_STENCIL_DESC depthStencilDescription;
 	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDescription;
 	D3D11_RASTERIZER_DESC rasterizerDescription;
-	D3D11_VIEWPORT viewport;
 	float fieldOfView, screenAspect;
 
 	vsync_enabled = vsync;
@@ -440,4 +439,14 @@ void D3DClass::GetVideoCardInfo(char* cardName, int& memory)
 {
 	strcpy_s(cardName, 128, videoCardDescription);
 	memory = videoCardMemory;
+}
+
+void D3DClass::SetBackBufferRenderTarget()
+{
+	deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+}
+
+void D3DClass::ResetViewport()
+{
+	deviceContext->RSSetViewports(1, &viewport);
 }

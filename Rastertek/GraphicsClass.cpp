@@ -5,6 +5,12 @@ GraphicsClass::GraphicsClass()
 	direct3D = nullptr;
 	camera = nullptr;
 	shader = nullptr;
+	light = nullptr;
+	light2 = nullptr;
+	renderTexture = nullptr;
+	renderTexture2 = nullptr;
+	timer = nullptr;
+	depthShader = nullptr;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass&)
@@ -48,17 +54,116 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	camera->SetPosition(0.0f, 0.0f, -5.0f);
 
+
+	timer = new TimerClass();
+	if (!timer)
+	{
+		return false;
+	}
+
+	result = timer->Initialize();
+	if (!result)
+	{
+		return false;
+	}
+
 	//HARDCODED - Setting up Models
 
-	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/companion_cube.dds", XMFLOAT3(-20.0f, 0.0f, 50.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/companion_cube.dds", XMFLOAT3(20.0f, 0.0f, 150.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/companion_cube.dds", XMFLOAT3(-20.0f, 0.0f, 250.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -4.0f, 0.0f), 100.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(00.0f, -4.0f, 200.0f), 100.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(00.0f, -4.0f, 400.0f), 100.0f));
+	//Scene
+	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/ice.dds", XMFLOAT3(-30, 0.0f, 50.0f), 4.0f));
+	
+	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/ice.dds", XMFLOAT3(30, 0.0f, 50.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/metal001.dds", XMFLOAT3(20.0f, 0.0f, 150.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/metal001.dds", XMFLOAT3(-20.0f, 0.0f, 150.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/wall01.dds", XMFLOAT3(-10, 0.0f, 250.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/wall01.dds", XMFLOAT3(10, 0.0f, 250.0f), 4.0f));
+
+	//noshadowmodels.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -10.0f, 0.0f), 100.0f));
+	//noshadowmodels.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -10.0f, 200.0f), 100.0f));
+	//noshadowmodels.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -10.0f, 400.0f), 100.0f));
+	//noshadowmodels.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(200.0f, -10.0f, 0.0f), 100.0f));
+	//noshadowmodels.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(200.0f, -10.0f, 200.0f), 100.0f));
+	//noshadowmodels.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(200.0f, -10.0f, 400.0f), 100.0f));
+	//noshadowmodels.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(-200.0f, -10.0f, 0.0f), 100.0f));
+	//noshadowmodels.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(-200.0f, -10.0f, 200.0f), 100.0f));
+	//noshadowmodels.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(-200.0f, -10.0f, 400.0f), 100.0f));
+	
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -10.0f, 0.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -10.0f, 200.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -10.0f, 400.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(200.0f, -10.0f, 0.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(200.0f, -10.0f, 200.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(200.0f, -10.0f, 400.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(-200.0f, -10.0f, 0.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(-200.0f, -10.0f, 200.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(-200.0f, -10.0f, 400.0f), 100.0f));
+	
+	//Lights
+	light = new LightClass();
+	if(!light)
+	{
+		return false;
+	}
+	light->SetPosition(-30.0f, 100.0f, -100.0f);
+	light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
+	light->SetDiffuseColor(1.0, 1.0, 1.0, 1.0f);
+	light->SetLookAt(0.0f, 0.0f, 20.0f);
+	light->GenerateProjectionsMatrix(SCREEN_DEPTH, SCREEN_NEAR);
+
+	//Lights
+	light2 = new LightClass();
+	if(!light2)
+	{
+		return false;
+	}
+	light2->SetPosition(30.0f, 100.0f, -100.0f);
+	light2->SetAmbientColor(0.0f, 0.0f, 0.0f, 0.0f);
+	light2->SetDiffuseColor(1.0, 1.0, 1.0, 1.0f);
+	light2->SetLookAt(0.0f, 0.0f, 20.0f);
+	light2->GenerateProjectionsMatrix(SCREEN_DEPTH, SCREEN_NEAR);
 
 	//HARDCODED END
 	
+	//Create RenderToTexture
+	renderTexture = new RenderTextureClass();
+	if (!renderTexture)
+	{
+		return false;
+	}
+
+	result = renderTexture->Initialize(direct3D->GetDevice(), SHADOWMAP_WIDTH, SHADOWMAP_HEIGHT, SCREEN_DEPTH, SCREEN_NEAR);
+	if(!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the render to texture object.", L"Error", MB_OK);
+		return false;
+	}
+	
+	renderTexture2 = new RenderTextureClass();
+	if (!renderTexture2)
+	{
+		return false;
+	}
+
+	result = renderTexture2->Initialize(direct3D->GetDevice(), SHADOWMAP_WIDTH, SHADOWMAP_HEIGHT, SCREEN_DEPTH, SCREEN_NEAR);
+	if(!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the render to texture object.", L"Error", MB_OK);
+		return false;
+	}
+
+	depthShader = new DepthShaderClass();
+	if(!depthShader)
+	{
+		return false;
+	}
+
+	result = depthShader->Initialize(direct3D->GetDevice(), hwnd);
+	if(!result)
+	{
+		MessageBox(hwnd, L"Could not initialize the depth shader object.", L"Error", MB_OK);
+		return false;
+	}
+
 	//Set up shader
 	shader = new ShaderClass();
 	if(!shader)
@@ -78,7 +183,46 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 void GraphicsClass::Shutdown()
 {
+	if (depthShader)
+	{
+		depthShader->Shutdown();
+		delete depthShader;
+		depthShader = nullptr;
+	}
+
+	if (renderTexture)
+	{
+		renderTexture->Shutdown();
+		delete renderTexture;
+		renderTexture = nullptr;
+	}
+
+	if (light)
+	{
+		delete light;
+		light = nullptr;
+	}
+	
+	if (renderTexture2)
+	{
+		renderTexture2->Shutdown();
+		delete renderTexture2;
+		renderTexture2 = nullptr;
+	}
+
+	if (light2)
+	{
+		delete light2;
+		light2 = nullptr;
+	}
+
 	ShutdownModels();
+
+	if(timer)
+	{
+		delete timer;
+		timer = nullptr;
+	}
 
 	if(shader)
 	{
@@ -105,17 +249,24 @@ void GraphicsClass::Shutdown()
 bool GraphicsClass::Frame(InputClass* input)
 {
 	bool result;
-	static float rotation = 0.0f;
+	static float counter = -5.0f;
+	timer->Frame();
+
+	float deltaTime = timer->GetFrameTime();
 
 	CheckWireframe(input);
-
-	rotation += static_cast<float>(XM_PI * 0.001f);
-	if(rotation > 360.0f)
+	
+	//Lightmovement
+	counter += deltaTime * 0.03f;
+	if(counter > 100.0f)
 	{
-		rotation -= 360.0f;
+		counter = -100.0f;
 	}
+	light->SetPosition(counter, light->GetPosition().y, light->GetPosition().z);
+	SetLightDirection(input);
 
-	result = Render(rotation, input);
+
+	result = Render(counter, input);
 	if(!result)
 	{
 		return false;
@@ -124,10 +275,90 @@ bool GraphicsClass::Frame(InputClass* input)
 	return true;
 }
 
+bool GraphicsClass::RenderSceneToTexture()
+{
+	XMMATRIX lightViewMatrix, lightProjectionMatrix;
+	bool result;
+
+	//Set texture as render target
+	renderTexture->SetRenderTarget(direct3D->GetDeviceContext());
+
+	//Clear rendertexture
+	renderTexture->ClearRenderTarget(direct3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
+
+	light->GenerateViewMatrix();
+
+	light->GetViewMatrix(lightViewMatrix);
+	light->GetProjectionMatrix(lightProjectionMatrix);
+
+	for(auto i : models)
+	{
+		i->Render(direct3D->GetDeviceContext());
+		result = depthShader->Render(direct3D->GetDeviceContext(), i->GetIndexCount(), i->GetInstanceCount(), i->worldMatrix, lightViewMatrix, lightProjectionMatrix);
+		if(!result)
+		{
+			return false;
+		}
+	}
+
+	direct3D->SetBackBufferRenderTarget();
+	direct3D->ResetViewport();
+
+	return true;
+}
+
+bool GraphicsClass::RenderSceneToTexture2()
+{
+	XMMATRIX lightViewMatrix, lightProjectionMatrix;
+	bool result;
+
+	//Set texture as render target
+	renderTexture2->SetRenderTarget(direct3D->GetDeviceContext());
+
+	//Clear rendertexture
+	renderTexture2->ClearRenderTarget(direct3D->GetDeviceContext(), 0.0f, 0.0f, 0.0f, 1.0f);
+
+	light2->GenerateViewMatrix();
+
+	light2->GetViewMatrix(lightViewMatrix);
+	light2->GetProjectionMatrix(lightProjectionMatrix);
+
+	for(auto i : models)
+	{
+		i->Render(direct3D->GetDeviceContext());
+		result = depthShader->Render(direct3D->GetDeviceContext(), i->GetIndexCount(), i->GetInstanceCount(), i->worldMatrix, lightViewMatrix, lightProjectionMatrix);
+		if(!result)
+		{
+			return false;
+		}
+	}
+
+	direct3D->SetBackBufferRenderTarget();
+	direct3D->ResetViewport();
+
+	return true;
+}
+
 bool GraphicsClass::Render(float rotation, InputClass* input)
 {
-	XMMATRIX viewMatrix, projectionMatrix;
+	XMMATRIX viewMatrix, projectionMatrix, translateMatrix;
+	XMMATRIX lightViewMatrix, lightProjectionMatrix;
+	XMMATRIX lightViewMatrix2, lightProjectionMatrix2;
 	bool result;
+
+	//Render scene to texture
+	result = RenderSceneToTexture();
+	if(!result)
+	{
+		return false;
+	}
+
+	//Render scene to texture 2
+	result = RenderSceneToTexture2();
+	if(!result)
+	{
+		return false;
+	}
 
 	//clear Buffer at beginning
 	direct3D->BeginScene(0.2f, 0.5f, 0.5f, 0.0f);
@@ -141,13 +372,22 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 	camera->GetViewMatrix(viewMatrix);
 	direct3D->GetProjectionMatrix(projectionMatrix);
 
+	//Lighting
+	light->GenerateViewMatrix();
+	light->GetViewMatrix(lightViewMatrix);
+	light->GetProjectionMatrix(lightProjectionMatrix);
+	//Lighting2
+	light2->GenerateViewMatrix();
+	light2->GetViewMatrix(lightViewMatrix2);
+	light2->GetProjectionMatrix(lightProjectionMatrix2);
+
 	//Put model vertex and index buffer on pipeline
 	for(ModelClass* model : models)
 	{
 		model->Render(direct3D->GetDeviceContext());
 
 		//Render using shader
-		result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), model->GetInstanceCount(), model->worldMatrix, viewMatrix, projectionMatrix, model->GetTextureView());
+		result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), model->GetInstanceCount(), model->worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTextureView(), renderTexture->GetShaderResourceView(), light->GetPosition(), light->GetAmbientColor(), light->GetDiffuseColor(),lightViewMatrix2, lightProjectionMatrix2,renderTexture2->GetShaderResourceView(), light2->GetPosition(), light2->GetDiffuseColor());
 		if(!result)
 		{
 			return false;
@@ -155,17 +395,17 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 	}
 
 	//Render Trackingpoints
-	for(ModelClass* model : camera->getTrackingPointsModels())
-	{
-		model->Render(direct3D->GetDeviceContext());
+	//for(ModelClass* model : camera->getTrackingPointsModels())
+	//{
 
-		//Render using shader
-		result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), model->GetInstanceCount(), model->worldMatrix, viewMatrix, projectionMatrix, model->GetTextureView());
-		if (!result)
-		{
-			return false;
-		}
-	}
+	//	model->Render(direct3D->GetDeviceContext());
+
+	//	//Render using shader
+	//	result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), model->GetInstanceCount(), model->worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTextureView(), renderTexture->GetShaderResourceView(), light->GetPosition(), light->GetAmbientColor(), light->GetDiffuseColor());
+	//	{
+	//		return false;
+	//	}
+	//}
 
 	//Output Buffer
 	direct3D->EndScene();
@@ -198,6 +438,34 @@ void GraphicsClass::CheckWireframe(InputClass* input)
 	if(input->IsKeyUp(zkey))
 	{
 		wireframeKeyToggle = false;
+	}
+}
+
+void GraphicsClass::SetLightDirection(InputClass* input)
+{
+	unsigned int onekey = 0x31;
+	unsigned int twokey = 0x32;
+
+	if (input->IsKeyDown(onekey))
+	{
+		Vector3 newposition = camera->GetPosition();
+		Vector3 newrotation = camera->GetRotation();
+		//newrotation.Normalize();
+
+		light->SetPosition(newposition.x, newposition.y, newposition.z);
+		//light->SetLookAt(newrotation.x, newrotation.y, newrotation.z);
+		light->SetLookAt(0, 0, 300);
+	}
+
+	if (input->IsKeyDown(twokey))
+	{
+		Vector3 newposition = camera->GetPosition();
+		Vector3 newrotation = camera->GetRotation();
+		newrotation.Normalize();
+
+		light2->SetPosition(newposition.x, newposition.y, newposition.z);
+		//light2->SetLookAt(newrotation.x, newrotation.y, newrotation.z);
+		light2->SetLookAt(0, 0, 300);
 	}
 }
 
