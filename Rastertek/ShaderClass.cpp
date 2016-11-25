@@ -39,13 +39,13 @@ void ShaderClass::Shutdown()
 
 bool ShaderClass::Render(ID3D11DeviceContext* context, int indexCount, int instanceCount,
 	XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX	projectionMatrix,
-	XMMATRIX lightViewMatrix, XMMATRIX lightProjectionMatrix, ID3D11ShaderResourceView* textureView,
+	XMMATRIX lightViewMatrix, XMMATRIX lightProjectionMatrix, ID3D11ShaderResourceView** textureArray,
 	ID3D11ShaderResourceView* depthMapTexture, XMFLOAT3 lightPosition, XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor,
 	XMMATRIX lightViewMatrix2, XMMATRIX lightProjectionMatrix2, ID3D11ShaderResourceView* depthMapTexture2, XMFLOAT3 lightPosition2, XMFLOAT4 diffuseColor2)
 {
 	bool result;
 
-	result = SetShaderParameters(context, worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, textureView, depthMapTexture, lightPosition, ambientColor, diffuseColor, lightViewMatrix2, lightProjectionMatrix2, depthMapTexture2, lightPosition2, diffuseColor2);
+	result = SetShaderParameters(context, worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, textureArray, depthMapTexture, lightPosition, ambientColor, diffuseColor, lightViewMatrix2, lightProjectionMatrix2, depthMapTexture2, lightPosition2, diffuseColor2);
 	if(!result)
 	{
 		return false;
@@ -62,7 +62,7 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* verte
 	ID3DBlob* errorMessage;
 	ID3DBlob* vertexShaderBuffer;
 	ID3DBlob* pixelShaderBuffer;
-	D3D11_INPUT_ELEMENT_DESC polygonLayout[4];
+	D3D11_INPUT_ELEMENT_DESC polygonLayout[6];
 	unsigned int numElements;
 	D3D11_BUFFER_DESC matrixBufferDesc;
 	D3D11_BUFFER_DESC lightBufferDesc;
@@ -152,6 +152,22 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* verte
 	polygonLayout[3].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[3].InstanceDataStepRate = 0;
 
+	polygonLayout[4].SemanticName = "TANGENT";
+	polygonLayout[4].SemanticIndex = 0;
+	polygonLayout[4].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	polygonLayout[4].InputSlot = 0;
+	polygonLayout[4].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[4].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[4].InstanceDataStepRate = 0;
+
+	polygonLayout[5].SemanticName = "BINORMAL";
+	polygonLayout[5].SemanticIndex = 0;
+	polygonLayout[5].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	polygonLayout[5].InputSlot = 0;
+	polygonLayout[5].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[5].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[5].InstanceDataStepRate = 0;
+
 	numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 
 	result = device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &layout);
@@ -168,12 +184,12 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* verte
 	pixelShaderBuffer = nullptr;
 
 	//Create wrap sampler state desc
-	samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	samplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
 	samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
 	samplerDesc.MipLODBias = 0.0f;
-	samplerDesc.MaxAnisotropy = 1;
+	samplerDesc.MaxAnisotropy = 16;
 	samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
 	samplerDesc.BorderColor[0] = 0;
 	samplerDesc.BorderColor[1] = 0;
@@ -319,7 +335,7 @@ void ShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, 
 }
 
 bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* context, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix,
-		XMMATRIX lightViewMatrix, XMMATRIX lightProjectionMatrix, ID3D11ShaderResourceView* textureView, ID3D11ShaderResourceView* depthMapTexture, XMFLOAT3 lightPosition, XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor,
+		XMMATRIX lightViewMatrix, XMMATRIX lightProjectionMatrix, ID3D11ShaderResourceView** textureArray, ID3D11ShaderResourceView* depthMapTexture, XMFLOAT3 lightPosition, XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor,
 		XMMATRIX lightViewMatrix2, XMMATRIX lightProjectionMatrix2, ID3D11ShaderResourceView* depthMapTexture2, XMFLOAT3 lightPosition2, XMFLOAT4 diffuseColor2)
 {
 	HRESULT result;
@@ -367,11 +383,11 @@ bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* context, XMMATRIX wor
 
 	// ### TEXTURE ###
 	//Set texture in pixel shader
-	context->PSSetShaderResources(0, 1, &textureView);
-	//Set depth Texture
-	context->PSSetShaderResources(1, 1, &depthMapTexture);
+	context->PSSetShaderResources(0, 2, textureArray);
+	//Set depth Texture - FEHLERPOTENZIAL
+	context->PSSetShaderResources(2, 1, &depthMapTexture);
 	//Set depth Texture2
-	context->PSSetShaderResources(2, 1, &depthMapTexture2);
+	context->PSSetShaderResources(3, 1, &depthMapTexture2);
 
 	// ### LIGHTBUFFER ###
 	//Lock Buffer

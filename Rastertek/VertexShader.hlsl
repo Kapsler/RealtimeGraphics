@@ -23,6 +23,8 @@ struct VertexInputType
     float2 tex : TEXCOORD0;
     float3 instancePosition : TEXCOORD1;
     float3 normal : NORMAL;
+    float3 tangent : TANGENT;
+    float3 binormal : BINORMAL;
 };
 
 struct PixelInputType
@@ -34,7 +36,9 @@ struct PixelInputType
     float3 lightPos : TEXCOORD3;
     float4 lightViewPosition2 : TEXCOORD4;
     float3 lightPos2 : TEXCOORD5;
-};
+    float3 tangent : TANGENT;
+    float3 binormal : BINORMAL;
+    };
 
 PixelInputType main( VertexInputType input )
 {
@@ -64,6 +68,12 @@ PixelInputType main( VertexInputType input )
     //Diffuse Light - World Related
     output.normal = mul(input.normal, (float3x3) worldMatrix);
     output.normal = normalize(output.normal);
+
+    //tangent and binormal
+    output.tangent = mul(input.tangent, (float3x3) worldMatrix);
+    output.tangent = normalize(output.tangent);
+    output.binormal = mul(input.binormal, (float3x3) worldMatrix);
+    output.binormal = normalize(output.binormal);
 
     //Determine Light Position
     output.lightPos = lightPosition.xyz - worldPosition.xyz;

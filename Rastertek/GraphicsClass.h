@@ -36,7 +36,7 @@ private:
 	void CheckWireframe(InputClass*);
 	void SetLightDirection(InputClass*);
 	void ChangeFillmode(D3D11_FILL_MODE);
-	ModelClass* InitializeModel(HWND, char*, WCHAR*, XMFLOAT3, float);
+	ModelClass* InitializeModel(HWND, char*, WCHAR*, WCHAR*, XMFLOAT3, float);
 	void ShutdownModels();
 
 	D3DClass* direct3D;

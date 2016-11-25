@@ -70,33 +70,23 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	//HARDCODED - Setting up Models
 
 	//Scene
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/ice.dds", XMFLOAT3(-30, 0.0f, 50.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-30, 0.0f, 50.0f), 4.0f));
 	
-	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/ice.dds", XMFLOAT3(30, 0.0f, 50.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/metal001.dds", XMFLOAT3(20.0f, 0.0f, 150.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/metal001.dds", XMFLOAT3(-20.0f, 0.0f, 150.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/wall01.dds", XMFLOAT3(-10, 0.0f, 250.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/wall01.dds", XMFLOAT3(10, 0.0f, 250.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(30, 0.0f, 50.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(20.0f, 0.0f, 150.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/crate.dds", L"./Model/cratebump.dds", XMFLOAT3(-20.0f, 0.0f, 150.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/soccertex.dds", L"./Model/soccernormal.dds", XMFLOAT3(-10, 0.0f, 250.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(10, 0.0f, 250.0f), 4.0f));
 
-	//noshadowmodels.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -10.0f, 0.0f), 100.0f));
-	//noshadowmodels.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -10.0f, 200.0f), 100.0f));
-	//noshadowmodels.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -10.0f, 400.0f), 100.0f));
-	//noshadowmodels.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(200.0f, -10.0f, 0.0f), 100.0f));
-	//noshadowmodels.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(200.0f, -10.0f, 200.0f), 100.0f));
-	//noshadowmodels.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(200.0f, -10.0f, 400.0f), 100.0f));
-	//noshadowmodels.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(-200.0f, -10.0f, 0.0f), 100.0f));
-	//noshadowmodels.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(-200.0f, -10.0f, 200.0f), 100.0f));
-	//noshadowmodels.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(-200.0f, -10.0f, 400.0f), 100.0f));
-	
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -10.0f, 0.0f), 100.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -10.0f, 200.0f), 100.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(0.0f, -10.0f, 400.0f), 100.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(200.0f, -10.0f, 0.0f), 100.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(200.0f, -10.0f, 200.0f), 100.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(200.0f, -10.0f, 400.0f), 100.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(-200.0f, -10.0f, 0.0f), 100.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(-200.0f, -10.0f, 200.0f), 100.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", XMFLOAT3(-200.0f, -10.0f, 400.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(0.0f, -10.0f, 0.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(0.0f, -10.0f, 200.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(0.0f, -10.0f, 400.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(200.0f, -10.0f, 0.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(200.0f, -10.0f, 200.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(200.0f, -10.0f, 400.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(-200.0f, -10.0f, 0.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(-200.0f, -10.0f, 200.0f), 100.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(-200.0f, -10.0f, 400.0f), 100.0f));
 	
 	//Lights
 	light = new LightClass();
@@ -387,7 +377,7 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 		model->Render(direct3D->GetDeviceContext());
 
 		//Render using shader
-		result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), model->GetInstanceCount(), model->worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTextureView(), renderTexture->GetShaderResourceView(), light->GetPosition(), light->GetAmbientColor(), light->GetDiffuseColor(),lightViewMatrix2, lightProjectionMatrix2,renderTexture2->GetShaderResourceView(), light2->GetPosition(), light2->GetDiffuseColor());
+		result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), model->GetInstanceCount(), model->worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTextureViewArray(), renderTexture->GetShaderResourceView(), light->GetPosition(), light->GetAmbientColor(), light->GetDiffuseColor(),lightViewMatrix2, lightProjectionMatrix2,renderTexture2->GetShaderResourceView(), light2->GetPosition(), light2->GetDiffuseColor());
 		if(!result)
 		{
 			return false;
@@ -485,7 +475,7 @@ void GraphicsClass::ChangeFillmode(D3D11_FILL_MODE fillmode)
 	rasterState = nullptr;
 }
 
-ModelClass* GraphicsClass::InitializeModel(HWND hwnd, char* modelFilename, WCHAR* textureFilename, XMFLOAT3 position, float scale)
+ModelClass* GraphicsClass::InitializeModel(HWND hwnd, char* modelFilename, WCHAR* textureFilename1, WCHAR* textureFilename2, XMFLOAT3 position, float scale)
 {
 	bool result;
 	ModelClass* model;
@@ -494,14 +484,14 @@ ModelClass* GraphicsClass::InitializeModel(HWND hwnd, char* modelFilename, WCHAR
 	model = new ModelClass();
 	if (!model)
 	{
-		return false;
+		return nullptr;
 	}
 
-	result = model->Initialize(direct3D->GetDevice(), modelFilename, textureFilename);
+	result = model->Initialize(direct3D->GetDevice(), modelFilename, textureFilename1, textureFilename2);
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize model", L"Error", MB_OK);
-		return false;
+		return nullptr;
 	}
 
 	model->worldMatrix *= XMMatrixScaling(scale, scale, scale);

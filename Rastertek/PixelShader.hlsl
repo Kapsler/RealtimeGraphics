@@ -1,6 +1,6 @@
-Texture2D shaderTexture;
-Texture2D depthMapTexture;
-Texture2D depthMapTexture2;
+Texture2D shaderTextures[2] : register(t0);
+Texture2D depthMapTexture : register (t2);
+Texture2D depthMapTexture2 : register (t3);
 
 SamplerState SampleTypeWrap;
 SamplerState SampleTypeClamp;
@@ -21,6 +21,8 @@ struct PixelInputType
     float3 lightPos : TEXCOORD3;
     float4 lightViewPosition2 : TEXCOORD4;
     float3 lightPos2 : TEXCOORD5;
+    float3 tangent : TANGENT;
+    float3 binormal : BINORMAL;
 };
 
 float4 main(PixelInputType input) : SV_Target
@@ -32,12 +34,24 @@ float4 main(PixelInputType input) : SV_Target
     float lightDepthValue;
     float lightIntensity;
     float4 textureColor;
+    float4 bumpMap;
+    float3 bumpNormal;
 
     //Bias is set to fix floating point precision issues
     bias = 0.000001f;
 
     //Set default color to ambient
     color = ambientColor;
+
+    //BUMPMAPPING
+    //Sample pixel
+    bumpMap = shaderTextures[1].Sample(SampleTypeWrap, input.tex);
+    //Change range to -1.0 to 1.0 instead of 0 to 1
+    bumpMap = (bumpMap * 2.0f) - 1.0f;
+    //Calculate Normal
+    bumpNormal = (bumpMap.x * input.tangent) + (bumpMap.y * input.binormal) + (bumpMap.z * input.normal);
+    bumpNormal = normalize(bumpNormal);
+    //BUMPMAPPING
 
     //Depth Buffer (Shadow Map)
     //Calculate Projected texture coordinates
@@ -59,7 +73,7 @@ float4 main(PixelInputType input) : SV_Target
         //Compare depths to shadow or light the pixel
         if (lightDepthValue < depthValue)
         {
-            lightIntensity = saturate(dot(input.normal, input.lightPos));
+            lightIntensity = saturate(dot(bumpNormal, input.lightPos));
 
             if (lightIntensity > 0.0f)
             {
@@ -82,7 +96,7 @@ float4 main(PixelInputType input) : SV_Target
 
         if (lightDepthValue < depthValue)
         {
-            lightIntensity = saturate(dot(input.normal, input.lightPos2));
+            lightIntensity = saturate(dot(bumpNormal, input.lightPos2));
             if (lightIntensity > 0.0f)
             {
                 color += (diffuseColor2 * lightIntensity);
@@ -94,7 +108,7 @@ float4 main(PixelInputType input) : SV_Target
     color = saturate(color);
 
     //Sample Texturet
-    textureColor = shaderTexture.Sample(SampleTypeWrap, input.tex);
+    textureColor = shaderTextures[0].Sample(SampleTypeWrap, input.tex);
 
     //Calculate lighting with texture
     color = color * textureColor;

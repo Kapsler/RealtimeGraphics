@@ -371,7 +371,7 @@ void CameraClass::addTrackingPoint()
 	generateModels();
 }
 
-ModelClass* CameraClass::InitializeTrackingPointModel(char* modelFilename, WCHAR* textureFilename, Vector3 pos, float scale, Quaternion rot)
+ModelClass* CameraClass::InitializeTrackingPointModel(char* modelFilename, WCHAR* textureFilename1, WCHAR* textureFilename2, Vector3 pos, float scale, Quaternion rot)
 {
 	bool result;
 	ModelClass* model;
@@ -380,10 +380,10 @@ ModelClass* CameraClass::InitializeTrackingPointModel(char* modelFilename, WCHAR
 	model = new ModelClass();
 	if (!model)
 	{
-		return false;
+		return nullptr;
 	}
 
-	result = model->Initialize(device, modelFilename, textureFilename);
+	result = model->Initialize(device, modelFilename, textureFilename1,textureFilename2);
 	if (!result)
 	{
 		
@@ -467,12 +467,12 @@ void CameraClass::generateModels()
 
 	for(ControlPoint* p : trackingPoints)
 	{
-		trackingPointsModels.push_back(InitializeTrackingPointModel("./Model/Cube.txt", L"./Model/companion_cube.dds", p->position, 0.8f, p->direction));
+		trackingPointsModels.push_back(InitializeTrackingPointModel("./Model/Cube.txt", L"./Model/companion_cube.dds", L"./Model/companion_cubebump.dds", p->position, 0.8f, p->direction));
 	}
 
 	for(ControlPoint* p : kochanekPoints)
 	{
-		trackingPointsModels.push_back(InitializeTrackingPointModel("./Model/Cube.txt", L"./Model/companion_cube.dds", p->position, 0.3f, p->direction));
+		trackingPointsModels.push_back(InitializeTrackingPointModel("./Model/Cube.txt", L"./Model/companion_cube.dds", L"./Model/companion_cubebump.dds", p->position, 0.3f, p->direction));
 	}
 
 }

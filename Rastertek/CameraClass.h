@@ -45,7 +45,7 @@ private:
 	void kochanekBartels(Vector3*, Quaternion*, float, int*);
 	void resetTrackingPoints();
 	void addTrackingPoint();
-	ModelClass* InitializeTrackingPointModel(char*, WCHAR*, Vector3, float, Quaternion);
+	ModelClass* InitializeTrackingPointModel(char*, WCHAR*, WCHAR*, Vector3, float, Quaternion);
 	void calculateTrack();
 	void generateModels();
 
