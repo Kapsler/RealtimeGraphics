@@ -257,12 +257,12 @@ bool GraphicsClass::Frame(InputClass* input)
 	CheckWireframe(input);
 	
 	//Lightmovement
-	//counter += deltaTime * 0.005f;
-	//if(counter > 30.0f)
-	//{
-	//	counter = -30.0f;
-	//}
-	//light->SetPosition(counter, light->GetPosition().y, light->GetPosition().z);
+	counter += deltaTime * 0.03f;
+	if(counter > 100.0f)
+	{
+		counter = -100.0f;
+	}
+	light->SetPosition(counter, light->GetPosition().y, light->GetPosition().z);
 	SetLightDirection(input);
 
 
@@ -450,10 +450,11 @@ void GraphicsClass::SetLightDirection(InputClass* input)
 	{
 		Vector3 newposition = camera->GetPosition();
 		Vector3 newrotation = camera->GetRotation();
-		newrotation.Normalize();
+		//newrotation.Normalize();
 
 		light->SetPosition(newposition.x, newposition.y, newposition.z);
-		light->SetLookAt(newrotation.x, newrotation.y, newrotation.z);
+		//light->SetLookAt(newrotation.x, newrotation.y, newrotation.z);
+		light->SetLookAt(0, 0, 300);
 	}
 
 	if (input->IsKeyDown(twokey))
@@ -463,7 +464,8 @@ void GraphicsClass::SetLightDirection(InputClass* input)
 		newrotation.Normalize();
 
 		light2->SetPosition(newposition.x, newposition.y, newposition.z);
-		light2->SetLookAt(newrotation.x, newrotation.y, newrotation.z);
+		//light2->SetLookAt(newrotation.x, newrotation.y, newrotation.z);
+		light2->SetLookAt(0, 0, 300);
 	}
 }
 
