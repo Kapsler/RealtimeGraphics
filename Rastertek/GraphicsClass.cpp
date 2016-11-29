@@ -10,7 +10,8 @@ GraphicsClass::GraphicsClass()
 	renderTexture = nullptr;
 	renderTexture2 = nullptr;
 	timer = nullptr;
-	depthShader = nullptr;
+	depthShader = nullptr; 
+	bumpiness = 0;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass&)
@@ -377,7 +378,7 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 		model->Render(direct3D->GetDeviceContext());
 
 		//Render using shader
-		result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), model->GetInstanceCount(), model->worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTextureViewArray(), renderTexture->GetShaderResourceView(), light->GetPosition(), light->GetAmbientColor(), light->GetDiffuseColor(),lightViewMatrix2, lightProjectionMatrix2,renderTexture2->GetShaderResourceView(), light2->GetPosition(), light2->GetDiffuseColor());
+		result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), model->GetInstanceCount(), model->worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTextureViewArray(), renderTexture->GetShaderResourceView(), light->GetPosition(), light->GetAmbientColor(), light->GetDiffuseColor(),lightViewMatrix2, lightProjectionMatrix2,renderTexture2->GetShaderResourceView(), light2->GetPosition(), light2->GetDiffuseColor(), bumpiness);
 		if(!result)
 		{
 			return false;
@@ -405,11 +406,13 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 
 void GraphicsClass::CheckWireframe(InputClass* input)
 {
+	unsigned int xkey = 0x58;
+	unsigned int ykey = 0x59;
 	unsigned int zkey = 0x5A;
 
-	if(!wireframeMode)
+	if(!wireframeMode & !wireframeKeyToggle)
 	{
-		if(input->IsKeyDown(zkey) & !wireframeKeyToggle)
+		if(input->IsKeyDown(zkey))
 		{
 			wireframeMode = true;
 			wireframeKeyToggle = true;
@@ -417,7 +420,7 @@ void GraphicsClass::CheckWireframe(InputClass* input)
 		}	
 	} else
 	{
-		if (input->IsKeyDown(zkey) & !wireframeKeyToggle)
+		if (input->IsKeyDown(zkey))
 		{
 			wireframeMode = false;
 			wireframeKeyToggle = true;
@@ -428,6 +431,30 @@ void GraphicsClass::CheckWireframe(InputClass* input)
 	if(input->IsKeyUp(zkey))
 	{
 		wireframeKeyToggle = false;
+	}
+
+	if(!bumpinessKeyToggle)
+	{
+		if(input->IsKeyDown(ykey))
+		{
+			if(bumpiness < 10)
+			{
+				bumpiness += 1;
+			}
+			bumpinessKeyToggle = true;
+		} else if(input->IsKeyDown(xkey))
+		{
+			if(bumpiness > 0)
+			{
+				bumpiness -= 1;
+			}
+			bumpinessKeyToggle = true;
+		}
+	} 
+	
+	if(input->IsKeyUp(ykey) && input->IsKeyUp(xkey))
+	{
+		bumpinessKeyToggle = false;
 	}
 }
 

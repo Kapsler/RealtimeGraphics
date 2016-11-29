@@ -7,6 +7,8 @@ cbuffer MatrixBuffer
     matrix lightProjectionMatrix;
     matrix lightViewMatrix2;
     matrix lightProjectionMatrix2;
+    float bumpiness;
+    float3 padding;
 };
 
 cbuffer LightBuffer2
@@ -38,7 +40,8 @@ struct PixelInputType
     float3 lightPos2 : TEXCOORD5;
     float3 tangent : TANGENT;
     float3 binormal : BINORMAL;
-    };
+    float bumpiness : BUMP;
+};
 
 PixelInputType main( VertexInputType input )
 {
@@ -64,6 +67,9 @@ PixelInputType main( VertexInputType input )
 
     //Texture coordinates
     output.tex = input.tex;
+
+    //Bumpiness
+    output.bumpiness = bumpiness;
 
     //Diffuse Light - World Related
     output.normal = mul(input.normal, (float3x3) worldMatrix);

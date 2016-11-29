@@ -49,6 +49,6 @@ private:
 	RenderTextureClass* renderTexture, *renderTexture2;
 	DepthShaderClass* depthShader;
 
-	bool wireframeMode, wireframeKeyToggle;
-
+	bool wireframeMode, wireframeKeyToggle, bumpinessKeyToggle;
+	float bumpiness;
 };

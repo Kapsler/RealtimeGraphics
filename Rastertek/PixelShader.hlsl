@@ -23,6 +23,7 @@ struct PixelInputType
     float3 lightPos2 : TEXCOORD5;
     float3 tangent : TANGENT;
     float3 binormal : BINORMAL;
+    float bumpiness : BUMP;
 };
 
 float4 main(PixelInputType input) : SV_Target
@@ -50,7 +51,8 @@ float4 main(PixelInputType input) : SV_Target
     bumpMap = (bumpMap * 2.0f) - 1.0f;
     //Calculate Normal
     bumpNormal = (bumpMap.x * input.tangent) + (bumpMap.y * input.binormal) + (bumpMap.z * input.normal);
-    bumpNormal = normalize(bumpNormal);
+    bumpNormal = normalize(bumpNormal * input.bumpiness + input.normal);
+    
     //BUMPMAPPING
 
     //Depth Buffer (Shadow Map)

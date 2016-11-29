@@ -41,11 +41,11 @@ bool ShaderClass::Render(ID3D11DeviceContext* context, int indexCount, int insta
 	XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX	projectionMatrix,
 	XMMATRIX lightViewMatrix, XMMATRIX lightProjectionMatrix, ID3D11ShaderResourceView** textureArray,
 	ID3D11ShaderResourceView* depthMapTexture, XMFLOAT3 lightPosition, XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor,
-	XMMATRIX lightViewMatrix2, XMMATRIX lightProjectionMatrix2, ID3D11ShaderResourceView* depthMapTexture2, XMFLOAT3 lightPosition2, XMFLOAT4 diffuseColor2)
+	XMMATRIX lightViewMatrix2, XMMATRIX lightProjectionMatrix2, ID3D11ShaderResourceView* depthMapTexture2, XMFLOAT3 lightPosition2, XMFLOAT4 diffuseColor2, float bumpiness)
 {
 	bool result;
 
-	result = SetShaderParameters(context, worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, textureArray, depthMapTexture, lightPosition, ambientColor, diffuseColor, lightViewMatrix2, lightProjectionMatrix2, depthMapTexture2, lightPosition2, diffuseColor2);
+	result = SetShaderParameters(context, worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, textureArray, depthMapTexture, lightPosition, ambientColor, diffuseColor, lightViewMatrix2, lightProjectionMatrix2, depthMapTexture2, lightPosition2, diffuseColor2, bumpiness);
 	if(!result)
 	{
 		return false;
@@ -336,7 +336,7 @@ void ShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND hwnd, 
 
 bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* context, XMMATRIX worldMatrix, XMMATRIX viewMatrix, XMMATRIX projectionMatrix,
 		XMMATRIX lightViewMatrix, XMMATRIX lightProjectionMatrix, ID3D11ShaderResourceView** textureArray, ID3D11ShaderResourceView* depthMapTexture, XMFLOAT3 lightPosition, XMFLOAT4 ambientColor, XMFLOAT4 diffuseColor,
-		XMMATRIX lightViewMatrix2, XMMATRIX lightProjectionMatrix2, ID3D11ShaderResourceView* depthMapTexture2, XMFLOAT3 lightPosition2, XMFLOAT4 diffuseColor2)
+		XMMATRIX lightViewMatrix2, XMMATRIX lightProjectionMatrix2, ID3D11ShaderResourceView* depthMapTexture2, XMFLOAT3 lightPosition2, XMFLOAT4 diffuseColor2, float bumpiness)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
@@ -353,7 +353,6 @@ bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* context, XMMATRIX wor
 	lightProjectionMatrix = XMMatrixTranspose(lightProjectionMatrix);
 	lightViewMatrix2 = XMMatrixTranspose(lightViewMatrix2);
 	lightProjectionMatrix2 = XMMatrixTranspose(lightProjectionMatrix2);
-
 
 	// ### MATRIXBUFFER ###
 	//Lock Buffer
@@ -374,6 +373,10 @@ bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* context, XMMATRIX wor
 	dataPtr->lightProjection = lightProjectionMatrix;
 	dataPtr->lightView2 = lightViewMatrix2;
 	dataPtr->lightProjection2 = lightProjectionMatrix2;
+	dataPtr->bumpiness = bumpiness;
+	dataPtr->padding.x = 0.0f;
+	dataPtr->padding.y = 0.0f;
+	dataPtr->padding.z = 0.0f;
 
 	context->Unmap(matrixBuffer, 0);
 	bufferNumber = 0;
