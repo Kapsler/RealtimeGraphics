@@ -12,7 +12,7 @@ public:
 	RenderTextureClass(const RenderTextureClass&);
 	~RenderTextureClass();
 
-	bool Initialize(ID3D11Device*, int, int, float, float);
+	bool Initialize(ID3D11Device*, int, int, float, float, int sampleCount, int qualityLevel);
 	void Shutdown();
 
 	void SetRenderTarget(ID3D11DeviceContext*);

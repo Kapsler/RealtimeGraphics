@@ -7,6 +7,8 @@
 
 #include <d3d11.h>
 #include <directxmath.h>
+#include <vector>
+#include <unordered_map>
 using namespace DirectX;
 
 class D3DClass
@@ -33,6 +35,14 @@ public:
 
 	void SetBackBufferRenderTarget();
 	void ResetViewport();
+	void ChangeMultiSampleMode(int newsamplecount, int newqualitylevel);
+	void FindMultiSampleModes();
+	int GetCurrentSampleCount();
+	int GetCurrentQualityLevel();
+	void IncreaseSampleCount();
+	void IncreaseQualityLevel();
+	int GetMaxSampleCount();
+	int GetMaxQualityLevels();
 
 private:
 	bool vsync_enabled;
@@ -50,4 +60,10 @@ private:
 	XMMATRIX worldMatrix;
 	XMMATRIX orthoMatrix;
 	D3D11_VIEWPORT viewport;
+
+	std::vector<int> sampleCountModes;
+	std::unordered_multimap<int, UINT> maxQualityLevels;
+	int currentSampleIndex;
+	int currentQuality;
+
 };

@@ -159,20 +159,10 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	swapChainDescription.OutputWindow = hwnd;
 
 	//Multisample
-	int sampleCount = 4;
-	UINT qualityLevels = 0;
-	device->CheckMultisampleQualityLevels(DXGI_FORMAT_D24_UNORM_S8_UINT, sampleCount, &qualityLevels);
+	FindMultiSampleModes();
 
-	if(qualityLevels > 0)
-	{
-		swapChainDescription.SampleDesc.Count = sampleCount;
-		swapChainDescription.SampleDesc.Quality = qualityLevels - 1;
-	} else
-	{
-		swapChainDescription.SampleDesc.Count = 1;
-		swapChainDescription.SampleDesc.Quality = 0;
-	}
-
+	swapChainDescription.SampleDesc.Count = sampleCountModes[currentSampleIndex];
+	swapChainDescription.SampleDesc.Quality = currentQuality;
 
 
 	//Fullscreen or window
@@ -237,15 +227,8 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	depthBufferDescription.MiscFlags = 0;
 
 	//Multisample
-	if(qualityLevels > 0)
-	{
-		depthBufferDescription.SampleDesc.Count = sampleCount;
-		depthBufferDescription.SampleDesc.Quality = qualityLevels - 1;
-	} else
-	{
-		depthBufferDescription.SampleDesc.Count = 1;
-		depthBufferDescription.SampleDesc.Quality = 0;
-	}
+	depthBufferDescription.SampleDesc.Count = sampleCountModes[currentSampleIndex];
+	depthBufferDescription.SampleDesc.Quality = currentQuality;
 
 	//Texture for depth buffer
 	result = device->CreateTexture2D(&depthBufferDescription, nullptr, &depthStencilBuffer);
@@ -479,4 +462,77 @@ void D3DClass::SetBackBufferRenderTarget()
 void D3DClass::ResetViewport()
 {
 	deviceContext->RSSetViewports(1, &viewport);
+}
+
+void D3DClass::ChangeMultiSampleMode(int newsamplecount, int newqualitylevel)
+{
+	currentSampleIndex = newsamplecount;
+	currentQuality = newqualitylevel;
+	std::cout << newsamplecount << newqualitylevel << std::endl;
+}
+
+void D3DClass::FindMultiSampleModes()
+{	
+	//Multisample
+
+	int sampleCount;
+	UINT qualityLevels;
+
+	for(int i = 1; i <= 32; i++)
+	{
+		sampleCount = i;
+
+		device->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM, sampleCount, &qualityLevels);
+
+		if (qualityLevels > 0)
+		{
+			sampleCountModes.push_back(i);
+			maxQualityLevels.insert(std::pair<int, UINT>(sampleCount, qualityLevels-1));
+		}
+	}
+	
+	currentSampleIndex = 0;
+	currentQuality = 0;
+}
+
+int D3DClass::GetCurrentSampleCount()
+{
+	return sampleCountModes[currentSampleIndex];
+}
+
+int D3DClass::GetCurrentQualityLevel()
+{
+	return currentQuality;
+}
+
+void D3DClass::IncreaseSampleCount()
+{
+	currentSampleIndex += 1;
+	if (currentSampleIndex >= sampleCountModes.size())
+	{
+		currentSampleIndex = 0;
+	}
+	if (currentQuality > maxQualityLevels.find(sampleCountModes[currentSampleIndex])->second)
+	{
+		currentQuality = 0;
+	}
+}
+
+void D3DClass::IncreaseQualityLevel()
+{
+	currentQuality += 1;
+	if (currentQuality > maxQualityLevels.find(sampleCountModes[currentSampleIndex])->second)
+	{
+		currentQuality = 0;
+	}
+}
+
+int D3DClass::GetMaxSampleCount()
+{
+	return *(sampleCountModes.end() - 1);
+}
+
+int D3DClass::GetMaxQualityLevels()
+{
+	return maxQualityLevels.find(sampleCountModes[currentSampleIndex])->second;
 }

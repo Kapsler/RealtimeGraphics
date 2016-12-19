@@ -15,7 +15,7 @@ RenderTextureClass::~RenderTextureClass()
 {
 }
 
-bool RenderTextureClass::Initialize(ID3D11Device* device, int textureWidth, int textureHeight, float screenDepth, float screenNear)
+bool RenderTextureClass::Initialize(ID3D11Device* device, int textureWidth, int textureHeight, float screenDepth, float screenNear, int sampleCount, int qualityLevel)
 {
 	D3D11_TEXTURE2D_DESC textureDesc;
 	HRESULT result;
@@ -41,19 +41,8 @@ bool RenderTextureClass::Initialize(ID3D11Device* device, int textureWidth, int 
 
 
 	//Multisample
-	int sampleCount = 4;
-	UINT qualityLevels = 0;
-	device->CheckMultisampleQualityLevels(DXGI_FORMAT_D24_UNORM_S8_UINT, sampleCount, &qualityLevels);
-
-	if(qualityLevels > 0)
-	{
 		textureDesc.SampleDesc.Count = sampleCount;
-		textureDesc.SampleDesc.Quality = qualityLevels-1;
-	} else
-	{
-		textureDesc.SampleDesc.Count = 1;
-		textureDesc.SampleDesc.Quality = 0;
-	}
+		textureDesc.SampleDesc.Quality = qualityLevel;
 
 	// Create the render target texture.
 	result = device->CreateTexture2D(&textureDesc, nullptr, &renderTargetTexture);
@@ -101,16 +90,8 @@ bool RenderTextureClass::Initialize(ID3D11Device* device, int textureWidth, int 
 	depthBufferDesc.MiscFlags = 0;
 
 	//Multisample
-	if (qualityLevels > 0)
-	{
-		depthBufferDesc.SampleDesc.Count = sampleCount;
-		depthBufferDesc.SampleDesc.Quality = qualityLevels-1;
-	}
-	else
-	{
-		depthBufferDesc.SampleDesc.Count = 1;
-		depthBufferDesc.SampleDesc.Quality = 0;
-	}
+	depthBufferDesc.SampleDesc.Count = sampleCount;
+	depthBufferDesc.SampleDesc.Quality = qualityLevel;
 
 	// Create the texture for the depth buffer using the filled out description.
 	result = device->CreateTexture2D(&depthBufferDesc, nullptr, &m_depthStencilBuffer);

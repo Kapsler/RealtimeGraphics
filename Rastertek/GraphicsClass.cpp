@@ -2,6 +2,7 @@
 #include <memory>
 #include <SpriteFont.h>
 #include <SimpleMath.inl>
+#include <string>
 
 GraphicsClass::GraphicsClass()
 {
@@ -13,7 +14,7 @@ GraphicsClass::GraphicsClass()
 	renderTexture = nullptr;
 	renderTexture2 = nullptr;
 	timer = nullptr;
-	depthShader = nullptr; 
+	depthShader = nullptr;
 	bumpiness = 1;
 }
 
@@ -29,15 +30,19 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 {
 	bool result;
 
+	currentScreenWidth = screenWidth;
+	currentScreenHeight = screenHeight;
+	hwndptr = &hwnd;
+
 	//Set up Direct3D
 	direct3D = new D3DClass();
-	if(!direct3D)
+	if (!direct3D)
 	{
 		return false;
 	}
 
 	result = direct3D->Initialize(screenWidth, screenHeight, VSYNC_ENABLED, hwnd, FULL_SCREEN, SCREEN_DEPTH, SCREEN_NEAR);
-	if(!result)
+	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize Direct3D", L"Error", MB_OK);
 		return false;
@@ -45,13 +50,13 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	//Set up Camera
 	camera = new CameraClass();
-	if(!camera)
+	if (!camera)
 	{
 		return false;
 	}
 
 	result = camera->Initialize(direct3D->GetDevice());
-	if(!result)
+	if (!result)
 	{
 		return false;
 	}
@@ -75,7 +80,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	//Scene
 	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-30, 0.0f, 50.0f), 4.0f));
-	
+
 	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(30, 0.0f, 50.0f), 4.0f));
 	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(20.0f, 0.0f, 150.0f), 4.0f));
 	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/crate.dds", L"./Model/cratebump.dds", XMFLOAT3(-20.0f, 0.0f, 150.0f), 4.0f));
@@ -91,10 +96,10 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(-200.0f, -10.0f, 0.0f), 100.0f));
 	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(-200.0f, -10.0f, 200.0f), 100.0f));
 	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(-200.0f, -10.0f, 400.0f), 100.0f));
-	
+
 	//Lights
 	light = new LightClass();
-	if(!light)
+	if (!light)
 	{
 		return false;
 	}
@@ -106,7 +111,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	//Lights
 	light2 = new LightClass();
-	if(!light2)
+	if (!light2)
 	{
 		return false;
 	}
@@ -117,7 +122,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	light2->GenerateProjectionsMatrix(SCREEN_DEPTH, SCREEN_NEAR);
 
 	//HARDCODED END
-	
+
 	//Create RenderToTexture
 	renderTexture = new RenderTextureClass();
 	if (!renderTexture)
@@ -125,34 +130,34 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 
-	result = renderTexture->Initialize(direct3D->GetDevice(), SHADOWMAP_WIDTH, SHADOWMAP_HEIGHT, SCREEN_DEPTH, SCREEN_NEAR);
-	if(!result)
+	result = renderTexture->Initialize(direct3D->GetDevice(), SHADOWMAP_WIDTH, SHADOWMAP_HEIGHT, SCREEN_DEPTH, SCREEN_NEAR, direct3D->GetCurrentSampleCount(), direct3D->GetCurrentQualityLevel());
+	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the render to texture object.", L"Error", MB_OK);
 		return false;
 	}
-	
+
 	renderTexture2 = new RenderTextureClass();
 	if (!renderTexture2)
 	{
 		return false;
 	}
 
-	result = renderTexture2->Initialize(direct3D->GetDevice(), SHADOWMAP_WIDTH, SHADOWMAP_HEIGHT, SCREEN_DEPTH, SCREEN_NEAR);
-	if(!result)
+	result = renderTexture2->Initialize(direct3D->GetDevice(), SHADOWMAP_WIDTH, SHADOWMAP_HEIGHT, SCREEN_DEPTH, SCREEN_NEAR, direct3D->GetCurrentSampleCount(), direct3D->GetCurrentQualityLevel());
+	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the render to texture object.", L"Error", MB_OK);
 		return false;
 	}
 
 	depthShader = new DepthShaderClass();
-	if(!depthShader)
+	if (!depthShader)
 	{
 		return false;
 	}
 
 	result = depthShader->Initialize(direct3D->GetDevice(), hwnd);
-	if(!result)
+	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize the depth shader object.", L"Error", MB_OK);
 		return false;
@@ -160,13 +165,13 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	//Set up shader
 	shader = new ShaderClass();
-	if(!shader)
+	if (!shader)
 	{
 		return false;
 	}
 
 	result = shader->Initialize(direct3D->GetDevice(), hwnd);
-	if(!result)
+	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize shader object", L"Error", MB_OK);
 		return false;
@@ -177,8 +182,12 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	m_spriteBatch.reset(new SpriteBatch(direct3D->GetDeviceContext()));
 
-	m_fontPos.x = 1600 / 2.f;
-	m_fontPos.y = 800 / 2.f;
+	fpsPos.x = screenWidth / 80.0f;
+	fpsPos.y = screenHeight / 80.0f + 10;
+	scPos.x = screenWidth / 80.0f;
+	scPos.y = screenHeight / 80.0f + 50;
+	qlPos.x = screenWidth / 80.0f;
+	qlPos.y = screenHeight / 80.0f + 90;
 
 	return true;
 }
@@ -204,7 +213,7 @@ void GraphicsClass::Shutdown()
 		delete light;
 		light = nullptr;
 	}
-	
+
 	if (renderTexture2)
 	{
 		renderTexture2->Shutdown();
@@ -220,27 +229,27 @@ void GraphicsClass::Shutdown()
 
 	ShutdownModels();
 
-	if(timer)
+	if (timer)
 	{
 		delete timer;
 		timer = nullptr;
 	}
 
-	if(shader)
+	if (shader)
 	{
 		shader->Shutdown();
 		delete shader;
 		shader = nullptr;
 	}
 
-	if(camera)
+	if (camera)
 	{
 		camera->Shutdown();
 		delete camera;
 		camera = nullptr;
 	}
 
-	if(direct3D)
+	if (direct3D)
 	{
 		direct3D->Shutdown();
 		delete direct3D;
@@ -252,15 +261,24 @@ bool GraphicsClass::Frame(InputClass* input)
 {
 	bool result;
 	static float counter = -5.0f;
+	static float totaltime = 0.0f;
 	timer->Frame();
 
 	float deltaTime = timer->GetFrameTime();
+	totaltime += deltaTime;
 
-	CheckWireframe(input);
-	
+	if(totaltime > 1000)
+	{
+		fps = 1000.0 / deltaTime;
+		totaltime = 0.0f;
+	}
+
+	CheckWireframe(input); 
+	CheckMSKeys(input);
+
 	//Lightmovement
 	counter += deltaTime * 0.03f;
-	if(counter > 100.0f)
+	if (counter > 100.0f)
 	{
 		counter = -100.0f;
 	}
@@ -269,7 +287,7 @@ bool GraphicsClass::Frame(InputClass* input)
 
 
 	result = Render(counter, input);
-	if(!result)
+	if (!result)
 	{
 		return false;
 	}
@@ -293,11 +311,11 @@ bool GraphicsClass::RenderSceneToTexture()
 	light->GetViewMatrix(lightViewMatrix);
 	light->GetProjectionMatrix(lightProjectionMatrix);
 
-	for(auto i : models)
+	for (auto i : models)
 	{
 		i->Render(direct3D->GetDeviceContext());
 		result = depthShader->Render(direct3D->GetDeviceContext(), i->GetIndexCount(), i->GetInstanceCount(), i->worldMatrix, lightViewMatrix, lightProjectionMatrix);
-		if(!result)
+		if (!result)
 		{
 			return false;
 		}
@@ -325,11 +343,11 @@ bool GraphicsClass::RenderSceneToTexture2()
 	light2->GetViewMatrix(lightViewMatrix);
 	light2->GetProjectionMatrix(lightProjectionMatrix);
 
-	for(auto i : models)
+	for (auto i : models)
 	{
 		i->Render(direct3D->GetDeviceContext());
 		result = depthShader->Render(direct3D->GetDeviceContext(), i->GetIndexCount(), i->GetInstanceCount(), i->worldMatrix, lightViewMatrix, lightProjectionMatrix);
-		if(!result)
+		if (!result)
 		{
 			return false;
 		}
@@ -343,8 +361,6 @@ bool GraphicsClass::RenderSceneToTexture2()
 
 bool GraphicsClass::Render(float rotation, InputClass* input)
 {
-
-
 	XMMATRIX viewMatrix, projectionMatrix, translateMatrix;
 	XMMATRIX lightViewMatrix, lightProjectionMatrix;
 	XMMATRIX lightViewMatrix2, lightProjectionMatrix2;
@@ -352,14 +368,14 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 
 	//Render scene to texture
 	result = RenderSceneToTexture();
-	if(!result)
+	if (!result)
 	{
 		return false;
 	}
 
 	//Render scene to texture 2
 	result = RenderSceneToTexture2();
-	if(!result)
+	if (!result)
 	{
 		return false;
 	}
@@ -386,13 +402,13 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 	light2->GetProjectionMatrix(lightProjectionMatrix2);
 
 	//Put model vertex and index buffer on pipeline
-	for(ModelClass* model : models)
+	for (ModelClass* model : models)
 	{
 		model->Render(direct3D->GetDeviceContext());
 
 		//Render using shader
-		result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), model->GetInstanceCount(), model->worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTextureViewArray(), renderTexture->GetShaderResourceView(), light->GetPosition(), light->GetAmbientColor(), light->GetDiffuseColor(),lightViewMatrix2, lightProjectionMatrix2,renderTexture2->GetShaderResourceView(), light2->GetPosition(), light2->GetDiffuseColor(), bumpiness);
-		if(!result)
+		result = shader->Render(direct3D->GetDeviceContext(), model->GetIndexCount(), model->GetInstanceCount(), model->worldMatrix, viewMatrix, projectionMatrix, lightViewMatrix, lightProjectionMatrix, model->GetTextureViewArray(), renderTexture->GetShaderResourceView(), light->GetPosition(), light->GetAmbientColor(), light->GetDiffuseColor(), lightViewMatrix2, lightProjectionMatrix2, renderTexture2->GetShaderResourceView(), light2->GetPosition(), light2->GetDiffuseColor(), bumpiness);
+		if (!result)
 		{
 			return false;
 		}
@@ -419,12 +435,9 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 	direct3D->GetDeviceContext()->RSGetState(&rsstate);
 	m_spriteBatch->Begin(SpriteSortMode_Deferred, nullptr, nullptr, depthstate, rsstate);
 
-	const wchar_t* output = L"Hello World";
-
-	DirectX::SimpleMath::Vector2 origin = m_font->MeasureString(output) / 2.f;
-
-	m_font->DrawString(m_spriteBatch.get(), output,
-		m_fontPos, Colors::White, 0.f, origin);
+	RenderText("FPS: " + std::to_string(static_cast<int>(fps)), fpsPos);
+	RenderText("SampleCount: " + std::to_string(direct3D->GetCurrentSampleCount()) + " of " + std::to_string(direct3D->GetMaxSampleCount()), scPos);
+	RenderText("QualityLevel: " + std::to_string(direct3D->GetCurrentQualityLevel()) + " of " + std::to_string(direct3D->GetMaxQualityLevels()), qlPos);
 
 	m_spriteBatch->End();
 
@@ -440,15 +453,16 @@ void GraphicsClass::CheckWireframe(InputClass* input)
 	unsigned int ykey = 0x59;
 	unsigned int zkey = 0x5A;
 
-	if(!wireframeMode & !wireframeKeyToggle)
+	if (!wireframeMode & !wireframeKeyToggle)
 	{
-		if(input->IsKeyDown(zkey))
+		if (input->IsKeyDown(zkey))
 		{
 			wireframeMode = true;
 			wireframeKeyToggle = true;
 			ChangeFillmode(D3D11_FILL_WIREFRAME);
-		}	
-	} else
+		}
+	}
+	else
 	{
 		if (input->IsKeyDown(zkey))
 		{
@@ -457,34 +471,66 @@ void GraphicsClass::CheckWireframe(InputClass* input)
 			ChangeFillmode(D3D11_FILL_SOLID);
 		}
 	}
-	
-	if(input->IsKeyUp(zkey))
+
+	if (input->IsKeyUp(zkey))
 	{
 		wireframeKeyToggle = false;
 	}
 
-	if(!bumpinessKeyToggle)
+	if (!bumpinessKeyToggle)
 	{
-		if(input->IsKeyDown(ykey))
+		if (input->IsKeyDown(ykey))
 		{
-			if(bumpiness < 10)
+			if (bumpiness < 10)
 			{
 				bumpiness += 1;
 			}
 			bumpinessKeyToggle = true;
-		} else if(input->IsKeyDown(xkey))
+		}
+		else if (input->IsKeyDown(xkey))
 		{
-			if(bumpiness > 0)
+			if (bumpiness > 0)
 			{
 				bumpiness -= 1;
 			}
 			bumpinessKeyToggle = true;
 		}
-	} 
-	
-	if(input->IsKeyUp(ykey) && input->IsKeyUp(xkey))
+	}
+
+	if (input->IsKeyUp(ykey) && input->IsKeyUp(xkey))
 	{
 		bumpinessKeyToggle = false;
+	}
+}
+
+void GraphicsClass::CheckMSKeys(InputClass* input)
+{
+	unsigned int mkey = 0x4D;
+	unsigned int commakey = VK_OEM_COMMA;
+	unsigned int periodkey = VK_OEM_PERIOD;
+
+	if (!msmodetoggle)
+	{
+		if (input->IsKeyDown(commakey))
+		{
+			direct3D->IncreaseSampleCount();
+			msmodetoggle = true;
+		}
+		if (input->IsKeyDown(periodkey))
+		{
+			direct3D->IncreaseQualityLevel();
+			msmodetoggle = true;
+		}
+		if (input->IsKeyDown(mkey))
+		{
+			direct3D->ChangeMultiSampleMode(direct3D->GetCurrentSampleCount(), direct3D->GetCurrentQualityLevel());
+			msmodetoggle = true;
+		}
+	}
+
+	if (input->IsKeyUp(mkey) && input->IsKeyUp(periodkey) && input->IsKeyUp(commakey))
+	{
+		msmodetoggle = false;
 	}
 }
 
@@ -532,6 +578,7 @@ void GraphicsClass::ChangeFillmode(D3D11_FILL_MODE fillmode)
 	rasterState = nullptr;
 }
 
+
 ModelClass* GraphicsClass::InitializeModel(HWND hwnd, char* modelFilename, WCHAR* textureFilename1, WCHAR* textureFilename2, XMFLOAT3 position, float scale)
 {
 	bool result;
@@ -559,12 +606,35 @@ ModelClass* GraphicsClass::InitializeModel(HWND hwnd, char* modelFilename, WCHAR
 
 void GraphicsClass::ShutdownModels()
 {
-	for(ModelClass* model : models)
+	for (ModelClass* model : models)
 	{
 		model->Shutdown();
 		delete model;
 	}
 
 	models.clear();
+}
 
+void GraphicsClass::RenderText(string texttorender, Vector2 screenPos)
+{
+	wstring test(texttorender.begin(), texttorender.end());
+	const wchar_t* output = test.c_str();
+
+	//Vector2 origin = m_font->MeasureString(output) / 2.f;
+	Vector2 origin = Vector2::Zero;
+
+	m_font->DrawString(m_spriteBatch.get(), output,
+		screenPos, Colors::White, 0.f, origin);
+}
+
+void GraphicsClass::RenderText(int inttorender, Vector2 screenPos)
+{
+	wstring test = std::to_wstring(inttorender);
+	const wchar_t* output = test.c_str();
+
+	//Vector2 origin = m_font->MeasureString(output) / 2.f;
+	Vector2 origin = Vector2::Zero;
+
+	m_font->DrawString(m_spriteBatch.get(), output,
+		screenPos, Colors::White, 0.f, origin);
 }

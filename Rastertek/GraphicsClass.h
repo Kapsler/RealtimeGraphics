@@ -35,10 +35,13 @@ private:
 	bool RenderSceneToTexture2();
 	bool Render(float, InputClass*);
 	void CheckWireframe(InputClass*);
+	void CheckMSKeys(InputClass*);
 	void SetLightDirection(InputClass*);
 	void ChangeFillmode(D3D11_FILL_MODE);
 	ModelClass* InitializeModel(HWND, char*, WCHAR*, WCHAR*, XMFLOAT3, float);
 	void ShutdownModels();
+	void RenderText(string texttorender, Vector2 screenPos);
+	void RenderText(int inttorender, Vector2 screenPos);
 
 	D3DClass* direct3D;
 	CameraClass* camera;
@@ -50,10 +53,12 @@ private:
 	RenderTextureClass* renderTexture, *renderTexture2;
 	DepthShaderClass* depthShader;
 
-	bool wireframeMode, wireframeKeyToggle, bumpinessKeyToggle;
+	bool wireframeMode, wireframeKeyToggle, bumpinessKeyToggle, msmodetoggle;
 	float bumpiness;
+	int currentScreenWidth, currentScreenHeight;
+	float fps;
 
 	unique_ptr<DirectX::SpriteFont> m_font;
-	DirectX::SimpleMath::Vector2 m_fontPos;
+	DirectX::SimpleMath::Vector2 fpsPos, scPos, qlPos;
 	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
 };
