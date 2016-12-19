@@ -1,4 +1,7 @@
 #include "GraphicsClass.h"
+#include <memory>
+#include <SpriteFont.h>
+#include <SimpleMath.inl>
 
 GraphicsClass::GraphicsClass()
 {
@@ -11,7 +14,7 @@ GraphicsClass::GraphicsClass()
 	renderTexture2 = nullptr;
 	timer = nullptr;
 	depthShader = nullptr; 
-	bumpiness = 0;
+	bumpiness = 1;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass&)
@@ -168,6 +171,14 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		MessageBox(hwnd, L"Could not initialize shader object", L"Error", MB_OK);
 		return false;
 	}
+
+	//Text
+	m_font.reset(new SpriteFont(direct3D->GetDevice(), L"./Model/myfile.spritefont"));
+
+	m_spriteBatch.reset(new SpriteBatch(direct3D->GetDeviceContext()));
+
+	m_fontPos.x = 1600 / 2.f;
+	m_fontPos.y = 800 / 2.f;
 
 	return true;
 }
@@ -332,6 +343,8 @@ bool GraphicsClass::RenderSceneToTexture2()
 
 bool GraphicsClass::Render(float rotation, InputClass* input)
 {
+
+
 	XMMATRIX viewMatrix, projectionMatrix, translateMatrix;
 	XMMATRIX lightViewMatrix, lightProjectionMatrix;
 	XMMATRIX lightViewMatrix2, lightProjectionMatrix2;
@@ -397,6 +410,23 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 	//		return false;
 	//	}
 	//}
+
+
+	//Text
+	ID3D11DepthStencilState* depthstate;
+	ID3D11RasterizerState* rsstate;
+	direct3D->GetDeviceContext()->OMGetDepthStencilState(&depthstate, nullptr);
+	direct3D->GetDeviceContext()->RSGetState(&rsstate);
+	m_spriteBatch->Begin(SpriteSortMode_Deferred, nullptr, nullptr, depthstate, rsstate);
+
+	const wchar_t* output = L"Hello World";
+
+	DirectX::SimpleMath::Vector2 origin = m_font->MeasureString(output) / 2.f;
+
+	m_font->DrawString(m_spriteBatch.get(), output,
+		m_fontPos, Colors::White, 0.f, origin);
+
+	m_spriteBatch->End();
 
 	//Output Buffer
 	direct3D->EndScene();

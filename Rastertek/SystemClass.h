@@ -16,7 +16,7 @@ public:
 
 	bool Initialize();
 	void Shutdown();
-	void Run();
+	int Run();
 
 	LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
 
@@ -24,6 +24,8 @@ private:
 	bool Frame();
 	void InitializeWindows(int&, int&);
 	void ShutdownWindows();
+	int checkInput();
+
 
 	LPCWSTR applicationName;
 	HINSTANCE hinstance;

@@ -75,7 +75,7 @@ void SystemClass::Shutdown()
 	ShutdownWindows();
 }
 
-void SystemClass::Run()
+int SystemClass::Run()
 {
 	MSG msg;
 	bool done, result;
@@ -93,6 +93,12 @@ void SystemClass::Run()
 			DispatchMessage(&msg);
 		}
 
+		int abort = checkInput();
+		if(abort != 0)
+		{
+			return abort;
+		}
+
 		//If exit signal
 		if (msg.message == WM_QUIT)
 		{
@@ -106,6 +112,8 @@ void SystemClass::Run()
 			}
 		}
 	}
+
+	return -1;
 }
 
 LRESULT SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM lparam)
@@ -138,12 +146,6 @@ LRESULT SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wparam, LPARAM 
 bool SystemClass::Frame()
 {
 	bool result;
-
-	//Check if escape is pressed
-	if(input->IsKeyDown(VK_ESCAPE))
-	{
-		return false;
-	}
 
 	//Do the frame processing for graphics
 	result = graphics->Frame(input);
@@ -248,6 +250,30 @@ void SystemClass::ShutdownWindows()
 	hinstance = nullptr;
 
 	ApplicationHandle = nullptr;
+}
+
+int SystemClass::checkInput()
+{
+
+	unsigned int okey = 0x4F;
+	unsigned int pkey = 0x50;
+
+	if(input->IsKeyDown(okey))
+	{
+		return 1;
+	}
+	if(input->IsKeyDown(pkey))
+	{
+		return 1;
+	}
+
+	//Check if escape is pressed
+	if (input->IsKeyDown(VK_ESCAPE))
+	{
+		return -1;
+	}
+	
+	return 0;
 }
 
 LRESULT WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam)

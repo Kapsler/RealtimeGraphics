@@ -27,17 +27,33 @@ bool RenderTextureClass::Initialize(ID3D11Device* device, int textureWidth, int 
 
 	ZeroMemory(&textureDesc, sizeof(textureDesc));
 
+
 	//Setup Render target texture desc
 	textureDesc.Width = textureWidth;
 	textureDesc.Height = textureHeight;
 	textureDesc.MipLevels = 1;
 	textureDesc.ArraySize = 1;
 	textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	textureDesc.SampleDesc.Count = 1;
 	textureDesc.Usage = D3D11_USAGE_DEFAULT;
 	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
 	textureDesc.CPUAccessFlags = 0;
 	textureDesc.MiscFlags = 0;
+
+
+	//Multisample
+	int sampleCount = 4;
+	UINT qualityLevels = 0;
+	device->CheckMultisampleQualityLevels(DXGI_FORMAT_D24_UNORM_S8_UINT, sampleCount, &qualityLevels);
+
+	if(qualityLevels > 0)
+	{
+		textureDesc.SampleDesc.Count = sampleCount;
+		textureDesc.SampleDesc.Quality = qualityLevels-1;
+	} else
+	{
+		textureDesc.SampleDesc.Count = 1;
+		textureDesc.SampleDesc.Quality = 0;
+	}
 
 	// Create the render target texture.
 	result = device->CreateTexture2D(&textureDesc, nullptr, &renderTargetTexture);
@@ -47,7 +63,7 @@ bool RenderTextureClass::Initialize(ID3D11Device* device, int textureWidth, int 
 	}
 
 	renderTargetViewDesc.Format = textureDesc.Format;
-	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
 	renderTargetViewDesc.Texture2D.MipSlice = 0;
 
 	// Create the render target view.
@@ -59,7 +75,7 @@ bool RenderTextureClass::Initialize(ID3D11Device* device, int textureWidth, int 
 
 	// Setup the description of the shader resource view.
 	shaderResourceViewDesc.Format = textureDesc.Format;
-	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
 
@@ -79,12 +95,22 @@ bool RenderTextureClass::Initialize(ID3D11Device* device, int textureWidth, int 
 	depthBufferDesc.MipLevels = 1;
 	depthBufferDesc.ArraySize = 1;
 	depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthBufferDesc.SampleDesc.Count = 1;
-	depthBufferDesc.SampleDesc.Quality = 0;
 	depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
 	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	depthBufferDesc.CPUAccessFlags = 0;
 	depthBufferDesc.MiscFlags = 0;
+
+	//Multisample
+	if (qualityLevels > 0)
+	{
+		depthBufferDesc.SampleDesc.Count = sampleCount;
+		depthBufferDesc.SampleDesc.Quality = qualityLevels-1;
+	}
+	else
+	{
+		depthBufferDesc.SampleDesc.Count = 1;
+		depthBufferDesc.SampleDesc.Quality = 0;
+	}
 
 	// Create the texture for the depth buffer using the filled out description.
 	result = device->CreateTexture2D(&depthBufferDesc, nullptr, &m_depthStencilBuffer);
@@ -98,7 +124,7 @@ bool RenderTextureClass::Initialize(ID3D11Device* device, int textureWidth, int 
 
 	// Set up the depth stencil view description.
 	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
 	depthStencilViewDesc.Texture2D.MipSlice = 0;
 
 	// Create the depth stencil view.

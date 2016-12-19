@@ -14,9 +14,21 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hPrevInstance, PSTR pScmdline,
 
 	//Initialize System
 	result = System->Initialize();
-	if(result)
+	while(result == true)
 	{
-		System->Run();
+		int newmode = System->Run();
+
+		if (newmode == -1)
+		{
+			result = false;
+		}
+		if(newmode == 1)
+		{
+			System->Shutdown();
+			System = new SystemClass();
+			result = System->Initialize();
+			newmode = 0;
+		}
 	}
 
 	//Shutdown and release

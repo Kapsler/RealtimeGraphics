@@ -1,4 +1,5 @@
 #include "D3DClass.h"
+#include <iostream>
 
 D3DClass::D3DClass()
 {
@@ -26,7 +27,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	IDXGIFactory* factory;
 	IDXGIAdapter* adapter;
 	IDXGIOutput* adapterOutput;
-	unsigned int numModes, numerator, denominator;
+	unsigned int numModes, numerator = 0, denominator = 1;
 	unsigned long long stringLength;
 	DXGI_MODE_DESC* displayModeList;
 	DXGI_ADAPTER_DESC adapterDescription;
@@ -123,6 +124,15 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	factory->Release();
 	factory = nullptr;
 
+	//Set feature level
+	featureLevel = D3D_FEATURE_LEVEL_11_0;
+
+	result = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr, D3D11_CREATE_DEVICE_DEBUG, &featureLevel, 1, D3D11_SDK_VERSION, &device, nullptr, &deviceContext);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
 	//Swap Chain (Front and Back buffer)
 	ZeroMemory(&swapChainDescription, sizeof(swapChainDescription));
 	
@@ -148,9 +158,22 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 
 	swapChainDescription.OutputWindow = hwnd;
 
-	//Multisample off
-	swapChainDescription.SampleDesc.Count = 1;
-	swapChainDescription.SampleDesc.Quality = 0;
+	//Multisample
+	int sampleCount = 4;
+	UINT qualityLevels = 0;
+	device->CheckMultisampleQualityLevels(DXGI_FORMAT_D24_UNORM_S8_UINT, sampleCount, &qualityLevels);
+
+	if(qualityLevels > 0)
+	{
+		swapChainDescription.SampleDesc.Count = sampleCount;
+		swapChainDescription.SampleDesc.Quality = qualityLevels - 1;
+	} else
+	{
+		swapChainDescription.SampleDesc.Count = 1;
+		swapChainDescription.SampleDesc.Quality = 0;
+	}
+
+
 
 	//Fullscreen or window
 	if (fullscreen)
@@ -171,8 +194,6 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	//advanced flags off
 	swapChainDescription.Flags = 0;
 
-	//Set feature level
-	featureLevel = D3D_FEATURE_LEVEL_11_0;
 
 	//Create swap chain, direct3d device and direct3d device context
 	//Will fail if hardware not dx11 ready
@@ -210,12 +231,21 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	depthBufferDescription.MipLevels = 1;
 	depthBufferDescription.ArraySize = 1;
 	depthBufferDescription.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthBufferDescription.SampleDesc.Count = 1;
-	depthBufferDescription.SampleDesc.Quality = 0;
 	depthBufferDescription.Usage = D3D11_USAGE_DEFAULT;
 	depthBufferDescription.BindFlags = D3D11_BIND_DEPTH_STENCIL;
 	depthBufferDescription.CPUAccessFlags = 0;
 	depthBufferDescription.MiscFlags = 0;
+
+	//Multisample
+	if(qualityLevels > 0)
+	{
+		depthBufferDescription.SampleDesc.Count = sampleCount;
+		depthBufferDescription.SampleDesc.Quality = qualityLevels - 1;
+	} else
+	{
+		depthBufferDescription.SampleDesc.Count = 1;
+		depthBufferDescription.SampleDesc.Quality = 0;
+	}
 
 	//Texture for depth buffer
 	result = device->CreateTexture2D(&depthBufferDescription, nullptr, &depthStencilBuffer);
@@ -263,7 +293,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 
 	//Set up depth stencil view desc
 	depthStencilViewDescription.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilViewDescription.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	depthStencilViewDescription.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
 	depthStencilViewDescription.Texture2D.MipSlice = 0;
 
 	result = device->CreateDepthStencilView(depthStencilBuffer, &depthStencilViewDescription, &depthStencilView);
@@ -276,14 +306,14 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hw
 	deviceContext->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
 
 	//Set up raster description, determines how polygons are drawn
-	rasterizerDescription.AntialiasedLineEnable = false;
+	rasterizerDescription.AntialiasedLineEnable = true;
 	rasterizerDescription.CullMode = D3D11_CULL_BACK;
 	rasterizerDescription.DepthBias = 0;
 	rasterizerDescription.DepthBiasClamp = 0.0f;
 	rasterizerDescription.DepthClipEnable = true;
 	rasterizerDescription.FillMode = D3D11_FILL_SOLID;
 	rasterizerDescription.FrontCounterClockwise = false;
-	rasterizerDescription.MultisampleEnable = false;
+	rasterizerDescription.MultisampleEnable = true;
 	rasterizerDescription.ScissorEnable = false;
 	rasterizerDescription.SlopeScaledDepthBias = 0.0f;
 

@@ -10,6 +10,7 @@
 #include "LightClass.h"
 #include "RenderTextureClass.h"
 #include "DepthShaderClass.h"
+#include "SpriteFont.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = true;
@@ -51,4 +52,8 @@ private:
 
 	bool wireframeMode, wireframeKeyToggle, bumpinessKeyToggle;
 	float bumpiness;
+
+	unique_ptr<DirectX::SpriteFont> m_font;
+	DirectX::SimpleMath::Vector2 m_fontPos;
+	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
 };
