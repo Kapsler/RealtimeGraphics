@@ -476,7 +476,7 @@ void D3DClass::FindMultiSampleModes()
 	int sampleCount;
 	UINT qualityLevels;
 
-	for(int i = 1; i <= 32; i++)
+	for(int i = 0; i <= D3D11_MAX_MULTISAMPLE_SAMPLE_COUNT; i++)
 	{
 		sampleCount = i;
 

@@ -41,8 +41,8 @@ bool RenderTextureClass::Initialize(ID3D11Device* device, int textureWidth, int 
 
 
 	//Multisample
-		textureDesc.SampleDesc.Count = sampleCount;
-		textureDesc.SampleDesc.Quality = qualityLevel;
+	textureDesc.SampleDesc.Count = sampleCount;
+	textureDesc.SampleDesc.Quality = qualityLevel;
 
 	// Create the render target texture.
 	result = device->CreateTexture2D(&textureDesc, nullptr, &renderTargetTexture);

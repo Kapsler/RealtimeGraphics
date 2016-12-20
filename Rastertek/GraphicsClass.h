@@ -13,7 +13,7 @@
 #include "SpriteFont.h"
 
 const bool FULL_SCREEN = false;
-const bool VSYNC_ENABLED = true;
+const bool VSYNC_ENABLED = false;
 const float SCREEN_DEPTH = 1000.0f;
 const float SCREEN_NEAR = 0.1f;
 const int SHADOWMAP_WIDTH = 2048;
@@ -30,9 +30,12 @@ public:
 	void Shutdown();
 	bool Frame(InputClass*);
 
+	bool GenerateScreenBuffer();
+
 private:
 	bool RenderSceneToTexture();
 	bool RenderSceneToTexture2();
+	bool SetScreenBuffer(float, float, float, float);
 	bool Render(float, InputClass*);
 	void CheckWireframe(InputClass*);
 	void CheckMSKeys(InputClass*);
@@ -61,4 +64,10 @@ private:
 	unique_ptr<DirectX::SpriteFont> m_font;
 	DirectX::SimpleMath::Vector2 fpsPos, scPos, qlPos;
 	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
+
+	ID3D11Texture2D* screenBuffer;
+	ID3D11RenderTargetView* screenTargetView;
+	ID3D11Texture2D* depthBuffer;
+	ID3D11DepthStencilView* depthTargetView;
+	
 };

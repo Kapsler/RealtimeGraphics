@@ -15,7 +15,11 @@ GraphicsClass::GraphicsClass()
 	renderTexture2 = nullptr;
 	timer = nullptr;
 	depthShader = nullptr;
-	bumpiness = 1;
+	bumpiness = 1;	
+	screenBuffer = nullptr;
+	screenTargetView = nullptr;
+	depthBuffer = nullptr;
+	depthTargetView = nullptr;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass&)
@@ -189,6 +193,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	qlPos.x = screenWidth / 80.0f;
 	qlPos.y = screenHeight / 80.0f + 90;
 
+	GenerateScreenBuffer();
+
 	return true;
 }
 
@@ -295,6 +301,117 @@ bool GraphicsClass::Frame(InputClass* input)
 	return true;
 }
 
+bool GraphicsClass::GenerateScreenBuffer()
+{
+	D3D11_TEXTURE2D_DESC textureDesc;
+	HRESULT result;
+	D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
+	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+	D3D11_TEXTURE2D_DESC depthBufferDesc;
+	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
+
+	if (screenBuffer)
+	{
+		screenBuffer->Release();
+		screenBuffer = nullptr;
+	}
+
+	if (screenTargetView)
+	{
+		screenTargetView->Release();
+		screenTargetView = nullptr;
+	}
+
+	if (depthBuffer)
+	{
+		depthBuffer->Release();
+		depthBuffer = nullptr;
+	}
+
+	if (depthTargetView)
+	{
+		depthTargetView->Release();
+		depthTargetView = nullptr;
+	}
+
+	ZeroMemory(&textureDesc, sizeof(textureDesc));
+
+	//Setup Render target texture desc
+	textureDesc.Width = currentScreenWidth;
+	textureDesc.Height = currentScreenHeight;
+	textureDesc.MipLevels = 1;
+	textureDesc.ArraySize = 1;
+	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+	textureDesc.CPUAccessFlags = 0;
+	textureDesc.MiscFlags = 0;
+
+	//Multisample
+	textureDesc.SampleDesc.Count = direct3D->GetCurrentSampleCount();
+	textureDesc.SampleDesc.Quality = direct3D->GetCurrentQualityLevel();
+
+	// Create the render target texture.
+	result = direct3D->GetDevice()->CreateTexture2D(&textureDesc, nullptr, &screenBuffer);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	renderTargetViewDesc.Format = textureDesc.Format;
+	renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
+	renderTargetViewDesc.Texture2D.MipSlice = 0;
+
+	// Create the render target view.
+	result = direct3D->GetDevice()->CreateRenderTargetView(screenBuffer, &renderTargetViewDesc, &screenTargetView);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	// Initialize the description of the depth buffer.
+	ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
+
+	// Set up the description of the depth buffer.
+	depthBufferDesc.Width = currentScreenWidth;
+	depthBufferDesc.Height = currentScreenHeight;
+	depthBufferDesc.MipLevels = 1;
+	depthBufferDesc.ArraySize = 1;
+	depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthBufferDesc.CPUAccessFlags = 0;
+	depthBufferDesc.MiscFlags = 0;
+
+	//Multisample
+	depthBufferDesc.SampleDesc.Count = direct3D->GetCurrentSampleCount();
+	depthBufferDesc.SampleDesc.Quality = direct3D->GetCurrentQualityLevel();
+
+	// Create the texture for the depth buffer using the filled out description.
+	result = direct3D->GetDevice()->CreateTexture2D(&depthBufferDesc, nullptr, &depthBuffer);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	// Initailze the depth stencil view description.
+	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
+
+	// Set up the depth stencil view description.
+	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
+	depthStencilViewDesc.Texture2D.MipSlice = 0;
+
+	// Create the depth stencil view.
+	result = direct3D->GetDevice()->CreateDepthStencilView(depthBuffer, &depthStencilViewDesc, &depthTargetView);
+	if (FAILED(result))
+	{
+		return false;
+	}
+
+	return true;
+}
+
 bool GraphicsClass::RenderSceneToTexture()
 {
 	XMMATRIX lightViewMatrix, lightProjectionMatrix;
@@ -359,6 +476,31 @@ bool GraphicsClass::RenderSceneToTexture2()
 	return true;
 }
 
+bool GraphicsClass::SetScreenBuffer(float red, float green, float blue, float alpha)
+{
+	XMMATRIX lightViewMatrix, lightProjectionMatrix;
+	bool result;
+
+	//Set texture as render target
+	renderTexture->SetRenderTarget(direct3D->GetDeviceContext());
+	direct3D->GetDeviceContext()->OMSetRenderTargets(1, &screenTargetView, depthTargetView);
+	direct3D->GetDeviceContext()->RSSetViewports(1, &direct3D->viewport);
+
+	//Clear rendertexture
+	float color[4];
+
+	color[0] = red;
+	color[1] = green;
+	color[2] = blue;
+	color[3] = alpha;
+
+	direct3D->GetDeviceContext()->ClearRenderTargetView(screenTargetView, color);
+
+	direct3D->GetDeviceContext()->ClearDepthStencilView(depthTargetView, D3D11_CLEAR_DEPTH, 1.0f, 0);
+
+	return true;
+}
+
 bool GraphicsClass::Render(float rotation, InputClass* input)
 {
 	XMMATRIX viewMatrix, projectionMatrix, translateMatrix;
@@ -380,8 +522,10 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 		return false;
 	}
 
+
 	//clear Buffer at beginning
-	direct3D->BeginScene(0.2f, 0.5f, 0.5f, 0.0f);
+	SetScreenBuffer(0.2f, 0.5f, 0.5f, 0.0f);
+	//direct3D->BeginScene(0.2f, 0.5f, 0.5f, 0.0f);
 
 	//Generate view matrix based on camera
 	camera->DoMovement(input);
@@ -440,6 +584,10 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 	RenderText("QualityLevel: " + std::to_string(direct3D->GetCurrentQualityLevel()) + " of " + std::to_string(direct3D->GetMaxQualityLevels()), qlPos);
 
 	m_spriteBatch->End();
+
+	ID3D11Texture2D* backBuffer;
+	direct3D->swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBuffer);
+	direct3D->GetDeviceContext()->ResolveSubresource(backBuffer, 0, screenBuffer, 0, DXGI_FORMAT_R8G8B8A8_UNORM);
 
 	//Output Buffer
 	direct3D->EndScene();
@@ -523,7 +671,7 @@ void GraphicsClass::CheckMSKeys(InputClass* input)
 		}
 		if (input->IsKeyDown(mkey))
 		{
-			direct3D->ChangeMultiSampleMode(direct3D->GetCurrentSampleCount(), direct3D->GetCurrentQualityLevel());
+			GenerateScreenBuffer();
 			msmodetoggle = true;
 		}
 	}

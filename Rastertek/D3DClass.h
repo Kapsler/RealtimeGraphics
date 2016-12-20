@@ -44,11 +44,12 @@ public:
 	int GetMaxSampleCount();
 	int GetMaxQualityLevels();
 
+	D3D11_VIEWPORT viewport;
+	IDXGISwapChain* swapChain;
 private:
 	bool vsync_enabled;
 	int videoCardMemory;
 	char videoCardDescription[128];
-	IDXGISwapChain* swapChain;
 	ID3D11Device* device;
 	ID3D11DeviceContext* deviceContext;
 	ID3D11RenderTargetView* renderTargetView;
@@ -59,7 +60,6 @@ private:
 	XMMATRIX projectionMatrix;
 	XMMATRIX worldMatrix;
 	XMMATRIX orthoMatrix;
-	D3D11_VIEWPORT viewport;
 
 	std::vector<int> sampleCountModes;
 	std::unordered_multimap<int, UINT> maxQualityLevels;
