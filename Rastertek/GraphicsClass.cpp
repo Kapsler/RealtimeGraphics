@@ -84,7 +84,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(30, 0.0f, 50.0f), 4.0f));
 	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(20.0f, 0.0f, 150.0f), 4.0f));
 	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/crate.dds", L"./Model/cratebump.dds", XMFLOAT3(-20.0f, 0.0f, 150.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/soccertex.dds", L"./Model/soccernormal.dds", XMFLOAT3(-10, 0.0f, 250.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-10, 0.0f, 250.0f), 4.0f));
 	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(10, 0.0f, 250.0f), 4.0f));
 
 	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(0.0f, -10.0f, 0.0f), 100.0f));

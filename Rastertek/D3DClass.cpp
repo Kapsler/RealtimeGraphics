@@ -466,8 +466,6 @@ void D3DClass::ResetViewport()
 
 void D3DClass::ChangeMultiSampleMode(int newsamplecount, int newqualitylevel)
 {
-	currentSampleIndex = newsamplecount;
-	currentQuality = newqualitylevel;
 	std::cout << newsamplecount << newqualitylevel << std::endl;
 }
 
