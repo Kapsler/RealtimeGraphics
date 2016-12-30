@@ -432,7 +432,7 @@ void CameraClass::calculateTrack()
 
 	std::vector<ControlPoint*> newPointsVector;
 
-	int numberOfPoints = trackingPoints.size();
+	int numberOfPoints = static_cast<int>(trackingPoints.size());
 
 	if(numberOfPoints > 1)
 	{
