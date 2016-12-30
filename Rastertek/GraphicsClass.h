@@ -13,7 +13,7 @@
 #include "SpriteFont.h"
 
 const bool FULL_SCREEN = false;
-const bool VSYNC_ENABLED = false;
+const bool VSYNC_ENABLED = true;
 const float SCREEN_DEPTH = 1000.0f;
 const float SCREEN_NEAR = 0.1f;
 const int SHADOWMAP_WIDTH = 2048;
@@ -43,8 +43,8 @@ private:
 	void ChangeFillmode(D3D11_FILL_MODE);
 	ModelClass* InitializeModel(HWND, char*, WCHAR*, WCHAR*, XMFLOAT3, float);
 	void ShutdownModels();
-	void RenderText(string texttorender, Vector2 screenPos);
-	void RenderText(int inttorender, Vector2 screenPos);
+	void RenderText(string texttorender, Vector2 screenPos, bool centerOrigin);
+	void RenderText(int inttorender, Vector2 screenPos, bool centerOrigin);
 
 	D3DClass* direct3D;
 	CameraClass* camera;

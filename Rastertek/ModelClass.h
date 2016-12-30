@@ -3,6 +3,7 @@
 #include "TextureClass.h"
 #include <DirectXMath.h>
 #include <fstream>
+#include "ModelType.h"
 using namespace std;
 
 class ModelClass
@@ -41,15 +42,6 @@ private:
 	{
 		XMFLOAT3 position;
 		float scale;
-	};
-
-	struct ModelType
-	{
-		float x, y, z;
-		float tu, tv;
-		float nx, ny, nz;
-		float tx, ty, tz;
-		float bx, by, bz;
 	};
 
 	struct TempVertexType

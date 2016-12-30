@@ -1,4 +1,6 @@
 #include "ModelClass.h"
+#include <iostream>
+#include "ModelLoader.h"
 
 ModelClass::ModelClass()
 {
@@ -21,21 +23,29 @@ bool ModelClass::Initialize(ID3D11Device* device, char* modelFilename, WCHAR* te
 {
 	bool result;
 
-	//Load Model
-	result = LoadModel(modelFilename);
+	////Load Model
+	//result = LoadModel(modelFilename);
+	//if(!result)
+	//{
+	//	return false;
+	//}
+
+	//CalculateModelVectors();
+
+	////Init vertex und index buffers
+	//result = InitializeBuffers(device);
+	//if(!result)
+	//{
+	//	return false;
+	//}
+
+	result = ModelLoader::getInstance().GetModel(modelFilename, device, &vertexBuffer, &indexBuffer, &instanceBuffer, &vertexCount, &indexCount, &instanceCount);
 	if(!result)
 	{
 		return false;
 	}
 
-	CalculateModelVectors();
-
-	//Init vertex und index buffers
-	result = InitializeBuffers(device);
-	if(!result)
-	{
-		return false;
-	}
+	worldMatrix = XMMatrixIdentity();
 
 	//Load Texture
 	result = LoadTextures(device, textureFilename1, textureFilename2);
@@ -51,9 +61,9 @@ void ModelClass::Shutdown()
 {
 	ReleaseTextures();
 
-	ShutdownBuffer();
+	//ShutdownBuffer();
 
-	ReleaseModel();
+	//ReleaseModel();
 }
 
 void ModelClass::Render(ID3D11DeviceContext* context)
@@ -321,6 +331,7 @@ bool ModelClass::LoadModel(char* filename)
 {
 	ifstream fin;
 	char input;
+
 
 	//open file
 	fin.open(filename);

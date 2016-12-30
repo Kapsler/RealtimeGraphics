@@ -1,6 +1,8 @@
 #include "Systemclass.h"
+#include <iostream>
+#include "ModelLoader.h"
 
-int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hPrevInstance, PSTR pScmdline, int iCmdshow)
+int main()
 {
 	SystemClass* System;
 	bool result;
@@ -23,6 +25,8 @@ int WINAPI WinMain(HINSTANCE hinstance, HINSTANCE hPrevInstance, PSTR pScmdline,
 	System->Shutdown();
 	delete System;
 	System = nullptr;
+
+	ModelLoader::getInstance().Release();
 
 	return 0;
 }

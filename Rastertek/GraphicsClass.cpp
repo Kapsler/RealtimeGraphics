@@ -579,9 +579,10 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 	direct3D->GetDeviceContext()->RSGetState(&rsstate);
 	m_spriteBatch->Begin(SpriteSortMode_Deferred, nullptr, nullptr, depthstate, rsstate);
 
-	RenderText("FPS: " + std::to_string(static_cast<int>(fps)), fpsPos);
-	RenderText("SampleCount: " + std::to_string(direct3D->GetCurrentSampleCount()) + " of " + std::to_string(direct3D->GetMaxSampleCount()), scPos);
-	RenderText("QualityLevel: " + std::to_string(direct3D->GetCurrentQualityLevel()) + " of " + std::to_string(direct3D->GetMaxQualityLevels()), qlPos);
+	RenderText(".", Vector2(currentScreenWidth / 2.0f, currentScreenHeight / 2.0f), true);
+	RenderText("FPS: " + std::to_string(static_cast<int>(fps)), fpsPos, false);
+	RenderText("SampleCount: " + std::to_string(direct3D->GetCurrentSampleCount()) + " of " + std::to_string(direct3D->GetMaxSampleCount()), scPos, false);
+	RenderText("QualityLevel: " + std::to_string(direct3D->GetCurrentQualityLevel()) + " of " + std::to_string(direct3D->GetMaxQualityLevels()), qlPos, false);
 
 	m_spriteBatch->End();
 
@@ -763,26 +764,41 @@ void GraphicsClass::ShutdownModels()
 	models.clear();
 }
 
-void GraphicsClass::RenderText(string texttorender, Vector2 screenPos)
+void GraphicsClass::RenderText(string texttorender, Vector2 screenPos, bool centerOrigin)
 {
 	wstring test(texttorender.begin(), texttorender.end());
 	const wchar_t* output = test.c_str();
+	Vector2 origin;
 
-	//Vector2 origin = m_font->MeasureString(output) / 2.f;
-	Vector2 origin = Vector2::Zero;
+	if(centerOrigin)
+	{
+		 origin = m_font->MeasureString(output) / 2.f;
+	} else
+	{
+		origin = Vector2::Zero;
+	}
 
 	m_font->DrawString(m_spriteBatch.get(), output,
-		screenPos, Colors::White, 0.f, origin);
+		screenPos, Colors::White, 0.f, origin, 0.5f);
 }
 
-void GraphicsClass::RenderText(int inttorender, Vector2 screenPos)
+void GraphicsClass::RenderText(int inttorender, Vector2 screenPos, bool centerOrigin)
 {
 	wstring test = std::to_wstring(inttorender);
 	const wchar_t* output = test.c_str();
 
-	//Vector2 origin = m_font->MeasureString(output) / 2.f;
-	Vector2 origin = Vector2::Zero;
+	Vector2 origin;
+
+	if (centerOrigin)
+	{
+		origin = m_font->MeasureString(output) / 2.f;
+	}
+	else
+	{
+		origin = Vector2::Zero;
+	}
 
 	m_font->DrawString(m_spriteBatch.get(), output,
-		screenPos, Colors::White, 0.f, origin);
+		screenPos, Colors::White, 0.f, origin, 0.5f);
+
 }
