@@ -383,16 +383,16 @@ ModelClass* CameraClass::InitializeTrackingPointModel(char* modelFilename, WCHAR
 		return nullptr;
 	}
 
-	result = model->Initialize(device, modelFilename, textureFilename1,textureFilename2);
+	model->worldMatrix *= XMMatrixRotationQuaternion(rot);
+	model->worldMatrix *= XMMatrixScaling(scale, scale, scale);
+	model->worldMatrix *= XMMatrixTranslation(pos.x, pos.y, pos.z);
+
+	result = model->Initialize(device, modelFilename, textureFilename1,textureFilename2, model->worldMatrix);
 	if (!result)
 	{
 		
 		std::cerr << "Error initializing model" << endl;
 	}
-
-	model->worldMatrix *= XMMatrixRotationQuaternion(rot);
-	model->worldMatrix *= XMMatrixScaling(scale, scale, scale);
-	model->worldMatrix *= XMMatrixTranslation(pos.x, pos.y, pos.z);
 
 	return model;
 }

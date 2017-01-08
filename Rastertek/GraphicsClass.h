@@ -11,6 +11,9 @@
 #include "RenderTextureClass.h"
 #include "DepthShaderClass.h"
 #include "SpriteFont.h"
+#include <VertexTypes.h>
+#include <Effects.h>
+#include <CommonStates.h>
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = true;
@@ -33,6 +36,7 @@ public:
 	bool GenerateScreenBuffer();
 
 private:
+	void SetupPrimitiveBatch();
 	bool RenderSceneToTexture();
 	bool RenderSceneToTexture2();
 	bool SetScreenBuffer(float, float, float, float);
@@ -69,5 +73,9 @@ private:
 	ID3D11RenderTargetView* screenTargetView;
 	ID3D11Texture2D* depthBuffer;
 	ID3D11DepthStencilView* depthTargetView;
+
+	PrimitiveBatch<VertexPositionColor>* primitiveBatch; 
+	BasicEffect* basicEffect;
+	ID3D11InputLayout* inputLayout;
 	
 };

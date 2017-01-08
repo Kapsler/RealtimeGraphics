@@ -1,4 +1,5 @@
 #include "ShaderClass.h"
+#include <SimpleMath.h>
 
 ShaderClass::ShaderClass()
 {
@@ -62,7 +63,7 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* verte
 	ID3DBlob* errorMessage;
 	ID3DBlob* vertexShaderBuffer;
 	ID3DBlob* pixelShaderBuffer;
-	D3D11_INPUT_ELEMENT_DESC polygonLayout[6];
+	D3D11_INPUT_ELEMENT_DESC polygonLayout[7];
 	unsigned int numElements;
 	D3D11_BUFFER_DESC matrixBufferDesc;
 	D3D11_BUFFER_DESC lightBufferDesc;
@@ -167,6 +168,14 @@ bool ShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd, WCHAR* verte
 	polygonLayout[5].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
 	polygonLayout[5].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 	polygonLayout[5].InstanceDataStepRate = 0;
+
+	polygonLayout[6].SemanticName = "COLOR";
+	polygonLayout[6].SemanticIndex = 0;
+	polygonLayout[6].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+	polygonLayout[6].InputSlot = 0;
+	polygonLayout[6].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+	polygonLayout[6].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+	polygonLayout[6].InstanceDataStepRate = 0;
 
 	numElements = sizeof(polygonLayout) / sizeof(polygonLayout[0]);
 
@@ -377,6 +386,7 @@ bool ShaderClass::SetShaderParameters(ID3D11DeviceContext* context, XMMATRIX wor
 	dataPtr->padding.x = 0.0f;
 	dataPtr->padding.y = 0.0f;
 	dataPtr->padding.z = 0.0f;
+	dataPtr->color = XMFLOAT4(Colors::White.f[0], Colors::White.f[1], Colors::White.f[2], Colors::White.f[3]);
 
 	context->Unmap(matrixBuffer, 0);
 	bufferNumber = 0;

@@ -4,6 +4,8 @@
 #include <DirectXMath.h>
 #include <fstream>
 #include "ModelType.h"
+#include "SimpleMath.h"
+
 using namespace std;
 
 class ModelClass
@@ -13,7 +15,7 @@ public:
 	ModelClass(const ModelClass&);
 	~ModelClass();
 
-	bool Initialize(ID3D11Device*, char*, WCHAR*, WCHAR*);
+	bool Initialize(ID3D11Device*, char*, WCHAR*, WCHAR*, const DirectX::SimpleMath::Matrix& worldMatrix);
 	void Shutdown();
 	void Render(ID3D11DeviceContext*);
 

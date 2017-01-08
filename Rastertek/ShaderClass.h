@@ -3,6 +3,7 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
+#include <DirectXColors.h>
 #include <fstream>
 using namespace DirectX;
 using namespace std;
@@ -43,6 +44,7 @@ private:
 		XMMATRIX lightProjection2;
 		float bumpiness;
 		XMFLOAT3 padding;
+		XMFLOAT4 color;
 	};
 
 

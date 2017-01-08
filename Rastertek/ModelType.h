@@ -1,4 +1,5 @@
 #pragma once
+#include "GameWorld.h"
 
 struct ModelType
 {
@@ -7,4 +8,5 @@ struct ModelType
 	float nx, ny, nz;
 	float tx, ty, tz;
 	float bx, by, bz;
+	GameWorld::Triangle triangle;
 };

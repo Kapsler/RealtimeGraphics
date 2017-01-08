@@ -19,7 +19,7 @@ ModelClass::~ModelClass()
 {
 }
 
-bool ModelClass::Initialize(ID3D11Device* device, char* modelFilename, WCHAR* textureFilename1, WCHAR* textureFilename2)
+bool ModelClass::Initialize(ID3D11Device* device, char* modelFilename, WCHAR* textureFilename1, WCHAR* textureFilename2, const SimpleMath::Matrix& otherWorldMatrix)
 {
 	bool result;
 
@@ -39,13 +39,13 @@ bool ModelClass::Initialize(ID3D11Device* device, char* modelFilename, WCHAR* te
 	//	return false;
 	//}
 
-	result = ModelLoader::getInstance().GetModel(modelFilename, device, &vertexBuffer, &indexBuffer, &instanceBuffer, &vertexCount, &indexCount, &instanceCount);
+	worldMatrix = otherWorldMatrix;
+
+	result = ModelLoader::getInstance().GetModel(modelFilename, device, &vertexBuffer, &indexBuffer, &instanceBuffer, &vertexCount, &indexCount, &instanceCount, otherWorldMatrix);
 	if(!result)
 	{
 		return false;
 	}
-
-	worldMatrix = XMMatrixIdentity();
 
 	//Load Texture
 	result = LoadTextures(device, textureFilename1, textureFilename2);
@@ -248,8 +248,6 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 	//release instance array
 	delete[] instances;
 	instances = nullptr;
-
-	worldMatrix = XMMatrixIdentity();
 
 	return true;
 }

@@ -3,6 +3,8 @@
 #include <SpriteFont.h>
 #include <SimpleMath.inl>
 #include <string>
+#include <iostream>
+#include "ModelLoader.h"
 
 GraphicsClass::GraphicsClass()
 {
@@ -24,6 +26,7 @@ GraphicsClass::GraphicsClass()
 
 GraphicsClass::GraphicsClass(const GraphicsClass&)
 {
+	
 }
 
 GraphicsClass::~GraphicsClass()
@@ -33,7 +36,7 @@ GraphicsClass::~GraphicsClass()
 bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 {
 	bool result;
-
+	
 	currentScreenWidth = screenWidth;
 	currentScreenHeight = screenHeight;
 	hwndptr = &hwnd;
@@ -82,8 +85,15 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	//HARDCODED - Setting up Models
 
-	models.push_back(InitializeModel(hwnd, "./Model/rungholt.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-40, 0.0f, 50.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-400, 0.0f, 500.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/rungholt.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-40, 0.0f, 50.0f), 4.0f));
+	/*models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-40, 0.0f, 50.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-400, 0.0f, 500.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-200, 0.0f, 200.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(200, 0.0f, -200.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(400, 0.0f, -400.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(0, 200.0f, 200.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-400, 0.0f, 400.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(0, -200.0f, -200.0f), 4.0f));*/
 
 	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-40, 0.0f, 50.0f), 4.0f));
 	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-50, 0.0f, 50.0f), 4.0f));
@@ -128,11 +138,11 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	////Scene
 	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-30, 0.0f, 50.0f), 4.0f));
 
-	//models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(30, 0.0f, 50.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Cube.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(30, 0.0f, 50.0f), 4.0f));
 	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(20.0f, 0.0f, 150.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/crate.dds", L"./Model/cratebump.dds", XMFLOAT3(-20.0f, 0.0f, 150.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Cube.obj", L"./Model/crate.dds", L"./Model/cratebump.dds", XMFLOAT3(-20.0f, 0.0f, 150.0f), 4.0f));
 	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-10, 0.0f, 250.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(10, 0.0f, 250.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Cube.obj", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(10, 0.0f, 250.0f), 4.0f));
 
 	//models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(0.0f, -10.0f, 0.0f), 100.0f));
 	//models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(0.0f, -10.0f, 200.0f), 100.0f));
@@ -143,6 +153,17 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	//models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(-200.0f, -10.0f, 0.0f), 100.0f));
 	//models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(-200.0f, -10.0f, 200.0f), 100.0f));
 	//models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(-200.0f, -10.0f, 400.0f), 100.0f));
+
+	//for(auto t : GameWorld::getInstance().triangles)
+	//{
+	//	std::cout << "Tri: " << std::endl;
+	//	std::cout << t.vertices[0].x << ", " << t.vertices[0].y << ", " << t.vertices[0].z << std::endl;
+	//	std::cout << t.vertices[1].x << ", " << t.vertices[1].y << ", " << t.vertices[1].z << std::endl;
+	//	std::cout << t.vertices[2].x << ", " << t.vertices[2].y << ", " << t.vertices[2].z << std::endl;
+	//	std::cout << std::endl;
+	//}
+
+	std::cout << GameWorld::getInstance().triangles.size() << endl;
 
 	//Lights
 	light = new LightClass();
@@ -237,6 +258,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	qlPos.y = screenHeight / 80.0f + 90;
 
 	GenerateScreenBuffer();
+
+	SetupPrimitiveBatch();
 
 	return true;
 }
@@ -454,6 +477,24 @@ bool GraphicsClass::GenerateScreenBuffer()
 	return true;
 }
 
+void GraphicsClass::SetupPrimitiveBatch()
+{
+	primitiveBatch = new PrimitiveBatch<VertexPositionColor>(direct3D->GetDeviceContext());
+
+	basicEffect = new BasicEffect(direct3D->GetDevice());
+	basicEffect->SetVertexColorEnabled(true);
+
+	void const* shaderByteCode;
+	size_t byteCodeLength;
+
+	basicEffect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
+
+	direct3D->GetDevice()->CreateInputLayout(VertexPositionColor::InputElements,
+		VertexPositionColor::InputElementCount,
+		shaderByteCode, byteCodeLength,
+		&inputLayout);
+}
+
 bool GraphicsClass::RenderSceneToTexture()
 {
 	XMMATRIX lightViewMatrix, lightProjectionMatrix;
@@ -549,19 +590,19 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 	XMMATRIX lightViewMatrix2, lightProjectionMatrix2;
 	bool result;
 
-	//Render scene to texture
-	result = RenderSceneToTexture();
-	if (!result)
-	{
-		return false;
-	}
+	////Render scene to texture
+	//result = RenderSceneToTexture();
+	//if (!result)
+	//{
+	//	return false;
+	//}
 
-	//Render scene to texture 2
-	result = RenderSceneToTexture2();
-	if (!result)
-	{
-		return false;
-	}
+	////Render scene to texture 2
+	//result = RenderSceneToTexture2();
+	//if (!result)
+	//{
+	//	return false;
+	//}
 
 
 	//clear Buffer at beginning
@@ -577,14 +618,15 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 	camera->GetViewMatrix(viewMatrix);
 	direct3D->GetProjectionMatrix(projectionMatrix);
 
-	//Lighting
-	light->GenerateViewMatrix();
-	light->GetViewMatrix(lightViewMatrix);
-	light->GetProjectionMatrix(lightProjectionMatrix);
-	//Lighting2
-	light2->GenerateViewMatrix();
-	light2->GetViewMatrix(lightViewMatrix2);
-	light2->GetProjectionMatrix(lightProjectionMatrix2);
+
+	////Lighting
+	//light->GenerateViewMatrix();
+	//light->GetViewMatrix(lightViewMatrix);
+	//light->GetProjectionMatrix(lightProjectionMatrix);
+	////Lighting2
+	//light2->GenerateViewMatrix();
+	//light2->GetViewMatrix(lightViewMatrix2);
+	//light2->GetProjectionMatrix(lightProjectionMatrix2);
 
 	//Put model vertex and index buffer on pipeline
 	for (ModelClass* model : models)
@@ -612,7 +654,6 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 	//	}
 	//}
 
-
 	//Text
 	ID3D11DepthStencilState* depthstate;
 	ID3D11RasterizerState* rsstate;
@@ -624,8 +665,28 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 	RenderText("FPS: " + std::to_string(static_cast<int>(fps)), fpsPos, false);
 	RenderText("SampleCount: " + std::to_string(direct3D->GetCurrentSampleCount()) + " of " + std::to_string(direct3D->GetMaxSampleCount()), scPos, false);
 	RenderText("QualityLevel: " + std::to_string(direct3D->GetCurrentQualityLevel()) + " of " + std::to_string(direct3D->GetMaxQualityLevels()), qlPos, false);
-
 	m_spriteBatch->End();
+
+
+	//Primitive Batch Begin
+	CommonStates states(direct3D->GetDevice());
+	direct3D->GetDeviceContext()->OMSetBlendState(states.Opaque(), nullptr, 0xFFFFFFFF);
+	direct3D->GetDeviceContext()->OMSetDepthStencilState(states.DepthNone(), 0);
+	direct3D->GetDeviceContext()->RSSetState(states.CullCounterClockwise());
+
+	basicEffect->SetWorld(XMMatrixIdentity());
+	basicEffect->SetView(viewMatrix);
+	basicEffect->SetProjection(projectionMatrix);
+	basicEffect->Apply(direct3D->GetDeviceContext());
+	direct3D->GetDeviceContext()->IASetInputLayout(inputLayout);
+
+	primitiveBatch->Begin();
+	primitiveBatch->DrawLine(VertexPositionColor(Vector3(100, 100, 100), Colors::Red), VertexPositionColor(Vector3(100, 100, 100), Colors::Red));
+	primitiveBatch->End();
+	//Primitive Batch End
+
+	direct3D->GetDeviceContext()->OMSetDepthStencilState(depthstate, 0);
+	direct3D->GetDeviceContext()->RSSetState(rsstate);
 
 	ID3D11Texture2D* backBuffer;
 	direct3D->swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBuffer);
@@ -781,15 +842,19 @@ ModelClass* GraphicsClass::InitializeModel(HWND hwnd, char* modelFilename, WCHAR
 		return nullptr;
 	}
 
-	result = model->Initialize(direct3D->GetDevice(), modelFilename, textureFilename1, textureFilename2);
+	model->worldMatrix = XMMatrixIdentity();
+	model->worldMatrix *= XMMatrixScaling(scale, scale, scale);
+	model->worldMatrix *= XMMatrixTranslation(position.x, position.y, position.z);
+
+	result = model->Initialize(direct3D->GetDevice(), modelFilename, textureFilename1, textureFilename2, model->worldMatrix);
 	if (!result)
 	{
 		MessageBox(hwnd, L"Could not initialize model", L"Error", MB_OK);
 		return nullptr;
 	}
 
-	model->worldMatrix *= XMMatrixScaling(scale, scale, scale);
-	model->worldMatrix *= XMMatrixTranslation(position.x, position.y, position.z);
+
+	ModelLoader::getInstance().GetTriangles(modelFilename);
 
 	return model;
 }

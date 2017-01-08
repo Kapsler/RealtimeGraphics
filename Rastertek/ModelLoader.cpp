@@ -1,6 +1,8 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "ModelLoader.h"
 #include <iostream>
+#include "GameWorld.h"
+#include <SimpleMath.h>
 
 ModelLoader& ModelLoader::getInstance()
 {
@@ -8,7 +10,7 @@ ModelLoader& ModelLoader::getInstance()
 	return instance;
 }
 
-bool ModelLoader::GetModel(char* filename, ID3D11Device* device, ID3D11Buffer** vertexBuffer, ID3D11Buffer** indexBuffer, ID3D11Buffer** instanceBuffer, int* vertexCount, int* indexCount, int* instanceCount)
+bool ModelLoader::GetModel(char* filename, ID3D11Device* device, ID3D11Buffer** vertexBuffer, ID3D11Buffer** indexBuffer, ID3D11Buffer** instanceBuffer, int* vertexCount, int* indexCount, int* instanceCount, const DirectX::SimpleMath::Matrix& worldMatrix)
 {
 	auto i = buffers.find(filename);
 
@@ -20,6 +22,15 @@ bool ModelLoader::GetModel(char* filename, ID3D11Device* device, ID3D11Buffer** 
 		*vertexCount = i->second->vertexCount;
 		*indexCount = i->second->indexCount;
 		*instanceCount = i->second->instanceCount;
+
+		for(const auto& t :triangles.at(filename))
+		{
+			GameWorld::Triangle tri;
+			tri.vertices[0] = static_cast<DirectX::XMFLOAT3>(DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3(t.vertices[0]), worldMatrix));
+			tri.vertices[1] = static_cast<DirectX::XMFLOAT3>(DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3(t.vertices[1]), worldMatrix));
+			tri.vertices[2] = static_cast<DirectX::XMFLOAT3>(DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3(t.vertices[2]), worldMatrix));
+			GameWorld::getInstance().AddTriangle(tri);
+		}
 		return true;
 	}
 
@@ -35,12 +46,26 @@ bool ModelLoader::GetModel(char* filename, ID3D11Device* device, ID3D11Buffer** 
 			*vertexCount = i->second->vertexCount;
 			*indexCount = i->second->indexCount;
 			*instanceCount = i->second->instanceCount;
+
+			for (const auto& t : triangles.at(filename))
+			{
+				GameWorld::Triangle tri;
+				tri.vertices[0] = static_cast<DirectX::XMFLOAT3>(DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3(t.vertices[0]), worldMatrix));
+				tri.vertices[1] = static_cast<DirectX::XMFLOAT3>(DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3(t.vertices[1]), worldMatrix));
+				tri.vertices[2] = static_cast<DirectX::XMFLOAT3>(DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3(t.vertices[2]), worldMatrix));
+				GameWorld::getInstance().AddTriangle(tri);
+			}
 			return true;
 		}
 	} 
 
 	std::cerr << "Couldn't Load Model!" << std::endl;
 	return false;
+}
+
+std::vector<GameWorld::Triangle> ModelLoader::GetTriangles(char* filename)
+{
+	return triangles.at(filename);
 }
 
 void ModelLoader::Release()
@@ -67,6 +92,7 @@ ModelLoader::~ModelLoader()
 
 bool ModelLoader::LoadModel(char* filename)
 {
+	std::vector<GameWorld::Triangle> tempTris;
 	std::ifstream fin;
 	char input;
 	std::vector<tinyobj::shape_t> shapes;
@@ -84,13 +110,20 @@ bool ModelLoader::LoadModel(char* filename)
 		std::cerr << "Error with Tiny Obj Loader" << std::endl;
 		exit(1);
 	}
+	
+	unsigned long long allTriangles = 0;
 
 	//Loop shapes
 	for (size_t s = 0; s < shapes.size(); s++) {
 		// Loop over faces(polygon)
 		size_t index_offset = 0;
+		allTriangles += shapes[s].mesh.num_face_vertices.size();
+		tempTris.reserve(tempTris.size() + allTriangles);
 		for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
 			int fv = shapes[s].mesh.num_face_vertices[f];
+
+			GameWorld::Triangle tri;
+			int triindex = 0;
 
 			// Loop over vertices in the face.
 			for (size_t v = 0; v < fv; v++) {
@@ -107,23 +140,24 @@ bool ModelLoader::LoadModel(char* filename)
 				temp.tu = attrib.texcoords[2 * idx.texcoord_index + 0];
 				temp.tv = attrib.texcoords[2 * idx.texcoord_index + 1];
 
+				tri.vertices[triindex].x = temp.x;
+				tri.vertices[triindex].y = temp.y;
+				tri.vertices[triindex].z = temp.z;
+				triindex++;
+
 				lastmodel.push_back(temp);
 			}
 			index_offset += fv;
+
+			tempTris.push_back(tri);
 
 			// per-face material
 			shapes[s].mesh.material_ids[f];
 		}
 	}
-
-	//open file
-	fin.open(filename);
-
-	if (fin.fail())
-	{
-		return false;
-	}
 	
+	triangles.insert_or_assign(filename, tempTris);
+
 	lastTriple->vertexCount = lastmodel.size();
 	lastTriple->indexCount = lastTriple->vertexCount;
 	return true;
@@ -281,36 +315,34 @@ void ModelLoader::CalculateNormal(VectorType tangent, VectorType binormal, Vecto
 
 bool ModelLoader::InitializeBuffers(ID3D11Device* device)
 {
-	VertexType* vertices;
+	std::vector<VertexType> vertices;
 	InstanceType* instances;
-	unsigned long* indices;
+	std::vector<unsigned long>  indices;
 	D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc, instanceBufferDesc;
 	D3D11_SUBRESOURCE_DATA vertexData, indexData, instanceData;
 	HRESULT result;
 
-	vertices = new VertexType[lastTriple->vertexCount];
-	if (!vertices)
-	{
-		return false;
-	}
-
-	indices = new unsigned long[lastTriple->indexCount];
-	if (!indices)
-	{
-		return false;
-	}
+	vertices.reserve(lastTriple->vertexCount); 
+	indices.reserve(lastTriple->indexCount);
 
 	//Load vertex and index array with data
-	for (auto i = 0; i < lastTriple->vertexCount; i++)
+	std::cout << "Starting vertice collection: " << lastmodel.size() << std::endl;
+	int index = 0;
+	for(auto it = lastmodel.begin(); it != lastmodel.end(); ++it)
 	{
-		vertices[i].position = DirectX::XMFLOAT3(lastmodel[i].x, lastmodel[i].y, lastmodel[i].z);
-		vertices[i].texture = DirectX::XMFLOAT2(lastmodel[i].tu, lastmodel[i].tv);
-		vertices[i].normal = DirectX::XMFLOAT3(lastmodel[i].nx, lastmodel[i].ny, lastmodel[i].nz);
-		vertices[i].tangent = DirectX::XMFLOAT3(lastmodel[i].tx, lastmodel[i].ty, lastmodel[i].tz);
-		vertices[i].binormal = DirectX::XMFLOAT3(lastmodel[i].bx, lastmodel[i].by, lastmodel[i].bz);
+		VertexType temp;
+		temp.position = DirectX::XMFLOAT3(it->x, it->y, it->z);
+		temp.texture = DirectX::XMFLOAT2(it->tu, it->tv);
+		temp.normal = DirectX::XMFLOAT3(it->nx, it->ny, it->nz);
+		temp.tangent = DirectX::XMFLOAT3(it->tx, it->ty, it->tz);
+		temp.binormal = DirectX::XMFLOAT3(it->bx, it->by, it->bz);
 
-		indices[i] = i;
+		vertices.push_back(temp);
+
+		indices.push_back(index);
+		index++;
 	}
+	std::cout << "Ending vertice collection" << std::endl;
 
 	lastmodel.clear();
 
@@ -322,7 +354,7 @@ bool ModelLoader::InitializeBuffers(ID3D11Device* device)
 	vertexBufferDesc.MiscFlags = 0;
 	vertexBufferDesc.StructureByteStride = 0;
 
-	vertexData.pSysMem = vertices;
+	vertexData.pSysMem = &vertices[0];
 	vertexData.SysMemPitch = 0;
 	vertexData.SysMemSlicePitch = 0;
 
@@ -341,7 +373,7 @@ bool ModelLoader::InitializeBuffers(ID3D11Device* device)
 	indexBufferDesc.MiscFlags = 0;
 	indexBufferDesc.StructureByteStride = 0;
 
-	indexData.pSysMem = indices;
+	indexData.pSysMem = &indices[0];
 	indexData.SysMemPitch = 0;
 	indexData.SysMemSlicePitch = 0;
 
@@ -352,11 +384,8 @@ bool ModelLoader::InitializeBuffers(ID3D11Device* device)
 	}
 
 	//Release arrays
-	delete[] vertices;
-	vertices = nullptr;
-	
-	delete[] indices;
-	indices = nullptr;
+	vertices.clear();
+	indices.clear();
 
 	//HARDCODED
 	lastTriple->instanceCount = 1;
@@ -406,12 +435,7 @@ bool ModelLoader::ModelFromFile(char* filename, ID3D11Device* device)
 
 	std::cout << "Loading: " << filename << std::endl;
 
-	//Load Model
-	result = LoadModel(filename);
-	if (!result)
-	{
-		return false;
-	}
+	LoadModel(filename);
 
 	CalculateModelVectors();
 

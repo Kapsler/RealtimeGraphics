@@ -5,6 +5,12 @@
 #include <fstream>
 #include <directxmath.h>
 #include "tiny_obj_loader.h"
+#include "GameWorld.h"
+
+namespace DirectX {namespace SimpleMath {
+	struct Matrix;
+}
+}
 
 class ModelLoader
 {
@@ -14,7 +20,8 @@ public:
 	ModelLoader(ModelLoader const&);
 	void operator= (ModelLoader const&);
 
-	bool GetModel(char* filename, ID3D11Device* device, ID3D11Buffer** vertexBuffer, ID3D11Buffer** indexBuffer, ID3D11Buffer** instanceBuffer, int* vertexCount, int* indexCount, int* instanceCount);
+	bool GetModel(char* filename, ID3D11Device* device, ID3D11Buffer** vertexBuffer, ID3D11Buffer** indexBuffer, ID3D11Buffer** instanceBuffer, int* vertexCount, int* indexCount, int* instanceCount, const DirectX::SimpleMath::Matrix& worldMatrix);
+	std::vector<GameWorld::Triangle> GetTriangles(char* filename);
 	void Release();
 private:
 
@@ -68,6 +75,7 @@ private:
 	bool ModelFromFile(char* filename, ID3D11Device* device);
 
 	std::unordered_map<std::string, bufferStruct*> buffers;
+	std::unordered_map<std::string, std::vector<GameWorld::Triangle>> triangles;
 
 	bufferStruct* lastTriple;
 	std::vector<ModelType> lastmodel;
