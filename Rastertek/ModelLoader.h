@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <fstream>
 #include <directxmath.h>
+#include "tiny_obj_loader.h"
 
 class ModelLoader
 {
@@ -69,6 +70,6 @@ private:
 	std::unordered_map<std::string, bufferStruct*> buffers;
 
 	bufferStruct* lastTriple;
-	ModelType* lastmodel;
+	std::vector<ModelType> lastmodel;
 	//int lastvertexCount, lastindexCount, lastinstanceCount;
 };

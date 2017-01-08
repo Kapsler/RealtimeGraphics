@@ -1,3 +1,4 @@
+#define TINYOBJLOADER_IMPLEMENTATION
 #include "ModelLoader.h"
 #include <iostream>
 
@@ -68,6 +69,52 @@ bool ModelLoader::LoadModel(char* filename)
 {
 	std::ifstream fin;
 	char input;
+	std::vector<tinyobj::shape_t> shapes;
+	std::vector <tinyobj::material_t> materials;
+	tinyobj::attrib_t attrib;
+	std::string err;
+
+	bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &err, filename);
+
+	if (!err.empty()) { // `err` may contain warning message.
+		std::cerr << err << std::endl;
+	}
+
+	if (!ret) {
+		std::cerr << "Error with Tiny Obj Loader" << std::endl;
+		exit(1);
+	}
+
+	//Loop shapes
+	for (size_t s = 0; s < shapes.size(); s++) {
+		// Loop over faces(polygon)
+		size_t index_offset = 0;
+		for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
+			int fv = shapes[s].mesh.num_face_vertices[f];
+
+			// Loop over vertices in the face.
+			for (size_t v = 0; v < fv; v++) {
+				// access to vertex
+				tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
+
+				ModelType temp;
+				temp.x = attrib.vertices[3 * idx.vertex_index + 0];
+				temp.y = attrib.vertices[3 * idx.vertex_index + 1];
+				temp.z = attrib.vertices[3 * idx.vertex_index + 2];
+				temp.nx = attrib.normals[3 * idx.normal_index + 0];
+				temp.ny = attrib.normals[3 * idx.normal_index + 1];
+				temp.nz = attrib.normals[3 * idx.normal_index + 2];
+				temp.tu = attrib.texcoords[2 * idx.texcoord_index + 0];
+				temp.tv = attrib.texcoords[2 * idx.texcoord_index + 1];
+
+				lastmodel.push_back(temp);
+			}
+			index_offset += fv;
+
+			// per-face material
+			shapes[s].mesh.material_ids[f];
+		}
+	}
 
 	//open file
 	fin.open(filename);
@@ -76,43 +123,9 @@ bool ModelLoader::LoadModel(char* filename)
 	{
 		return false;
 	}
-
-	//First ":" for vertex count
-	fin.get(input);
-	while (input != ':')
-	{
-		fin.get(input);
-	}
-
-	fin >> lastTriple->vertexCount;
+	
+	lastTriple->vertexCount = lastmodel.size();
 	lastTriple->indexCount = lastTriple->vertexCount;
-
-	lastmodel = new ModelType[lastTriple->vertexCount];
-	if (!lastmodel)
-	{
-		return false;
-	}
-
-	//Read until data follows
-	fin.get(input);
-	while (input != ':')
-	{
-		fin.get(input);
-	}
-	fin.get(input);
-	fin.get(input);
-
-	//Read vertex data
-	for (auto i = 0; i < lastTriple->vertexCount; i++)
-	{
-		fin >> lastmodel[i].x >> lastmodel[i].y >> lastmodel[i].z;
-		fin >> lastmodel[i].tu >> lastmodel[i].tv;
-		fin >> lastmodel[i].nx >> lastmodel[i].ny >> lastmodel[i].nz;
-	}
-
-	//Close file
-	fin.close();
-
 	return true;
 }
 
@@ -298,6 +311,8 @@ bool ModelLoader::InitializeBuffers(ID3D11Device* device)
 
 		indices[i] = i;
 	}
+
+	lastmodel.clear();
 
 	//Set up static vertex buffer desc
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;

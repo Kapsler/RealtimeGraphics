@@ -467,12 +467,12 @@ void CameraClass::generateModels()
 
 	for(ControlPoint* p : trackingPoints)
 	{
-		trackingPointsModels.push_back(InitializeTrackingPointModel("./Model/Cube.txt", L"./Model/companion_cube.dds", L"./Model/companion_cubebump.dds", p->position, 0.8f, p->direction));
+		//trackingPointsModels.push_back(InitializeTrackingPointModel("./Model/Cube.txt", L"./Model/companion_cube.dds", L"./Model/companion_cubebump.dds", p->position, 0.8f, p->direction));
 	}
 
 	for(ControlPoint* p : kochanekPoints)
 	{
-		trackingPointsModels.push_back(InitializeTrackingPointModel("./Model/Cube.txt", L"./Model/companion_cube.dds", L"./Model/companion_cubebump.dds", p->position, 0.3f, p->direction));
+		//trackingPointsModels.push_back(InitializeTrackingPointModel("./Model/Cube.txt", L"./Model/companion_cube.dds", L"./Model/companion_cubebump.dds", p->position, 0.3f, p->direction));
 	}
 
 }

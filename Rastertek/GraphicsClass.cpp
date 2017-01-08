@@ -82,65 +82,67 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	//HARDCODED - Setting up Models
 
+	models.push_back(InitializeModel(hwnd, "./Model/rungholt.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-40, 0.0f, 50.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-400, 0.0f, 500.0f), 4.0f));
 
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-40, 0.0f, 50.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-50, 0.0f, 50.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-60, 0.0f, 50.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-70, 0.0f, 50.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-80, 0.0f, 50.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-90, 0.0f, 50.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-100, 0.0f, 50.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-110, 0.0f, 50.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-120, 0.0f, 50.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-130, 0.0f, 50.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-140, 0.0f, 50.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-150, 0.0f, 50.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-40, 0.0f, 50.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-50, 0.0f, 50.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-60, 0.0f, 50.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-70, 0.0f, 50.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-80, 0.0f, 50.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-90, 0.0f, 50.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-100, 0.0f, 50.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-110, 0.0f, 50.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-120, 0.0f, 50.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-130, 0.0f, 50.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-140, 0.0f, 50.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-150, 0.0f, 50.0f), 4.0f));
 
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(30.0f, 0.0f, 150.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(40.0f, 0.0f, 150.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(50.0f, 0.0f, 150.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(60.0f, 0.0f, 150.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(70.0f, 0.0f, 150.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(80.0f, 0.0f, 150.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(90.0f, 0.0f, 150.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(100.0f, 0.0f, 150.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(110.0f, 0.0f, 150.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(120.0f, 0.0f, 150.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(130.0f, 0.0f, 150.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(140.0f, 0.0f, 150.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(30.0f, 0.0f, 150.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(40.0f, 0.0f, 150.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(50.0f, 0.0f, 150.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(60.0f, 0.0f, 150.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(70.0f, 0.0f, 150.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(80.0f, 0.0f, 150.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(90.0f, 0.0f, 150.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(100.0f, 0.0f, 150.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(110.0f, 0.0f, 150.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(120.0f, 0.0f, 150.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(130.0f, 0.0f, 150.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(140.0f, 0.0f, 150.0f), 4.0f));
 
 
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-20, 0.0f, 250.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-30, 0.0f, 250.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-40, 0.0f, 250.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-50, 0.0f, 250.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-60, 0.0f, 250.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-70, 0.0f, 250.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-80, 0.0f, 250.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-90, 0.0f, 250.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-100, 0.0f, 250.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-110, 0.0f, 250.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-120, 0.0f, 250.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-130, 0.0f, 250.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-20, 0.0f, 250.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-30, 0.0f, 250.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-40, 0.0f, 250.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-50, 0.0f, 250.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-60, 0.0f, 250.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-70, 0.0f, 250.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-80, 0.0f, 250.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-90, 0.0f, 250.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-100, 0.0f, 250.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-110, 0.0f, 250.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-120, 0.0f, 250.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-130, 0.0f, 250.0f), 4.0f));
 
-	//Scene
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-30, 0.0f, 50.0f), 4.0f));
+	////Scene
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-30, 0.0f, 50.0f), 4.0f));
 
-	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(30, 0.0f, 50.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(20.0f, 0.0f, 150.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/crate.dds", L"./Model/cratebump.dds", XMFLOAT3(-20.0f, 0.0f, 150.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-10, 0.0f, 250.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(10, 0.0f, 250.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(30, 0.0f, 50.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(20.0f, 0.0f, 150.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/crate.dds", L"./Model/cratebump.dds", XMFLOAT3(-20.0f, 0.0f, 150.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-10, 0.0f, 250.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Cube.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(10, 0.0f, 250.0f), 4.0f));
 
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(0.0f, -10.0f, 0.0f), 100.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(0.0f, -10.0f, 200.0f), 100.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(0.0f, -10.0f, 400.0f), 100.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(200.0f, -10.0f, 0.0f), 100.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(200.0f, -10.0f, 200.0f), 100.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(200.0f, -10.0f, 400.0f), 100.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(-200.0f, -10.0f, 0.0f), 100.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(-200.0f, -10.0f, 200.0f), 100.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(-200.0f, -10.0f, 400.0f), 100.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(0.0f, -10.0f, 0.0f), 100.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(0.0f, -10.0f, 200.0f), 100.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(0.0f, -10.0f, 400.0f), 100.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(200.0f, -10.0f, 0.0f), 100.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(200.0f, -10.0f, 200.0f), 100.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(200.0f, -10.0f, 400.0f), 100.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(-200.0f, -10.0f, 0.0f), 100.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(-200.0f, -10.0f, 200.0f), 100.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(-200.0f, -10.0f, 400.0f), 100.0f));
 
 	//Lights
 	light = new LightClass();
@@ -149,7 +151,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 	light->SetPosition(-30.0f, 100.0f, -100.0f);
-	light->SetAmbientColor(0.15f, 0.15f, 0.15f, 1.0f);
+	light->SetAmbientColor(0.85f, 0.85f, 0.85f, 1.0f);
 	light->SetDiffuseColor(1.0, 1.0, 1.0, 1.0f);
 	light->SetLookAt(0.0f, 0.0f, 20.0f);
 	light->GenerateProjectionsMatrix(SCREEN_DEPTH, SCREEN_NEAR);
