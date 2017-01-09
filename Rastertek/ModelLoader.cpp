@@ -140,8 +140,15 @@ bool ModelLoader::LoadModel(char* filename)
 				temp.nx = attrib.normals[3 * idx.normal_index + 0];
 				temp.ny = attrib.normals[3 * idx.normal_index + 1];
 				temp.nz = attrib.normals[3 * idx.normal_index + 2];
-				temp.tu = attrib.texcoords[2 * idx.texcoord_index + 0];
-				temp.tv = attrib.texcoords[2 * idx.texcoord_index + 1];
+				if(idx.texcoord_index != -1)
+				{
+					temp.tu = attrib.texcoords[2 * idx.texcoord_index + 0];
+					temp.tv = attrib.texcoords[2 * idx.texcoord_index + 1];
+				} else
+				{
+					temp.tu = 1.0f;
+					temp.tv = 1.0f;
+				}
 
 				tri->vertices[triindex].x = temp.x;
 				tri->vertices[triindex].y = temp.y;

@@ -93,5 +93,7 @@ private:
 	Vector3 ruler;
 
 	bool rayToggle = false;
+	bool rayRenderToggle = false;
+	bool rayrendermode = false;
 	
 };

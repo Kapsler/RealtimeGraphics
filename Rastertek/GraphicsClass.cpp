@@ -86,11 +86,12 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	//HARDCODED - Setting up Models
 
 	//models.push_back(InitializeModel(hwnd, "./Model/rungholt.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-40, 0.0f, 50.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-40, 0.0f, 50.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/buddha.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-40, 0.0f, 50.0f), 500.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-40, 0.0f, 50.0f), 4.0f));
 	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-400, 0.0f, 500.0f), 4.0f));
 	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-200, 0.0f, 200.0f), 4.0f));
 	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(200, 0.0f, -200.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(400, 0.0f, -400.0f), 4.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(400, 0.0f, -400.0f), 4.0f));
 	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(0, 200.0f, 200.0f), 4.0f));
 	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-400, 0.0f, 400.0f), 4.0f));
 	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(0, -200.0f, -200.0f), 4.0f));
@@ -761,22 +762,26 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 	basicEffect->Apply(direct3D->GetDeviceContext());
 	direct3D->GetDeviceContext()->IASetInputLayout(inputLayout);
 
-	primitiveBatch->Begin();
-	//for(const auto t : GameWorld::getInstance().triangles)
-	//{
-	//	primitiveBatch->DrawTriangle(VertexPositionColor(Vector3(t->vertices[0]), Colors::Red), VertexPositionColor(Vector3(t->vertices[1]), Colors::Red), VertexPositionColor(Vector3(t->vertices[2]), Colors::Red));
-	//}
-	//primitiveBatch->DrawTriangle(VertexPositionColor(Vector3(GameWorld::getInstance().triangles[0]->vertices[0]), Colors::Red), VertexPositionColor(Vector3(GameWorld::getInstance().triangles[0]->vertices[1]), Colors::Red), VertexPositionColor(Vector3(GameWorld::getInstance().triangles[0]->vertices[2]), Colors::Red));
+	if(rayrendermode)
+	{
 
-	tree->Draw(primitiveBatch, Colors::LightGreen);
+		primitiveBatch->Begin();
+		//for(const auto t : GameWorld::getInstance().triangles)
+		//{
+		//	primitiveBatch->DrawTriangle(VertexPositionColor(Vector3(t->vertices[0]), Colors::Red), VertexPositionColor(Vector3(t->vertices[1]), Colors::Red), VertexPositionColor(Vector3(t->vertices[2]), Colors::Red));
+		//}
+		//primitiveBatch->DrawTriangle(VertexPositionColor(Vector3(GameWorld::getInstance().triangles[0]->vertices[0]), Colors::Red), VertexPositionColor(Vector3(GameWorld::getInstance().triangles[0]->vertices[1]), Colors::Red), VertexPositionColor(Vector3(GameWorld::getInstance().triangles[0]->vertices[2]), Colors::Red));
 
-	primitiveBatch->End();
-	//Primitive Batch End
+		tree->Draw(primitiveBatch, Colors::LightGreen);
 
-	//direct3D->GetDeviceContext()->OMSetDepthStencilState(depthstate, 0);
-	//direct3D->GetDeviceContext()->RSSetState(rsstate);
+		primitiveBatch->End();
+		//Primitive Batch End
 
-	RenderRay();
+		//direct3D->GetDeviceContext()->OMSetDepthStencilState(depthstate, 0);
+		//direct3D->GetDeviceContext()->RSSetState(rsstate);
+
+			RenderRay();
+	}
 
 	ID3D11Texture2D* backBuffer;
 	direct3D->swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<LPVOID*>(&backBuffer));
@@ -793,8 +798,9 @@ void GraphicsClass::CheckWireframe(InputClass* input)
 	unsigned int xkey = 0x58;
 	unsigned int ykey = 0x59;
 	unsigned int zkey = 0x5A;
+	unsigned int bkey = 0x42;
 
-	if (!wireframeMode & !wireframeKeyToggle)
+	if (!wireframeMode && !wireframeKeyToggle)
 	{
 		if (input->IsKeyDown(zkey))
 		{
@@ -803,7 +809,7 @@ void GraphicsClass::CheckWireframe(InputClass* input)
 			ChangeFillmode(D3D11_FILL_WIREFRAME);
 		}
 	}
-	else if(wireframeMode & !wireframeKeyToggle)
+	else if(wireframeMode && !wireframeKeyToggle)
 	{
 		if (input->IsKeyDown(zkey))
 		{
@@ -813,9 +819,31 @@ void GraphicsClass::CheckWireframe(InputClass* input)
 		}
 	}
 
+	if (!rayRenderToggle && !rayrendermode)
+	{
+		if (input->IsKeyDown(bkey))
+		{
+			rayrendermode = true;
+			rayRenderToggle = true;
+		}
+	}
+	else if (!rayRenderToggle && rayrendermode)
+	{
+		if (input->IsKeyDown(bkey))
+		{
+			rayrendermode = false;
+			rayRenderToggle = true;
+		}
+	}
+
 	if (input->IsKeyUp(zkey))
 	{
 		wireframeKeyToggle = false;
+	}
+
+	if (input->IsKeyUp(bkey))
+	{
+		rayRenderToggle = false;
 	}
 
 	if (!bumpinessKeyToggle)
