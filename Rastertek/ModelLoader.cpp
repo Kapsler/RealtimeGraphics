@@ -146,8 +146,8 @@ bool ModelLoader::LoadModel(char* filename)
 					temp.tv = attrib.texcoords[2 * idx.texcoord_index + 1];
 				} else
 				{
-					temp.tu = 1.0f;
-					temp.tv = 1.0f;
+					temp.tu = (static_cast<double>(rand()) / (RAND_MAX));
+					temp.tv = (static_cast<double>(rand()) / (RAND_MAX));
 				}
 
 				tri->vertices[triindex].x = temp.x;
