@@ -25,10 +25,10 @@ bool ModelLoader::GetModel(char* filename, ID3D11Device* device, ID3D11Buffer** 
 
 		for(const auto& t :triangles.at(filename))
 		{
-			GameWorld::Triangle tri;
-			tri.vertices[0] = static_cast<DirectX::XMFLOAT3>(DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3(t.vertices[0]), worldMatrix));
-			tri.vertices[1] = static_cast<DirectX::XMFLOAT3>(DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3(t.vertices[1]), worldMatrix));
-			tri.vertices[2] = static_cast<DirectX::XMFLOAT3>(DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3(t.vertices[2]), worldMatrix));
+			GameWorld::Triangle* tri = new GameWorld::Triangle();
+			tri->vertices[0] = static_cast<DirectX::XMFLOAT3>(DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3(t->vertices[0]), worldMatrix));
+			tri->vertices[1] = static_cast<DirectX::XMFLOAT3>(DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3(t->vertices[1]), worldMatrix));
+			tri->vertices[2] = static_cast<DirectX::XMFLOAT3>(DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3(t->vertices[2]), worldMatrix));
 			GameWorld::getInstance().AddTriangle(tri);
 		}
 		return true;
@@ -49,10 +49,10 @@ bool ModelLoader::GetModel(char* filename, ID3D11Device* device, ID3D11Buffer** 
 
 			for (const auto& t : triangles.at(filename))
 			{
-				GameWorld::Triangle tri;
-				tri.vertices[0] = static_cast<DirectX::XMFLOAT3>(DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3(t.vertices[0]), worldMatrix));
-				tri.vertices[1] = static_cast<DirectX::XMFLOAT3>(DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3(t.vertices[1]), worldMatrix));
-				tri.vertices[2] = static_cast<DirectX::XMFLOAT3>(DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3(t.vertices[2]), worldMatrix));
+				GameWorld::Triangle* tri = new GameWorld::Triangle();
+				tri->vertices[0] = static_cast<DirectX::XMFLOAT3>(DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3(t->vertices[0]), worldMatrix));
+				tri->vertices[1] = static_cast<DirectX::XMFLOAT3>(DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3(t->vertices[1]), worldMatrix));
+				tri->vertices[2] = static_cast<DirectX::XMFLOAT3>(DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3(t->vertices[2]), worldMatrix));
 				GameWorld::getInstance().AddTriangle(tri);
 			}
 			return true;
@@ -63,7 +63,7 @@ bool ModelLoader::GetModel(char* filename, ID3D11Device* device, ID3D11Buffer** 
 	return false;
 }
 
-std::vector<GameWorld::Triangle> ModelLoader::GetTriangles(char* filename)
+std::vector<GameWorld::Triangle*> ModelLoader::GetTriangles(char* filename)
 {
 	return triangles.at(filename);
 }
@@ -92,9 +92,8 @@ ModelLoader::~ModelLoader()
 
 bool ModelLoader::LoadModel(char* filename)
 {
-	std::vector<GameWorld::Triangle> tempTris;
+	std::vector<GameWorld::Triangle*> tempTris;
 	std::ifstream fin;
-	char input;
 	std::vector<tinyobj::shape_t> shapes;
 	std::vector <tinyobj::material_t> materials;
 	tinyobj::attrib_t attrib;
@@ -122,7 +121,7 @@ bool ModelLoader::LoadModel(char* filename)
 		for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
 			int fv = shapes[s].mesh.num_face_vertices[f];
 
-			GameWorld::Triangle tri;
+			GameWorld::Triangle* tri = new GameWorld::Triangle();
 			int triindex = 0;
 
 			// Loop over vertices in the face.
@@ -140,9 +139,9 @@ bool ModelLoader::LoadModel(char* filename)
 				temp.tu = attrib.texcoords[2 * idx.texcoord_index + 0];
 				temp.tv = attrib.texcoords[2 * idx.texcoord_index + 1];
 
-				tri.vertices[triindex].x = temp.x;
-				tri.vertices[triindex].y = temp.y;
-				tri.vertices[triindex].z = temp.z;
+				tri->vertices[triindex].x = temp.x;
+				tri->vertices[triindex].y = temp.y;
+				tri->vertices[triindex].z = temp.z;
 				triindex++;
 
 				lastmodel.push_back(temp);

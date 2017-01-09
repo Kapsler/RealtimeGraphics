@@ -13,9 +13,9 @@ public:
 
 	static GameWorld& getInstance();
 
-	void AddTriangles(const std::vector<Triangle> newTriangles);
-	void AddTriangle(Triangle tri);
-	std::vector<Triangle> triangles;
+	void AddTriangles(const std::vector<Triangle*> newTriangles);
+	void AddTriangle(Triangle* tri);
+	std::vector<Triangle*> triangles;
 
 private:
 

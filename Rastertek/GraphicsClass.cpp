@@ -86,14 +86,14 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	//HARDCODED - Setting up Models
 
 	//models.push_back(InitializeModel(hwnd, "./Model/rungholt.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-40, 0.0f, 50.0f), 4.0f));
-	/*models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-40, 0.0f, 50.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-400, 0.0f, 500.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-200, 0.0f, 200.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(200, 0.0f, -200.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(400, 0.0f, -400.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(0, 200.0f, 200.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-400, 0.0f, 400.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(0, -200.0f, -200.0f), 4.0f));*/
+	models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-40, 0.0f, 50.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-400, 0.0f, 500.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-200, 0.0f, 200.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(200, 0.0f, -200.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(400, 0.0f, -400.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(0, 200.0f, 200.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-400, 0.0f, 400.0f), 4.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(0, -200.0f, -200.0f), 4.0f));
 
 	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-40, 0.0f, 50.0f), 4.0f));
 	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-50, 0.0f, 50.0f), 4.0f));
@@ -157,9 +157,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	//for(auto t : GameWorld::getInstance().triangles)
 	//{
 	//	std::cout << "Tri: " << std::endl;
-	//	std::cout << t.vertices[0].x << ", " << t.vertices[0].y << ", " << t.vertices[0].z << std::endl;
-	//	std::cout << t.vertices[1].x << ", " << t.vertices[1].y << ", " << t.vertices[1].z << std::endl;
-	//	std::cout << t.vertices[2].x << ", " << t.vertices[2].y << ", " << t.vertices[2].z << std::endl;
+	//	std::cout << t->vertices[0].x << ", " << t->vertices[0].y << ", " << t->vertices[0].z << std::endl;
+	//	std::cout << t->vertices[1].x << ", " << t->vertices[1].y << ", " << t->vertices[1].z << std::endl;
+	//	std::cout << t->vertices[2].x << ", " << t->vertices[2].y << ", " << t->vertices[2].z << std::endl;
 	//	std::cout << std::endl;
 	//}
 
@@ -670,9 +670,9 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 
 	//Primitive Batch Begin
 	CommonStates states(direct3D->GetDevice());
-	direct3D->GetDeviceContext()->OMSetBlendState(states.Opaque(), nullptr, 0xFFFFFFFF);
+	//direct3D->GetDeviceContext()->OMSetBlendState(states.Opaque(), nullptr, 0xFFFFFFFF);
 	direct3D->GetDeviceContext()->OMSetDepthStencilState(states.DepthNone(), 0);
-	direct3D->GetDeviceContext()->RSSetState(states.CullCounterClockwise());
+	//direct3D->GetDeviceContext()->RSSetState(states.CullCounterClockwise());
 
 	basicEffect->SetWorld(XMMatrixIdentity());
 	basicEffect->SetView(viewMatrix);
@@ -681,15 +681,19 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 	direct3D->GetDeviceContext()->IASetInputLayout(inputLayout);
 
 	primitiveBatch->Begin();
-	primitiveBatch->DrawLine(VertexPositionColor(Vector3(100, 100, 100), Colors::Red), VertexPositionColor(Vector3(100, 100, 100), Colors::Red));
+	for(const auto t : GameWorld::getInstance().triangles)
+	{
+		//primitiveBatch->DrawTriangle(VertexPositionColor(Vector3(t->vertices[0]), Colors::Red), VertexPositionColor(Vector3(t->vertices[1]), Colors::Red), VertexPositionColor(Vector3(t->vertices[2]), Colors::Red));
+	}
+	//primitiveBatch->DrawTriangle(VertexPositionColor(Vector3(GameWorld::getInstance().triangles[0]->vertices[0]), Colors::Red), VertexPositionColor(Vector3(GameWorld::getInstance().triangles[0]->vertices[1]), Colors::Red), VertexPositionColor(Vector3(GameWorld::getInstance().triangles[0]->vertices[2]), Colors::Red));
 	primitiveBatch->End();
 	//Primitive Batch End
 
 	direct3D->GetDeviceContext()->OMSetDepthStencilState(depthstate, 0);
-	direct3D->GetDeviceContext()->RSSetState(rsstate);
+	//direct3D->GetDeviceContext()->RSSetState(rsstate);
 
 	ID3D11Texture2D* backBuffer;
-	direct3D->swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBuffer);
+	direct3D->swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<LPVOID*>(&backBuffer));
 	direct3D->GetDeviceContext()->ResolveSubresource(backBuffer, 0, screenBuffer, 0, DXGI_FORMAT_R8G8B8A8_UNORM);
 
 	//Output Buffer

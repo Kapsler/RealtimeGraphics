@@ -7,13 +7,13 @@ GameWorld& GameWorld::getInstance()
 	return instance;
 }
 
-void GameWorld::AddTriangles(const std::vector<Triangle> newTriangles)
+void GameWorld::AddTriangles(const std::vector<Triangle*> newTriangles)
 {
 	triangles.insert(triangles.end(), newTriangles.begin(), newTriangles.end());
 	std::cout << triangles.size() << std::endl;
 }
 
-void GameWorld::AddTriangle(Triangle tri)
+void GameWorld::AddTriangle(Triangle* tri)
 {
 	triangles.push_back(tri);
 }
