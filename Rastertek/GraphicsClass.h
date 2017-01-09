@@ -5,15 +5,18 @@
 #include "ModelClass.h"
 #include "ShaderClass.h"
 #include "TextureClass.h"
-#include <PrimitiveBatch.h>
 #include <vector>
 #include "LightClass.h"
 #include "RenderTextureClass.h"
 #include "DepthShaderClass.h"
 #include "SpriteFont.h"
+#include <PrimitiveBatch.h>
 #include <VertexTypes.h>
 #include <Effects.h>
 #include <CommonStates.h>
+#include "MyBoundingBox.h"
+#include "KdNode.h"
+#include "RayHitStruct.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = true;
@@ -25,6 +28,7 @@ const int SHADOWMAP_HEIGHT = 2048;
 class GraphicsClass
 {
 public:
+
 	GraphicsClass();
 	GraphicsClass(const GraphicsClass&);
 	~GraphicsClass();
@@ -40,9 +44,12 @@ private:
 	bool RenderSceneToTexture();
 	bool RenderSceneToTexture2();
 	bool SetScreenBuffer(float, float, float, float);
+	void RenderRay();
+	void CastRay();
 	bool Render(float, InputClass*);
 	void CheckWireframe(InputClass*);
 	void CheckMSKeys(InputClass*);
+	void CheckRaycast(InputClass*);
 	void SetLightDirection(InputClass*);
 	void ChangeFillmode(D3D11_FILL_MODE);
 	ModelClass* InitializeModel(HWND, char*, WCHAR*, WCHAR*, XMFLOAT3, float);
@@ -77,5 +84,14 @@ private:
 	PrimitiveBatch<VertexPositionColor>* primitiveBatch; 
 	BasicEffect* basicEffect;
 	ID3D11InputLayout* inputLayout;
+
+	KdNode* tree;
+	Ray ray;
+	RayHitStruct hit1;
+	RayHitStruct hit2;
+	int hitCounter;
+	Vector3 ruler;
+
+	bool rayToggle = false;
 	
 };

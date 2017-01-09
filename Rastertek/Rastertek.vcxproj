@@ -93,6 +93,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <StackReserveSize>20000</StackReserveSize>
+      <HeapReserveSize>2000</HeapReserveSize>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -106,6 +108,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <StackReserveSize>20000</StackReserveSize>
+      <HeapReserveSize>2000</HeapReserveSize>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -123,6 +127,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <StackReserveSize>20000</StackReserveSize>
+      <HeapReserveSize>2000</HeapReserveSize>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -140,12 +146,16 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <StackReserveSize>20000</StackReserveSize>
+      <HeapReserveSize>2000</HeapReserveSize>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="MyBoundingBox.cpp" />
     <ClCompile Include="CameraClass.cpp" />
     <ClCompile Include="DepthShaderClass.cpp" />
     <ClCompile Include="GameWorld.cpp" />
+    <ClCompile Include="KdNode.cpp" />
     <ClCompile Include="LightClass.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
     <ClCompile Include="RenderTextureClass.cpp" />
@@ -160,14 +170,17 @@
     <ClCompile Include="TimerClass.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="MyBoundingBox.h" />
     <ClInclude Include="CameraClass.h" />
     <ClInclude Include="DepthShaderClass.h" />
     <ClInclude Include="GameWorld.h" />
+    <ClInclude Include="KdNode.h" />
     <ClInclude Include="LightClass.h" />
     <ClInclude Include="ltalloc.h" />
     <ClInclude Include="ltalloc.hpp" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="ModelType.h" />
+    <ClInclude Include="RayHitStruct.h" />
     <ClInclude Include="RenderTextureClass.h" />
     <ClInclude Include="ShaderClass.h" />
     <ClInclude Include="D3DClass.h" />

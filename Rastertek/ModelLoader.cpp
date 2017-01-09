@@ -29,6 +29,8 @@ bool ModelLoader::GetModel(char* filename, ID3D11Device* device, ID3D11Buffer** 
 			tri->vertices[0] = static_cast<DirectX::XMFLOAT3>(DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3(t->vertices[0]), worldMatrix));
 			tri->vertices[1] = static_cast<DirectX::XMFLOAT3>(DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3(t->vertices[1]), worldMatrix));
 			tri->vertices[2] = static_cast<DirectX::XMFLOAT3>(DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3(t->vertices[2]), worldMatrix));
+			tri->CalculateGreatest();
+			tri->CalculateSmallest();
 			GameWorld::getInstance().AddTriangle(tri);
 		}
 		return true;
@@ -53,6 +55,8 @@ bool ModelLoader::GetModel(char* filename, ID3D11Device* device, ID3D11Buffer** 
 				tri->vertices[0] = static_cast<DirectX::XMFLOAT3>(DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3(t->vertices[0]), worldMatrix));
 				tri->vertices[1] = static_cast<DirectX::XMFLOAT3>(DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3(t->vertices[1]), worldMatrix));
 				tri->vertices[2] = static_cast<DirectX::XMFLOAT3>(DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3(t->vertices[2]), worldMatrix));
+				tri->CalculateGreatest();
+				tri->CalculateSmallest();
 				GameWorld::getInstance().AddTriangle(tri);
 			}
 			return true;

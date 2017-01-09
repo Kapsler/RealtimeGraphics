@@ -17,7 +17,7 @@ GraphicsClass::GraphicsClass()
 	renderTexture2 = nullptr;
 	timer = nullptr;
 	depthShader = nullptr;
-	bumpiness = 1;	
+	bumpiness = 1;
 	screenBuffer = nullptr;
 	screenTargetView = nullptr;
 	depthBuffer = nullptr;
@@ -163,8 +163,6 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	//	std::cout << std::endl;
 	//}
 
-	std::cout << GameWorld::getInstance().triangles.size() << endl;
-
 	//Lights
 	light = new LightClass();
 	if (!light)
@@ -261,6 +259,11 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	SetupPrimitiveBatch();
 
+	std::cout << "Generating KD-Tree for " << GameWorld::getInstance().triangles.size() << " triangles" << std::endl;
+	tree = new KdNode();
+	tree = tree->build(&GameWorld::getInstance().triangles, 0);
+	std::cout << "KD-Tree finished" << std::endl;
+
 	return true;
 }
 
@@ -347,6 +350,7 @@ bool GraphicsClass::Frame(InputClass* input)
 
 	CheckWireframe(input); 
 	CheckMSKeys(input);
+	CheckRaycast(input);
 
 	//Lightmovement
 	counter += deltaTime * 0.03f;
@@ -583,6 +587,83 @@ bool GraphicsClass::SetScreenBuffer(float red, float green, float blue, float al
 	return true;
 }
 
+void GraphicsClass::RenderRay()
+{
+	ID3D11DepthStencilState* depthstate;
+	ID3D11RasterizerState* rsstate;
+	direct3D->GetDeviceContext()->OMGetDepthStencilState(&depthstate, nullptr);
+	direct3D->GetDeviceContext()->RSGetState(&rsstate);
+
+	//Primitive Batch Begin
+	CommonStates states(direct3D->GetDevice());
+	direct3D->GetDeviceContext()->OMSetBlendState(states.Opaque(), nullptr, 0xFFFFFFFF);
+	direct3D->GetDeviceContext()->OMSetDepthStencilState(states.DepthNone(), 0);
+	direct3D->GetDeviceContext()->RSSetState(states.CullNone());
+
+
+	primitiveBatch->Begin();
+
+	//Ray1
+	primitiveBatch->DrawLine(VertexPositionColor(hit1.hitray.position, Colors::Blue), VertexPositionColor(hit1.hitray.position + hit1.hitray.direction * hit1.hitDistance, Colors::Blue));
+
+	if (hit1.hitTriangle != nullptr)
+	{
+		primitiveBatch->DrawTriangle(VertexPositionColor(hit1.hitTriangle->vertices[0], XMFLOAT4(Colors::Blue)), VertexPositionColor(hit1.hitTriangle->vertices[1], XMFLOAT4(Colors::Blue)), VertexPositionColor(hit1.hitTriangle->vertices[2], XMFLOAT4(Colors::Blue)));
+	}
+
+	if(hit1.hitBox != nullptr)
+	{
+		hit1.hitBox->Draw(primitiveBatch, Colors::Blue);
+	}
+	
+	//Ray2
+	primitiveBatch->DrawLine(VertexPositionColor(hit2.hitray.position, Colors::Red), VertexPositionColor(hit2.hitray.position + hit2.hitray.direction * hit2.hitDistance, Colors::Red));
+
+	if (hit2.hitTriangle != nullptr)
+	{
+		primitiveBatch->DrawTriangle(VertexPositionColor(hit2.hitTriangle->vertices[0], XMFLOAT4(Colors::Red)), VertexPositionColor(hit2.hitTriangle->vertices[1], XMFLOAT4(Colors::Red)), VertexPositionColor(hit2.hitTriangle->vertices[2], XMFLOAT4(Colors::Red)));
+	}
+
+	if(hit2.hitBox != nullptr)
+	{
+		hit2.hitBox->Draw(primitiveBatch, Colors::Red);
+	}
+
+	//Ruler
+
+	primitiveBatch->DrawLine(VertexPositionColor(hit1.hitPoint, Colors::Magenta), VertexPositionColor(hit2.hitPoint, Colors::Magenta));
+
+	primitiveBatch->End();
+
+	direct3D->GetDeviceContext()->OMSetDepthStencilState(depthstate, 0);
+	direct3D->GetDeviceContext()->RSSetState(rsstate);
+	//Primitive Batch End
+}
+
+void GraphicsClass::CastRay()
+{
+	float maxRange = 100000.0f;
+	float hitfloat = 100000.0f;
+
+	if(hitCounter%2 == 0)
+	{
+		if(KdNode::hit(tree, &ray, hitfloat, maxRange, hit1))
+		{
+			hitCounter++;
+		}
+	} else
+	{
+		if (KdNode::hit(tree, &ray, hitfloat, maxRange, hit2))
+		{
+			hitCounter++;
+		}
+	}
+
+	ruler = hit2.hitPoint - hit1.hitPoint;
+	std::cout << "Distance between Points: " << ruler.Length() << std::endl;
+
+}
+
 bool GraphicsClass::Render(float rotation, InputClass* input)
 {
 	XMMATRIX viewMatrix, projectionMatrix, translateMatrix;
@@ -671,8 +752,8 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 	//Primitive Batch Begin
 	CommonStates states(direct3D->GetDevice());
 	//direct3D->GetDeviceContext()->OMSetBlendState(states.Opaque(), nullptr, 0xFFFFFFFF);
-	direct3D->GetDeviceContext()->OMSetDepthStencilState(states.DepthNone(), 0);
-	//direct3D->GetDeviceContext()->RSSetState(states.CullCounterClockwise());
+	//direct3D->GetDeviceContext()->OMSetDepthStencilState(states.DepthNone(), 0);
+	//direct3D->GetDeviceContext()->RSSetState(states.CullNone());
 
 	basicEffect->SetWorld(XMMatrixIdentity());
 	basicEffect->SetView(viewMatrix);
@@ -681,16 +762,21 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 	direct3D->GetDeviceContext()->IASetInputLayout(inputLayout);
 
 	primitiveBatch->Begin();
-	for(const auto t : GameWorld::getInstance().triangles)
-	{
-		//primitiveBatch->DrawTriangle(VertexPositionColor(Vector3(t->vertices[0]), Colors::Red), VertexPositionColor(Vector3(t->vertices[1]), Colors::Red), VertexPositionColor(Vector3(t->vertices[2]), Colors::Red));
-	}
+	//for(const auto t : GameWorld::getInstance().triangles)
+	//{
+	//	primitiveBatch->DrawTriangle(VertexPositionColor(Vector3(t->vertices[0]), Colors::Red), VertexPositionColor(Vector3(t->vertices[1]), Colors::Red), VertexPositionColor(Vector3(t->vertices[2]), Colors::Red));
+	//}
 	//primitiveBatch->DrawTriangle(VertexPositionColor(Vector3(GameWorld::getInstance().triangles[0]->vertices[0]), Colors::Red), VertexPositionColor(Vector3(GameWorld::getInstance().triangles[0]->vertices[1]), Colors::Red), VertexPositionColor(Vector3(GameWorld::getInstance().triangles[0]->vertices[2]), Colors::Red));
+
+	tree->Draw(primitiveBatch, Colors::LightGreen);
+
 	primitiveBatch->End();
 	//Primitive Batch End
 
-	direct3D->GetDeviceContext()->OMSetDepthStencilState(depthstate, 0);
+	//direct3D->GetDeviceContext()->OMSetDepthStencilState(depthstate, 0);
 	//direct3D->GetDeviceContext()->RSSetState(rsstate);
+
+	RenderRay();
 
 	ID3D11Texture2D* backBuffer;
 	direct3D->swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<LPVOID*>(&backBuffer));
@@ -786,6 +872,30 @@ void GraphicsClass::CheckMSKeys(InputClass* input)
 	if (input->IsKeyUp(mkey) && input->IsKeyUp(periodkey) && input->IsKeyUp(commakey))
 	{
 		msmodetoggle = false;
+	}
+}
+
+void GraphicsClass::CheckRaycast(InputClass* input)
+{
+	unsigned int spaceKey = VK_SPACE;
+
+	if(!rayToggle)
+	{
+		if(input->IsKeyDown(spaceKey))
+		{
+			ray.position = camera->GetPosition();
+			XMMATRIX newdir;
+			camera->GetViewMatrix(newdir);	
+			ray.direction = Matrix(newdir).Transpose().Backward();
+			rayToggle = true;
+
+			CastRay();
+		}
+	}
+
+	if(rayToggle && input->IsKeyUp(spaceKey))
+	{
+		rayToggle = false;
 	}
 }
 
