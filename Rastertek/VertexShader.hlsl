@@ -85,8 +85,8 @@ PixelInputType main( VertexInputType input )
     //output.binormal = normalize(output.binormal);
 
     //Determine Light Position
-    //output.lightPos = lightPosition.xyz - worldPosition.xyz;
-    //output.lightPos = normalize(output.lightPos);
+    output.lightPos = lightPosition.xyz - worldPosition.xyz;
+    output.lightPos = normalize(output.lightPos);
 
     ////Determine Light 2 Position
     //output.lightPos2 = lightPosition2.xyz - worldPosition.xyz;

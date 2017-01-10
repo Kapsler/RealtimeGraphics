@@ -86,7 +86,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	//HARDCODED - Setting up Models
 
 	//models.push_back(InitializeModel(hwnd, "./Model/rungholt.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-40, 0.0f, 50.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/buddha.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-40, 0.0f, 50.0f), 500.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/hairball.obj", L"./Model/ground.dds", L"./Model/brickbump.dds", XMFLOAT3(-40, 0.0f, 50.0f), 500.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/buddha.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-400, 0.0f, 50.0f), 500.0f));
 	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-40, 0.0f, 50.0f), 4.0f));
 	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-400, 0.0f, 500.0f), 4.0f));
 	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-200, 0.0f, 200.0f), 4.0f));
@@ -171,7 +172,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 		return false;
 	}
 	light->SetPosition(-30.0f, 100.0f, -100.0f);
-	light->SetAmbientColor(0.85f, 0.85f, 0.85f, 1.0f);
+	light->SetAmbientColor(0.2f, 0.2f, 0.2f, 1.0f);
 	light->SetDiffuseColor(1.0, 1.0, 1.0, 1.0f);
 	light->SetLookAt(0.0f, 0.0f, 20.0f);
 	light->GenerateProjectionsMatrix(SCREEN_DEPTH, SCREEN_NEAR);

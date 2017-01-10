@@ -45,16 +45,16 @@ float4 main(PixelInputType input) : SV_Target
     //Set default color to ambient
     color = ambientColor;
 
-    //BUMPMAPPING
-    //Sample pixel
-    bumpMap = shaderTextures[1].Sample(SampleTypeWrap, input.tex);
-    //Change range to -1.0 to 1.0 instead of 0 to 1
-    bumpMap = (bumpMap * 2.0f) - 1.0f;
-    //Calculate Normal
-    bumpNormal = (bumpMap.x * input.tangent) + (bumpMap.y * input.binormal) + (bumpMap.z * input.normal);
-    bumpNormal = normalize(bumpNormal * input.bumpiness + input.normal);
+    ////BUMPMAPPING
+    ////Sample pixel
+    //bumpMap = shaderTextures[1].Sample(SampleTypeWrap, input.tex);
+    ////Change range to -1.0 to 1.0 instead of 0 to 1
+    //bumpMap = (bumpMap * 2.0f) - 1.0f;
+    ////Calculate Normal
+    //bumpNormal = (bumpMap.x * input.tangent) + (bumpMap.y * input.binormal) + (bumpMap.z * input.normal);
+    //bumpNormal = normalize(bumpNormal * input.bumpiness + input.normal);
     
-    //BUMPMAPPING
+    ////BUMPMAPPING
 
     ////Depth Buffer (Shadow Map)
     ////Calculate Projected texture coordinates
@@ -107,6 +107,18 @@ float4 main(PixelInputType input) : SV_Target
     //    }
     //}
     
+    //DIFFUSE ONLY BEGIN - Remove!
+
+    lightIntensity = saturate(dot(input.normal, input.lightPos));
+
+    if (lightIntensity > 0.0f)
+    {
+        //Diffuse color
+        color += (diffuseColor * lightIntensity);
+    }
+
+    //DIFFUSE ONLY END - Remove!
+
     //Saturate to final light color
     color = saturate(color);
 
@@ -114,8 +126,6 @@ float4 main(PixelInputType input) : SV_Target
     textureColor = shaderTextures[0].Sample(SampleTypeWrap, input.tex);
 
     //Calculate lighting with texture
-    input.color = float4(1,1,1,1);
-    color = color * input.color;
     color = color * textureColor;
 
     return color;
