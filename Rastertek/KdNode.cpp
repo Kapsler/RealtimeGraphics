@@ -46,7 +46,7 @@ KdNode* KdNode::build(std::vector<GameWorld::Triangle*>* tris, int depth) const
 		return node;
 	}
 
-	if(tris->size() <= 1000)
+	if(tris->size() <= 500)
 	{
 		node->bbox = new MyBoundingBox(*tris);
 		node->left = new KdNode();
@@ -79,46 +79,88 @@ KdNode* KdNode::build(std::vector<GameWorld::Triangle*>* tris, int depth) const
 		axisBaryCenter = medTri->getBarycenter().z;
 	}
 
-	for(int i = 0; i < tris->size(); ++i)
+	for (int i = 0; i < tris->size(); ++i)
 	{
-		switch(axis)
+		switch (axis)
 		{
-			case 0:
-				if((*tris)[i]->smallest.x < axisBaryCenter)
-				{
-					leftTris->push_back((*tris)[i]);
-				}
-				if((*tris)[i]->greatest.x >= axisBaryCenter)
-				{
-					rightTris->push_back((*tris)[i]);
-				}
-				break;
-			case 1:
-				if ((*tris)[i]->smallest.y < axisBaryCenter)
-				{
-					leftTris->push_back((*tris)[i]);
-				}
-				if ((*tris)[i]->greatest.y >= axisBaryCenter)
-				{
-					rightTris->push_back((*tris)[i]);
-				}
-				break;
-			case 2:
-				if ((*tris)[i]->smallest.z < axisBaryCenter)
-				{
-					leftTris->push_back((*tris)[i]);
-				}
-				if ((*tris)[i]->greatest.z >= axisBaryCenter)
-				{
-					rightTris->push_back((*tris)[i]);
-				}
-				break;
-			default: break;
+		case 0:
+			if ((*tris)[i]->smallest.x < axisBaryCenter)
+			{
+				leftTris->push_back((*tris)[i]);
+			}
+			if ((*tris)[i]->greatest.x >= axisBaryCenter)
+			{
+				rightTris->push_back((*tris)[i]);
+			}
+			break;
+		case 1:
+			if ((*tris)[i]->smallest.y < axisBaryCenter)
+			{
+				leftTris->push_back((*tris)[i]);
+			}
+			if ((*tris)[i]->greatest.y >= axisBaryCenter)
+			{
+				rightTris->push_back((*tris)[i]);
+			}
+			break;
+		case 2:
+			if ((*tris)[i]->smallest.z < axisBaryCenter)
+			{
+				leftTris->push_back((*tris)[i]);
+			}
+			if ((*tris)[i]->greatest.z >= axisBaryCenter)
+			{
+				rightTris->push_back((*tris)[i]);
+			}
+			break;
+		default: break;
 		}
 	}
+	
 
-	node->left = build(leftTris, depth + 1);
-	node->right = build(rightTris, depth + 1);
+	if(tris->size() < 100000)
+	{
+		if (leftTris->size() == 0 && rightTris->size() > 0) leftTris = rightTris;
+		if (rightTris->size() == 0 && leftTris->size() > 0) rightTris = leftTris;
+
+		int matches = 0;
+		#pragma omp parallel
+		{
+			#pragma omp for
+			for(int i = 0; i < leftTris->size(); ++i)
+			{
+				for(int j = 0; j < rightTris->size(); ++j)
+				{
+					if((*leftTris)[i] == (*rightTris)[j])
+					{
+						matches++;
+					}
+				}
+			}
+			
+		}
+		
+
+		if(static_cast<float>(matches) / leftTris->size() < 0.5f && static_cast<float>(matches) / rightTris->size() < 0.5f)
+		{
+			node->left = build(leftTris, depth + 1);
+			node->right = build(rightTris, depth + 1);
+		} else
+		{
+			node->left = new KdNode();
+			node->right = new KdNode;
+			node->left->triangles = new std::vector<GameWorld::Triangle*>();
+			node->right->triangles = new std::vector<GameWorld::Triangle*>();
+		}
+
+	} else
+	{
+
+		node->left = build(leftTris, depth + 1);
+		node->right = build(rightTris, depth + 1);
+		
+	}
+	
 
 	return node;
 }

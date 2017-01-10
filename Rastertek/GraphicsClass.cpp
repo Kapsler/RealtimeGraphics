@@ -86,7 +86,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	//HARDCODED - Setting up Models
 
 	//models.push_back(InitializeModel(hwnd, "./Model/rungholt.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-40, 0.0f, 50.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/hairball.obj", L"./Model/ground.dds", L"./Model/brickbump.dds", XMFLOAT3(-40, 0.0f, 50.0f), 500.0f));
+	//models.push_back(InitializeModel(hwnd, "./Model/hairball.obj", L"./Model/ground.dds", L"./Model/brickbump.dds", XMFLOAT3(-40, 0.0f, 50.0f), 10.0f));
 	models.push_back(InitializeModel(hwnd, "./Model/buddha.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-400, 0.0f, 50.0f), 500.0f));
 	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-40, 0.0f, 50.0f), 4.0f));
 	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-400, 0.0f, 500.0f), 4.0f));
