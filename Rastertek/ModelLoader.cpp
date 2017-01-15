@@ -137,9 +137,18 @@ bool ModelLoader::LoadModel(char* filename)
 				temp.x = attrib.vertices[3 * idx.vertex_index + 0];
 				temp.y = attrib.vertices[3 * idx.vertex_index + 1];
 				temp.z = attrib.vertices[3 * idx.vertex_index + 2];
-				temp.nx = attrib.normals[3 * idx.normal_index + 0];
-				temp.ny = attrib.normals[3 * idx.normal_index + 1];
-				temp.nz = attrib.normals[3 * idx.normal_index + 2];
+				if (idx.normal_index != -1)
+				{
+					temp.nx = attrib.normals[3 * idx.normal_index + 0];
+					temp.ny = attrib.normals[3 * idx.normal_index + 1];
+					temp.nz = attrib.normals[3 * idx.normal_index + 2];
+				}
+				else
+				{
+					temp.nx = 1;
+					temp.ny = 1;
+					temp.nz = 1;
+				}
 				if(idx.texcoord_index != -1)
 				{
 					temp.tu = attrib.texcoords[2 * idx.texcoord_index + 0];

@@ -45,79 +45,67 @@ float4 main(PixelInputType input) : SV_Target
     //Set default color to ambient
     color = ambientColor;
 
-    ////BUMPMAPPING
-    ////Sample pixel
-    //bumpMap = shaderTextures[1].Sample(SampleTypeWrap, input.tex);
-    ////Change range to -1.0 to 1.0 instead of 0 to 1
-    //bumpMap = (bumpMap * 2.0f) - 1.0f;
-    ////Calculate Normal
-    //bumpNormal = (bumpMap.x * input.tangent) + (bumpMap.y * input.binormal) + (bumpMap.z * input.normal);
-    //bumpNormal = normalize(bumpNormal * input.bumpiness + input.normal);
+    //BUMPMAPPING
+    //Sample pixel
+    bumpMap = shaderTextures[1].Sample(SampleTypeWrap, input.tex);
+    //Change range to -1.0 to 1.0 instead of 0 to 1
+    bumpMap = (bumpMap * 2.0f) - 1.0f;
+    //Calculate Normal
+    bumpNormal = (bumpMap.x * input.tangent) + (bumpMap.y * input.binormal) + (bumpMap.z * input.normal);
+    bumpNormal = normalize(bumpNormal * input.bumpiness + input.normal);
     
-    ////BUMPMAPPING
+    //BUMPMAPPING
 
-    ////Depth Buffer (Shadow Map)
-    ////Calculate Projected texture coordinates
-    //projectTexCoord.x = input.lightViewPosition.x / input.lightViewPosition.w / 2.0f + 0.5f;
-    //projectTexCoord.y = -input.lightViewPosition.y / input.lightViewPosition.w / 2.0f + 0.5f;
+    //Depth Buffer (Shadow Map)
+    //Calculate Projected texture coordinates
+    projectTexCoord.x = input.lightViewPosition.x / input.lightViewPosition.w / 2.0f + 0.5f;
+    projectTexCoord.y = -input.lightViewPosition.y / input.lightViewPosition.w / 2.0f + 0.5f;
 
-    ////Check if projected coords are in view
-    //if ((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y));
-    //{
-    //    //Depth Value of pixel in Shadow map - only red channel because greyscale
-    //    depthValue = depthMapTexture.Sample(SampleTypeClamp, projectTexCoord).r;
-
-    //    //Distance to light
-    //    lightDepthValue = input.lightViewPosition.z / input.lightViewPosition.w;
-
-    //    //Use bias
-    //    lightDepthValue = lightDepthValue - bias;
-        
-    //    //Compare depths to shadow or light the pixel
-    //    if (lightDepthValue < depthValue)
-    //    {
-    //        lightIntensity = saturate(dot(bumpNormal, input.lightPos));
-
-    //        if (lightIntensity > 0.0f)
-    //        {
-    //            //Diffuse color
-    //            color += (diffuseColor * lightIntensity);
-    //        }
-    //    }
-    //}
-
-    ////Second Light
-    //projectTexCoord.x = input.lightViewPosition2.x / input.lightViewPosition2.w / 2.0f + 0.5f;
-    //projectTexCoord.y = -input.lightViewPosition2.y / input.lightViewPosition2.w / 2.0f + 0.5f;
-
-    //if ((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y))
-    //{
-    //    depthValue = depthMapTexture2.Sample(SampleTypeClamp, projectTexCoord).r;
-
-    //    lightDepthValue = input.lightViewPosition2.z / input.lightViewPosition2.w;
-    //    lightDepthValue = lightDepthValue - bias;
-
-    //    if (lightDepthValue < depthValue)
-    //    {
-    //        lightIntensity = saturate(dot(bumpNormal, input.lightPos2));
-    //        if (lightIntensity > 0.0f)
-    //        {
-    //            color += (diffuseColor2 * lightIntensity);
-    //        }
-    //    }
-    //}
-    
-    //DIFFUSE ONLY BEGIN - Remove!
-
-    lightIntensity = saturate(dot(input.normal, input.lightPos));
-
-    if (lightIntensity > 0.0f)
+    //Check if projected coords are in view
+    if ((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y));
     {
-        //Diffuse color
-        color += (diffuseColor * lightIntensity);
+        //Depth Value of pixel in Shadow map - only red channel because greyscale
+        depthValue = depthMapTexture.Sample(SampleTypeClamp, projectTexCoord).r;
+
+        //Distance to light
+        lightDepthValue = input.lightViewPosition.z / input.lightViewPosition.w;
+
+        //Use bias
+        lightDepthValue = lightDepthValue - bias;
+        
+        //Compare depths to shadow or light the pixel
+        if (lightDepthValue < depthValue)
+        {
+            lightIntensity = saturate(dot(bumpNormal, input.lightPos));
+
+            if (lightIntensity > 0.0f)
+            {
+                //Diffuse color
+                color += (diffuseColor * lightIntensity);
+            }
+        }
     }
 
-    //DIFFUSE ONLY END - Remove!
+    //Second Light
+    projectTexCoord.x = input.lightViewPosition2.x / input.lightViewPosition2.w / 2.0f + 0.5f;
+    projectTexCoord.y = -input.lightViewPosition2.y / input.lightViewPosition2.w / 2.0f + 0.5f;
+
+    if ((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y))
+    {
+        depthValue = depthMapTexture2.Sample(SampleTypeClamp, projectTexCoord).r;
+
+        lightDepthValue = input.lightViewPosition2.z / input.lightViewPosition2.w;
+        lightDepthValue = lightDepthValue - bias;
+
+        if (lightDepthValue < depthValue)
+        {
+            lightIntensity = saturate(dot(bumpNormal, input.lightPos2));
+            if (lightIntensity > 0.0f)
+            {
+                color += (diffuseColor2 * lightIntensity);
+            }
+        }
+    }
 
     //Saturate to final light color
     color = saturate(color);

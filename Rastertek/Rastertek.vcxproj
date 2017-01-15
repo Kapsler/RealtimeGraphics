@@ -162,6 +162,7 @@
     <ClCompile Include="KdNode.cpp" />
     <ClCompile Include="LightClass.cpp" />
     <ClCompile Include="ModelLoader.cpp" />
+    <ClCompile Include="PerformanceTimer.cpp" />
     <ClCompile Include="RenderTextureClass.cpp" />
     <ClCompile Include="ShaderClass.cpp" />
     <ClCompile Include="D3DClass.cpp" />
@@ -184,6 +185,7 @@
     <ClInclude Include="ltalloc.hpp" />
     <ClInclude Include="ModelLoader.h" />
     <ClInclude Include="ModelType.h" />
+    <ClInclude Include="PerformanceTimer.h" />
     <ClInclude Include="RayHitStruct.h" />
     <ClInclude Include="RenderTextureClass.h" />
     <ClInclude Include="ShaderClass.h" />

@@ -17,6 +17,7 @@
 #include "MyBoundingBox.h"
 #include "KdNode.h"
 #include "RayHitStruct.h"
+#include "PerformanceTimer.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = true;
@@ -95,5 +96,7 @@ private:
 	bool rayToggle = false;
 	bool rayRenderToggle = false;
 	bool rayrendermode = false;
+	PerformanceTimer raytimer;;
+
 	
 };

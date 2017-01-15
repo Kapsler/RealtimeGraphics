@@ -120,7 +120,7 @@ void CameraClass::DoMovement(InputClass* input)
 
 
 	float deltaTime = timer->GetFrameTime();
-	float cameraSpeed = 0.1f * deltaTime;
+	float cameraSpeed = 0.2f * deltaTime;
 	viewQuaternion.Inverse(viewQuaternion);
 
 	if(!tracking)
@@ -151,19 +151,19 @@ void CameraClass::DoMovement(InputClass* input)
 		//Rotation
 		if(input->IsKeyDown(VK_UP))
 		{
-			rotation.x -= cameraSpeed ;
+			rotation.x -= cameraSpeed * 0.5f ;
 		}
 		if(input->IsKeyDown(VK_DOWN))
 		{
-			rotation.x += cameraSpeed;
+			rotation.x += cameraSpeed * 0.5f;
 		}
 		if(input->IsKeyDown(VK_LEFT))
 		{
-			rotation.y -= cameraSpeed * 2;
+			rotation.y -= cameraSpeed * 1;
 		}
 		if(input->IsKeyDown(VK_RIGHT))
 		{
-			rotation.y += cameraSpeed * 2;
+			rotation.y += cameraSpeed * 1;
 		}
 
 		//reset Tracking points

@@ -46,7 +46,7 @@ KdNode* KdNode::build(std::vector<GameWorld::Triangle*>* tris, int depth) const
 		return node;
 	}
 
-	if(tris->size() <= 500)
+	if(tris->size() <= 100 || depth > 1000)
 	{
 		node->bbox = new MyBoundingBox(*tris);
 		node->left = new KdNode();
@@ -116,51 +116,8 @@ KdNode* KdNode::build(std::vector<GameWorld::Triangle*>* tris, int depth) const
 		default: break;
 		}
 	}
-	
-
-	if(tris->size() < 100000)
-	{
-		if (leftTris->size() == 0 && rightTris->size() > 0) leftTris = rightTris;
-		if (rightTris->size() == 0 && leftTris->size() > 0) rightTris = leftTris;
-
-		int matches = 0;
-		#pragma omp parallel
-		{
-			#pragma omp for
-			for(int i = 0; i < leftTris->size(); ++i)
-			{
-				for(int j = 0; j < rightTris->size(); ++j)
-				{
-					if((*leftTris)[i] == (*rightTris)[j])
-					{
-						matches++;
-					}
-				}
-			}
-			
-		}
-		
-
-		if(static_cast<float>(matches) / leftTris->size() < 0.5f && static_cast<float>(matches) / rightTris->size() < 0.5f)
-		{
-			node->left = build(leftTris, depth + 1);
-			node->right = build(rightTris, depth + 1);
-		} else
-		{
-			node->left = new KdNode();
-			node->right = new KdNode;
-			node->left->triangles = new std::vector<GameWorld::Triangle*>();
-			node->right->triangles = new std::vector<GameWorld::Triangle*>();
-		}
-
-	} else
-	{
-
-		node->left = build(leftTris, depth + 1);
-		node->right = build(rightTris, depth + 1);
-		
-	}
-	
+	node->left = build(leftTris, depth + 1);
+	node->right = build(rightTris, depth + 1);
 
 	return node;
 }

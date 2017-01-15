@@ -84,86 +84,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	//HARDCODED - Setting up Models
-
-	//models.push_back(InitializeModel(hwnd, "./Model/rungholt.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-40, 0.0f, 50.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/hairball.obj", L"./Model/ground.dds", L"./Model/brickbump.dds", XMFLOAT3(-40, 0.0f, 50.0f), 10.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/buddha.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-400, 0.0f, 50.0f), 500.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-40, 0.0f, 50.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-400, 0.0f, 500.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-200, 0.0f, 200.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(200, 0.0f, -200.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(400, 0.0f, -400.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(0, 200.0f, 200.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-400, 0.0f, 400.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(0, -200.0f, -200.0f), 4.0f));
-
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-40, 0.0f, 50.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-50, 0.0f, 50.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-60, 0.0f, 50.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-70, 0.0f, 50.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-80, 0.0f, 50.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-90, 0.0f, 50.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-100, 0.0f, 50.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-110, 0.0f, 50.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-120, 0.0f, 50.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-130, 0.0f, 50.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-140, 0.0f, 50.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-150, 0.0f, 50.0f), 4.0f));
-
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(30.0f, 0.0f, 150.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(40.0f, 0.0f, 150.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(50.0f, 0.0f, 150.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(60.0f, 0.0f, 150.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(70.0f, 0.0f, 150.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(80.0f, 0.0f, 150.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(90.0f, 0.0f, 150.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(100.0f, 0.0f, 150.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(110.0f, 0.0f, 150.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(120.0f, 0.0f, 150.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(130.0f, 0.0f, 150.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(140.0f, 0.0f, 150.0f), 4.0f));
-
-
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-20, 0.0f, 250.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-30, 0.0f, 250.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-40, 0.0f, 250.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-50, 0.0f, 250.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-60, 0.0f, 250.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-70, 0.0f, 250.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-80, 0.0f, 250.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-90, 0.0f, 250.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-100, 0.0f, 250.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-110, 0.0f, 250.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-120, 0.0f, 250.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-130, 0.0f, 250.0f), 4.0f));
-
-	////Scene
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(-30, 0.0f, 50.0f), 4.0f));
-
-	models.push_back(InitializeModel(hwnd, "./Model/Cube.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(30, 0.0f, 50.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(20.0f, 0.0f, 150.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Cube.obj", L"./Model/crate.dds", L"./Model/cratebump.dds", XMFLOAT3(-20.0f, 0.0f, 150.0f), 4.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Sphere.txt", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(-10, 0.0f, 250.0f), 4.0f));
-	models.push_back(InitializeModel(hwnd, "./Model/Cube.obj", L"./Model/stone01.dds", L"./Model/bump01.dds", XMFLOAT3(10, 0.0f, 250.0f), 4.0f));
-
-	//models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(0.0f, -10.0f, 0.0f), 100.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(0.0f, -10.0f, 200.0f), 100.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(0.0f, -10.0f, 400.0f), 100.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(200.0f, -10.0f, 0.0f), 100.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(200.0f, -10.0f, 200.0f), 100.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(200.0f, -10.0f, 400.0f), 100.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(-200.0f, -10.0f, 0.0f), 100.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(-200.0f, -10.0f, 200.0f), 100.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Plane.txt", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(-200.0f, -10.0f, 400.0f), 100.0f));
-
-	//for(auto t : GameWorld::getInstance().triangles)
-	//{
-	//	std::cout << "Tri: " << std::endl;
-	//	std::cout << t->vertices[0].x << ", " << t->vertices[0].y << ", " << t->vertices[0].z << std::endl;
-	//	std::cout << t->vertices[1].x << ", " << t->vertices[1].y << ", " << t->vertices[1].z << std::endl;
-	//	std::cout << t->vertices[2].x << ", " << t->vertices[2].y << ", " << t->vertices[2].z << std::endl;
-	//	std::cout << std::endl;
-	//}
+	models.push_back(InitializeModel(hwnd, "./Model/earth.obj", L"./Model/earthtex.dds", L"./Model/earthnormal.dds", XMFLOAT3(0, 0.0f, 500.0f), 0.2f));
+	models.push_back(InitializeModel(hwnd, "./Model/earth.obj", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(200, 0.0f, 500.0f), 0.2f));
+	models.push_back(InitializeModel(hwnd, "./Model/Terrain_001.obj", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(0.0f, -700.0f, 0.0f), 500.0f));
 
 	//Lights
 	light = new LightClass();
@@ -263,8 +186,10 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 
 	std::cout << "Generating KD-Tree for " << GameWorld::getInstance().triangles.size() << " triangles" << std::endl;
 	tree = new KdNode();
+	raytimer.StartTimer();
 	tree = tree->build(&GameWorld::getInstance().triangles, 0);
-	std::cout << "KD-Tree finished" << std::endl;
+	double kdbuildtime = raytimer.GetTime();
+	std::cout << "KD-Tree finished in " << kdbuildtime << " seconds" << std::endl;
 
 	return true;
 }
@@ -340,6 +265,7 @@ bool GraphicsClass::Frame(InputClass* input)
 	static float counter = -5.0f;
 	static float totaltime = 0.0f;
 	timer->Frame();
+	static float rotation = 0.0f;
 
 	float deltaTime = timer->GetFrameTime();
 	totaltime += deltaTime;
@@ -354,6 +280,13 @@ bool GraphicsClass::Frame(InputClass* input)
 	CheckMSKeys(input);
 	CheckRaycast(input);
 
+	// Update the rotation variable each frame.
+	rotation += (float)XM_PI * 0.0001f;
+	if (rotation > 360.0f)
+	{
+		rotation -= 360.0f;
+	}
+
 	//Lightmovement
 	counter += deltaTime * 0.03f;
 	if (counter > 100.0f)
@@ -364,7 +297,7 @@ bool GraphicsClass::Frame(InputClass* input)
 	SetLightDirection(input);
 
 
-	result = Render(counter, input);
+	result = Render(rotation, input);
 	if (!result)
 	{
 		return false;
@@ -646,19 +579,23 @@ void GraphicsClass::CastRay()
 {
 	float maxRange = 100000.0f;
 	float hitfloat = 100000.0f;
+	double raycasttime;
 
 	if(hitCounter%2 == 0)
 	{
-		if(KdNode::hit(tree, &ray, hitfloat, maxRange, hit1))
-		{
-			hitCounter++;
-		}
+		raytimer.StartTimer();
+		KdNode::hit(tree, &ray, hitfloat, maxRange, hit1);
+		raycasttime = raytimer.GetTime();
+		std::cout << "Raycast took " << raycasttime << " second" << std::endl;
+		hitCounter++;
+		
 	} else
 	{
-		if (KdNode::hit(tree, &ray, hitfloat, maxRange, hit2))
-		{
-			hitCounter++;
-		}
+		raytimer.StartTimer();
+		KdNode::hit(tree, &ray, hitfloat, maxRange, hit2);
+		raycasttime = raytimer.GetTime();
+		std::cout << "Raycast took " << raycasttime << " second" << std::endl;
+		hitCounter++;
 	}
 
 	ruler = hit2.hitPoint - hit1.hitPoint;
@@ -673,19 +610,19 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 	XMMATRIX lightViewMatrix2, lightProjectionMatrix2;
 	bool result;
 
-	////Render scene to texture
-	//result = RenderSceneToTexture();
-	//if (!result)
-	//{
-	//	return false;
-	//}
+	//Render scene to texture
+	result = RenderSceneToTexture();
+	if (!result)
+	{
+		return false;
+	}
 
-	////Render scene to texture 2
-	//result = RenderSceneToTexture2();
-	//if (!result)
-	//{
-	//	return false;
-	//}
+	//Render scene to texture 2
+	result = RenderSceneToTexture2();
+	if (!result)
+	{
+		return false;
+	}
 
 
 	//clear Buffer at beginning
@@ -701,15 +638,14 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 	camera->GetViewMatrix(viewMatrix);
 	direct3D->GetProjectionMatrix(projectionMatrix);
 
-
-	////Lighting
-	//light->GenerateViewMatrix();
-	//light->GetViewMatrix(lightViewMatrix);
-	//light->GetProjectionMatrix(lightProjectionMatrix);
-	////Lighting2
-	//light2->GenerateViewMatrix();
-	//light2->GetViewMatrix(lightViewMatrix2);
-	//light2->GetProjectionMatrix(lightProjectionMatrix2);
+	//Lighting
+	light->GenerateViewMatrix();
+	light->GetViewMatrix(lightViewMatrix);
+	light->GetProjectionMatrix(lightProjectionMatrix);
+	//Lighting2
+	light2->GenerateViewMatrix();
+	light2->GetViewMatrix(lightViewMatrix2);
+	light2->GetProjectionMatrix(lightProjectionMatrix2);
 
 	//Put model vertex and index buffer on pipeline
 	for (ModelClass* model : models)
@@ -781,7 +717,7 @@ bool GraphicsClass::Render(float rotation, InputClass* input)
 		//direct3D->GetDeviceContext()->OMSetDepthStencilState(depthstate, 0);
 		//direct3D->GetDeviceContext()->RSSetState(rsstate);
 
-			RenderRay();
+		RenderRay();
 	}
 
 	ID3D11Texture2D* backBuffer;
