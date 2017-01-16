@@ -23,6 +23,7 @@ public:
 
 		DirectX::XMFLOAT3 vertices[3];
 		DirectX::SimpleMath::Vector3 smallest, greatest;
+		bool alreadyCut = false;
 	};
 
 	static GameWorld& getInstance();

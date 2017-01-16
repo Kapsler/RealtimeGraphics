@@ -46,7 +46,7 @@ KdNode* KdNode::build(std::vector<GameWorld::Triangle*>* tris, int depth) const
 		return node;
 	}
 
-	if(tris->size() <= 100 || depth > 1000)
+	if(tris->size() <= 100 || depth > 200)
 	{
 		node->bbox = new MyBoundingBox(*tris);
 		node->left = new KdNode();
