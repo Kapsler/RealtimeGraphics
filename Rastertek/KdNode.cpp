@@ -46,7 +46,7 @@ KdNode* KdNode::build(std::vector<GameWorld::Triangle*>* tris, int depth) const
 		return node;
 	}
 
-	if(tris->size() <= 100 || depth > 200)
+	if(tris->size() <= 100)
 	{
 		node->bbox = new MyBoundingBox(*tris);
 		node->left = new KdNode();
@@ -78,6 +78,16 @@ KdNode* KdNode::build(std::vector<GameWorld::Triangle*>* tris, int depth) const
 		medTri = (*(tris->begin() + tris->size() / 2));
 		axisBaryCenter = medTri->getBarycenter().z;
 	}
+
+	if (medTri->alreadyCut) {
+		node->bbox = new MyBoundingBox(*tris);
+		node->left = new KdNode();
+		node->right = new KdNode();
+		node->left->triangles = new std::vector<GameWorld::Triangle*>();
+		node->right->triangles = new std::vector<GameWorld::Triangle*>();
+		return node;
+	}
+	medTri->alreadyCut = true;
 
 	for (int i = 0; i < tris->size(); ++i)
 	{
@@ -116,6 +126,7 @@ KdNode* KdNode::build(std::vector<GameWorld::Triangle*>* tris, int depth) const
 		default: break;
 		}
 	}
+
 	node->left = build(leftTris, depth + 1);
 	node->right = build(rightTris, depth + 1);
 
