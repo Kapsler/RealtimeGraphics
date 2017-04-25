@@ -84,12 +84,13 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd)
 	}
 
 	//HARDCODED - Setting up Models
-	models.push_back(InitializeModel(hwnd, "./Model/rungholt.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(0, -50.0f, 0.0f), 0.2f));
+	//models.push_back(InitializeModel(hwnd, "./Model/buddha.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(0, -50.0f, 0.0f), 1.0f));
 
 	//models.push_back(InitializeModel(hwnd, "./Model/earth.obj", L"./Model/earthtex.dds", L"./Model/earthnormal.dds", XMFLOAT3(0, 0.0f, 500.0f), 0.2f));
+	models.push_back(InitializeModel(hwnd, "./Model/buddha.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(0, 0.0f, 100.0f), 200.0f));
 	//models.push_back(InitializeModel(hwnd, "./Model/earth.obj", L"./Model/icetex.dds", L"./Model/icenormal.dds", XMFLOAT3(200, 0.0f, 500.0f), 0.2f));
 	//models.push_back(InitializeModel(hwnd, "./Model/house.obj", L"./Model/brickwall.dds", L"./Model/brickbump.dds", XMFLOAT3(0.0f, 0.0f, 100.0f), 1.0f));
-	//models.push_back(InitializeModel(hwnd, "./Model/Terrain_001.obj", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(0.0f, -700.0f, 0.0f), 500.0f));
+	models.push_back(InitializeModel(hwnd, "./Model/Terrain_001.obj", L"./Model/ground.dds", L"./Model/groundbump.dds", XMFLOAT3(0.0f, -700.0f, 0.0f), 500.0f));
 
 	//Lights
 	light = new LightClass();
